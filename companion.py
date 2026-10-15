@@ -10,8 +10,11 @@ import threading
 from pathlib import Path
 import subprocess
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from companion_core import choose_window, overlay_position, usable_ocr_values, recommendation_status
+from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
+                              store_capture, export_pack)
+from screen_r4 import user_dir
 from live_state_r24 import FreshnessGate, rectangles_overlap
 from companion_window import discover_windows
 from recommendation_bridge_r28 import load_handoff, HintGate, HandoffError
@@ -58,6 +61,9 @@ class Companion(tk.Tk):
         self.button_patterns=[]
         self.button_info=tk.StringVar(value='훈련 버튼: 기준 등록 필요')
         self.r28_info=tk.StringVar(value='R28 추천: 실게임 점검 창에서 훈련 검수 필요')
+        self.capture_label=tk.StringVar(value='훈련')
+        self.capture_pack=None
+        self.capture_pending=False
         self.scene_anchors=[]
         self.last_hwnd=None
         self.freshness=FreshnessGate()
@@ -130,12 +136,68 @@ class Companion(tk.Tk):
         tk.Button(row,text='실게임 훈련 점검 · R22',command=self._launch_game_test,
                   bg='#247368',fg='white',relief='flat').pack(fill='x',pady=(0,5))
         tk.Button(row,text='R23 · 게임 없이 사전점검',command=self._launch_preflight,bg='#345778',fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
+        self._label(row,'R29 · 실게임 화면 자료 수집 (선택 기능)',AQUA,9,'bold').pack(anchor='w',pady=(3,2))
+        ttk.Combobox(row,values=SCENES,textvariable=self.capture_label,state='readonly').pack(fill='x',pady=(0,4))
+        tk.Button(row,text='4초 뒤 게임 화면 저장 · 게임 창으로 돌아가기',command=self._schedule_capture,
+                  bg='#346075',fg=TEXT,relief='flat').pack(fill='x',pady=(0,4))
+        tk.Button(row,text='저장된 화면 ZIP 내보내기 (직접 선택)',command=self._export_capture_pack,
+                  bg='#344766',fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
         tk.Button(row,text='상세 설정·자료 관리 열기',command=self._launch_advanced,bg='#263754',fg=TEXT,relief='flat').pack(fill='x')
         self._label(self.body,'실제 게임 클릭은 아직 지원하지 않음 · 오인식 시 정지 우선',MUTED,8).pack(anchor='w',padx=14)
 
     def _helper(self):
         self.action.set('헬퍼 모드')
         self.reason.set(recommendation_status(False,False))
+
+    def _schedule_capture(self):
+        """Button is clicked on the companion; user has 4 seconds to refocus game."""
+        if self.capture_pending or self.demo:
+            self.reason.set('시연 모드에서는 게임 화면을 저장할 수 없습니다.')
+            return
+        if self.game is None or os.name != 'nt':
+            self.reason.set('Windows에서 실제 게임 창을 찾은 뒤 사용하세요.')
+            return
+        self.capture_pending=True
+        target=self.game
+        scene=self.capture_label.get()
+        self.hint_overlay.hide()
+        self.reason.set('4초 뒤 캡처: 게임 창으로 돌아가고 다른 창으로 가리지 마세요.')
+        self.after(4000,lambda:self._capture_r29(target,scene))
+
+    def _capture_r29(self,expected,scene):
+        try:
+            if os.name!='nt':raise CaptureError('Windows PC에서만 사용할 수 있습니다.')
+            import ctypes
+            from PIL import ImageGrab
+            current, _=choose_window(discover_windows())
+            panel=(self.winfo_rootx(),self.winfo_rooty(),
+                   self.winfo_rootx()+self.winfo_width(),self.winfo_rooty()+self.winfo_height())
+            rect=check_capture_target(expected,current,ctypes.windll.user32.GetForegroundWindow(),panel)
+            if not self.capture_pack:
+                self.capture_pack=new_pack(user_dir()/'r29_local_captures')
+            self.hint_overlay.hide()
+            # No game clicks or keyboard events are sent.
+            image=ImageGrab.grab(bbox=rect,all_screens=True)
+            store_capture(self.capture_pack,image,scene_label=scene,
+                          window_size=(current.width,current.height))
+            self.reason.set(f'로컬 화면 저장 완료 · {scene} · 폴더: r29_local_captures (외부 전송 없음)')
+        except (CaptureError,OSError,ValueError) as error:
+            self.reason.set('R29 캡처 보류 · '+str(error)[:100])
+        finally:
+            self.capture_pending=False
+
+    def _export_capture_pack(self):
+        if not self.capture_pack:
+            self.reason.set('R29 캡처를 먼저 저장하세요.')
+            return
+        location=filedialog.asksaveasfilename(title='본인이 확인한 화면만 공유하세요',
+                   defaultextension='.zip',filetypes=[('ZIP archives','*.zip')])
+        if not location:return
+        try:
+            export_pack(self.capture_pack,Path(location))
+            self.reason.set('ZIP 저장 완료 · 게임 화면에 개인 정보가 없는지 공유 전 확인하세요.')
+        except (CaptureError,OSError,ValueError) as error:
+            self.reason.set('R29 ZIP 내보내기 실패 · '+str(error)[:100])
 
     def _launch_game_test(self):
         base=Path(sys.executable).resolve().parent if getattr(sys,'frozen',False) else Path(__file__).resolve().parent
