@@ -1,24 +1,26 @@
-# Uma Trainer KR
+# Uma Trainer KR — R30 Portable
 
-한국 우마무스메 PC 전용 육성 보조 프로젝트. R29 개발본.
+한국 우마무스메 PC 육성 보조 도구 연구·개발 프로젝트.
 
-- **일반 화면:** 게임 옆 작은 정보창 및 게임 위 훈련 추천 표식(검증 전).
-- **R29 추가:** 게임이 업데이트되거나 화면이 달라도 사용자가 원할 때 진단용 실제 게임 화면 자료를 로컬에 저장하고 ZIP으로 내보내는 기능. 자동 업로드 없음.
-- **목표:** 챔피언스 미팅·리그 오브 히어로즈 / 무인도부터 지원하고 향후 시나리오 추가.
-- **미구현:** 게임 자동 클릭, 검증된 자동 육성 및 실제 승률 기반 ML.
+## 설치 없이 사용하기
 
-## 실행
-`python -m pip install -r requirements.txt` 후 `python companion.py` (Windows 실PC).
-`python -m unittest discover -s tests -q` (소스 테스트).
+GitHub **Actions → Build Windows portable and installer (manual only)**에서 Windows 수동 빌드가 성공하면 `UmaTrainerKR-R30-Windows-Verified`라는 Artifacts를 받을 수 있습니다. 내부 `portable/UmaTrainerKR-Portable-v0.30.0.zip`을 압축 해제한 뒤 `UmaTrainerKR_Companion.exe`를 실행하세요. **설치 프로그램과 Python 설치가 필요하지 않습니다.** 단 OCR용 Tesseract가 별도로 필요할 수 있습니다.
 
-Python 없는 설치파일은 GitHub **수동** Actions 빌드로 생성합니다. 아직 빌드 및 한국 서버 실제 호환성은 검증되지 않았습니다.
+### 이후 버전 업데이트
 
-자세한 내용은 `docs/R29_실게임화면_증거팩_사용방법.md`에 있습니다.
+R30 포터블 도우미는 시작 시와 실행 중 매일 공식 GitHub Release의 안정 버전을 확인합니다. 새 버전이 있으면 **사용자가 동의한 경우에만** 내려받고 SHA-256을 검증하여 새 버전 폴더에 설치합니다. 기존 버전은 삭제하지 않으며 설정/육성 기록은 `%LOCALAPPDATA%\UmaTrainerKR`에 보존됩니다.
 
-## Windows 설치파일 받기 (소스 업로드와 별개)
-1. GitHub 저장소의 **Actions** 탭에서 **Build and verify Windows installer (manual only)** 워크플로를 엽니다.
-2. **Run workflow** → `main` → **Run workflow**를 클릭합니다.
-3. 성공한 실행의 **Artifacts**에서 `UmaTrainerKR-R29-Windows-Verified`를 내려받습니다.
-4. 내부의 `installer/UmaTrainerKR_Setup_0.29.0.exe`를 사용합니다.
+GitHub 코드가 변경되었다고 자동으로 실행파일이 업데이트되는 것은 **아닙니다**. 새 **GitHub Release**가 Windows 테스트 후 실제로 게시되어야 새 버전을 받을 수 있습니다. Releases 게시 작업도 수동이고, `publish_release=false`가 기본입니다.
 
-이 단계는 수동 실행되며, 아직 실제 Windows 빌드 성공 여부와 게임 화면 호환성은 확인되지 않았습니다.
+소스 실행: `python -m pip install -r requirements.txt` 이후 `python companion.py`. 전체 테스트: `python -m unittest discover -s tests -q`.
+
+구체적인 사용·릴리스 절차 및 4개월 주기 운영 방침은 [R30 포터블 업데이트 안내](docs/R30_포터블업데이트_사용방법.md)를 확인하세요.
+
+### 기능/검증 범위
+
+- 지원 개발 중: 게임 옆 패널, 훈련 스크린샷 인식 및 검수, 게임 위 추천 표시(Windows 한국 서버 실검증 전).
+- R29: 화면 캡처 자료를 **로컬**에서 관리/내보내기. 자동 전송 없음.
+- R30: 포터블 버전 조회·검증·별도 폴더 설치·선택적 버전 전환.
+- 자동 클릭·완전 자동 육성/실제 게임 기반 ML 학습은 구현되지 않았음.
+
+게임 화면 감지와 OCR 정확도는 실제 한국 서버 환경 테스트 전입니다.

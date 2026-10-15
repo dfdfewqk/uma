@@ -1,8 +1,14 @@
-name: Build and verify Windows installer (manual only)
+name: Build Windows portable and installer (manual only)
 
-# Intentionally no pushes, PR triggers, tags, schedule, or automatic release.
+# Manual-only. No push, PR, tag, or schedule trigger; publication is explicit opt-in.
 on:
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: 'Publish tested ZIP as GitHub Release for in-app updater (explicit opt-in)'
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -148,10 +154,16 @@ jobs:
           python scripts/verify_windows_package_r25.py dist $version
           if ($LASTEXITCODE -ne 0) { throw 'Artifact verification failed' }
 
-      - name: Upload verified Windows builds (no release publication)
+      - name: Create and verify portable ZIP and SHA-256
+        shell: pwsh
+        run: |
+          python scripts/build_portable_r30.py dist
+          if ($LASTEXITCODE -ne 0) { throw 'Portable ZIP verification failed' }
+
+      - name: Upload verified Windows builds (no automatic release publication)
         uses: actions/upload-artifact@v4
         with:
-          name: UmaTrainerKR-R29-Windows-Verified
+          name: UmaTrainerKR-R30-Windows-Verified
           path: |
             dist/UmaTrainerKR.exe
             dist/UmaTrainerKR_Companion.exe
@@ -160,5 +172,40 @@ jobs:
             dist/installer/UmaTrainerKR_Setup_*.exe
             dist/SHA256_MANIFEST.json
             dist/smoke-reports/*.json
+            dist/portable/UmaTrainerKR-Portable-*.zip
+            dist/portable/UmaTrainerKR-Portable-*.zip.sha256
           if-no-files-found: error
           retention-days: 14
+
+  publish-portable:
+    name: Publish reviewed R30 portable archive (opt-in only)
+    needs: windows-package
+    if: ${{ inputs.publish_release == true }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: UmaTrainerKR-R30-Windows-Verified
+          path: dist
+      - name: Publish tested portable release (only when explicitly requested)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $raw = Get-Content VERSION.txt -Raw
+          $match = [regex]::Match($raw, '(?m)^Version:\s*(\d+\.\d+\.\d+)\s*$')
+          if (-not $match.Success) { throw 'Invalid release version' }
+          $version = $match.Groups[1].Value
+          $tag = "v$version"
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) { throw "Release $tag already exists; refuse overwrite" }
+          gh release create $tag `
+            "dist/portable/UmaTrainerKR-Portable-v$version.zip" `
+            "dist/portable/UmaTrainerKR-Portable-v$version.zip.sha256" `
+            --target "${{ github.sha }}" --title "Uma Trainer KR $tag (Portable)" `
+            --notes "Windows portable helper. SHA-256 verification and user-confirmed side-by-side updates; auto-click and live game validation not included." `
+            --latest
+          if ($LASTEXITCODE -ne 0) { throw 'Release publication failed' }

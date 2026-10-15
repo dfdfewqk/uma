@@ -10,7 +10,7 @@ import threading
 from pathlib import Path
 import subprocess
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, messagebox
 from companion_core import choose_window, overlay_position, usable_ocr_values, recommendation_status
 from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
                               store_capture, export_pack)
@@ -19,6 +19,7 @@ from live_state_r24 import FreshnessGate, rectangles_overlap
 from companion_window import discover_windows
 from recommendation_bridge_r28 import load_handoff, HintGate, HandoffError
 from game_overlay_r28 import TrainingOverlay
+from portable_update_r30 import check_latest, download_portable, UpdateError, CURRENT_VERSION
 from scene_recognition_r20 import StableScene, load_library, profile_path as scene_profile_path
 from button_detection_r21 import StableButtons, load_patterns, path_default as button_pattern_path, DetectionError, DetectorUnavailable
 
@@ -47,6 +48,10 @@ class Companion(tk.Tk):
         self.reading=False
         self.last_capture=0
         self.q=queue.Queue()
+        self.update_queue=queue.Queue()
+        self.update_release=None
+        self.update_busy=False
+        self.update_status=tk.StringVar(value=f'현재 R30 · v{CURRENT_VERSION} · 업데이트 확인 대기')
         self.event_var=tk.StringVar(value='챔피언스 미팅')
         self.mode_var=tk.StringVar(value='고점작 헬퍼')
         self.status=tk.StringVar(value='게임 창 찾는 중…')
@@ -71,6 +76,12 @@ class Companion(tk.Tk):
         self.energy=tk.StringVar(value='—')
         self.skill=tk.StringVar(value='—')
         self._draw()
+        self.after(300,self._update_poll)
+        if getattr(sys, 'frozen', False) and os.name == 'nt':
+            self.after(2600,self._check_updates)
+            self.after(24*60*60*1000,self._periodic_update_check)
+        else:
+            self.update_status.set('소스 실행 · 자동 교체는 Windows 포터블 EXE에서 지원')
         if self.demo:
             self.status.set('시연 화면 · 실제 게임 아님')
             self.detail.set('이 화면은 원하는 사용 방식의 UI 프로토타입입니다.')
@@ -143,7 +154,93 @@ class Companion(tk.Tk):
         tk.Button(row,text='저장된 화면 ZIP 내보내기 (직접 선택)',command=self._export_capture_pack,
                   bg='#344766',fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
         tk.Button(row,text='상세 설정·자료 관리 열기',command=self._launch_advanced,bg='#263754',fg=TEXT,relief='flat').pack(fill='x')
+        u=self._card()
+        self._label(u,'R30 · 무설치 업데이트',AQUA,10,'bold').pack(anchor='w')
+        tk.Label(u,textvariable=self.update_status,bg=CARD,fg=TEXT,wraplength=290,
+                 justify='left',anchor='w').pack(anchor='w',pady=(5,4))
+        self.update_check_button=tk.Button(u,text='GitHub 최신 버전 확인',
+                     command=self._check_updates,bg='#345778',fg=TEXT,relief='flat')
+        self.update_check_button.pack(fill='x',pady=(0,4))
+        self.update_install_button=tk.Button(u,text='새 포터블 버전 받기 및 실행',
+                     command=self._download_update,state='disabled',relief='flat')
+        self.update_install_button.pack(fill='x')
+        self._label(u,'현재 버전은 그대로 보존 · 기록은 사용자 폴더에 유지',MUTED,8).pack(anchor='w',pady=(5,0))
         self._label(self.body,'실제 게임 클릭은 아직 지원하지 않음 · 오인식 시 정지 우선',MUTED,8).pack(anchor='w',padx=14)
+
+    def _periodic_update_check(self):
+        if not self.update_busy:
+            self._check_updates()
+        self.after(24*60*60*1000,self._periodic_update_check)
+
+    def _check_updates(self):
+        if self.update_busy:
+            return
+        if os.name != 'nt' or not getattr(sys,'frozen',False):
+            self.update_status.set('소스 실행에서는 버전 교체를 지원하지 않습니다.')
+            return
+        self.update_busy=True
+        self.update_check_button.configure(state='disabled')
+        self.update_install_button.configure(state='disabled')
+        self.update_status.set('GitHub 공개 릴리스 확인 중…')
+        def worker():
+            try:
+                self.update_queue.put(('check_ok',check_latest()))
+            except Exception as exc:
+                self.update_queue.put(('error',str(exc)[:150]))
+        threading.Thread(target=worker,daemon=True).start()
+
+    def _download_update(self):
+        release=self.update_release
+        if self.update_busy or release is None:
+            return
+        if not messagebox.askyesno('포터블 업데이트 확인',
+            f'v{release.version}을 공식 GitHub에서 내려받아 SHA-256 검증 후 새 폴더에 준비합니다.\n'
+            '기존 버전과 육성 기록은 지워지지 않습니다. 진행할까요?',parent=self):
+            return
+        self.update_busy=True
+        self.update_check_button.configure(state='disabled')
+        self.update_install_button.configure(state='disabled')
+        self.update_status.set(f'v{release.version} 다운로드 및 무결성 검증 중…')
+        exe=Path(sys.executable).resolve()
+        def worker():
+            try:
+                self.update_queue.put(('download_ok',download_portable(release,exe)))
+            except Exception as exc:
+                self.update_queue.put(('error',str(exc)[:150]))
+        threading.Thread(target=worker,daemon=True).start()
+
+    def _update_poll(self):
+        try:
+            while True:
+                kind,result=self.update_queue.get_nowait()
+                self.update_busy=False
+                self.update_check_button.configure(state='normal')
+                if kind=='error':
+                    self.update_status.set('업데이트 오류 · 기존 버전 유지: '+result)
+                    self.update_install_button.configure(state='normal' if self.update_release else 'disabled')
+                elif kind=='check_ok':
+                    self.update_release=result
+                    if result is None:
+                        self.update_status.set(f'현재 버전 v{CURRENT_VERSION} · 새 공개 버전 없음')
+                    else:
+                        self.update_status.set(f'새 공개 버전 v{result.version} · 사용자 확인 후 업데이트')
+                        self.update_install_button.configure(state='normal')
+                elif kind=='download_ok':
+                    new_exe=Path(result)
+                    self.update_status.set(f'새 버전 준비 완료: {new_exe.parent.name}')
+                    if messagebox.askyesno('새 버전 준비 완료',
+                            '검증된 새 버전이 별도 폴더에 준비됐습니다. 지금 새 버전을 실행할까요?\n'
+                            '기존 프로그램은 종료되며 저장된 기록은 유지됩니다.',parent=self):
+                        try:
+                            subprocess.Popen([str(new_exe)],cwd=str(new_exe.parent))
+                        except OSError as exc:
+                            self.update_status.set('새 프로그램 실행 실패 · 기존 버전 유지: '+str(exc)[:80])
+                        else:
+                            self.destroy()
+        except queue.Empty:
+            pass
+        if self.winfo_exists():
+            self.after(350,self._update_poll)
 
     def _helper(self):
         self.action.set('헬퍼 모드')

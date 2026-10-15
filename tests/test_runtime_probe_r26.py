@@ -75,6 +75,8 @@ class ReadinessTests(unittest.TestCase):
         self.assertIn('Get-FileHash -Algorithm SHA256',workflow)
         self.assertIn('installed_first_run.json',workflow)
         self.assertIn('Uninstall left binary behind',workflow)
-        self.assertNotIn('gh release create',workflow)
+        self.assertIn('if: ${{ inputs.publish_release == true }}',workflow)
+        self.assertIn('publish-portable:',workflow)
+        self.assertIn('contents: write',workflow)
 
 if __name__=='__main__':unittest.main()

@@ -108,6 +108,8 @@ class TestR25SelfCheck(unittest.TestCase):
         self.assertIn('permissions:\n  contents: read',workflow)
         self.assertIn('--self-check-report',workflow)
         self.assertIn('verify_windows_package_r25.py',workflow)
-        self.assertNotIn('gh release create',workflow)
+        self.assertIn('if: ${{ inputs.publish_release == true }}',workflow)
+        self.assertIn('publish-portable:',workflow)
+        self.assertIn('contents: write',workflow)
 
 if __name__=='__main__':unittest.main()

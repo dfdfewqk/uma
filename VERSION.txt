@@ -1,2 +1,2 @@
-Uma Trainer KR R29
-Version: 0.29.0
+Uma Trainer KR R30
+Version: 0.30.0
