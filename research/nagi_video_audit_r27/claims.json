@@ -1,0 +1,69 @@
+{
+  "schema": "uma_r27_claims_v1",
+  "data_status": "reference_evidence_only_not_training_labels",
+  "claims": [
+    {
+      "id": "island_basic_mechanics",
+      "claim": "시설 건설 계획, 발전 Pt, 섬 트레이닝 티켓, 반기별 평가회가 핵심 구조다.",
+      "status": "verified_general_mechanic",
+      "basis": [
+        "cygames_scenario"
+      ],
+      "applicable_when": "all_runs",
+      "numeric_formula_verified": false
+    },
+    {
+      "id": "patch_timestamp",
+      "claim": "일본 2025-06-30 23:20 무렵 긴급 조정이 적용된 것으로 복수 자료에서 확인된다. 일부 변경 목록은 12:00으로 표기해 시각이 충돌한다.",
+      "status": "verified_with_source_timestamp_conflict",
+      "basis": [
+        "gamewith_post_patch",
+        "silvervine_post_patch",
+        "gamewith_patch_index"
+      ],
+      "applicable_when": "JP_post_2025_06_30",
+      "numeric_formula_verified": false
+    },
+    {
+      "id": "post_patch_facilities",
+      "claim": "스태미나·파워·근성·지능 시설 및 해변의 집 관련 효과, 섬 훈련과 일반 지능 훈련 등의 밸런스가 변경되었다.",
+      "status": "verified_patch_scope",
+      "basis": [
+        "dengekionline_patch",
+        "gamewith_post_patch"
+      ],
+      "applicable_when": "JP_post_2025_06_30",
+      "numeric_formula_verified": false
+    },
+    {
+      "id": "first_island_ticket_early_bond",
+      "claim": "첫 섬 트레이닝 티켓은 다음 지급 전 여유가 짧아 인연도 상승을 위해 조기에 사용하는 전략이 있다.",
+      "status": "guide_strategy_not_game_rule",
+      "basis": [
+        "gamewith_post_patch"
+      ],
+      "applicable_when": "first_ticket_only",
+      "numeric_formula_verified": false
+    },
+    {
+      "id": "later_island_friendship",
+      "claim": "첫 티켓 이후 섬 훈련은 복수 우정 훈련 시 유리할 가능성이 있으나 티켓을 낭비할 정도로 대기하는 것은 피하는 편이다.",
+      "status": "guide_strategy_not_game_rule",
+      "basis": [
+        "gamewith_post_patch"
+      ],
+      "applicable_when": "after_first_ticket",
+      "numeric_formula_verified": false
+    },
+    {
+      "id": "highlander_not_mandatory",
+      "claim": "수정 후 혼합형 하이랜더가 기본 추천으로 부상했지만, 스피드 5장 편성이 금지되거나 항상 열등한 것은 아니다.",
+      "status": "guide_strategy_not_absolute",
+      "basis": [
+        "gamewith_post_patch"
+      ],
+      "applicable_when": "JP_post_2025_06_30",
+      "numeric_formula_verified": false
+    }
+  ]
+}

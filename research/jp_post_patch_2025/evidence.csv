@@ -1,0 +1,29 @@
+evidence_id,source_id,scope_or_condition,finding_ko,product_implication_ko,evidence_type,confidence
+E001,S001,2025-06-30 JP change,스태미나·파워·근성·지능 시설 효과 강화,이전 공식 수치와 섞지 않고 패치 태그 검증,mechanic_patch,high
+E002,S001,2025-06-30 JP change,해변의 집에 복수 시설 우정 발생 수 기반 훈련 보정 추가,우정 인원과 서로 다른 시설 수를 별도 상태로 관측,mechanic_patch,high
+E003,S002,JP patch chronology,6월 30일 23:20 시각의 공지가 아카이브됨. GameWith는 실행 시각 12:00경으로 표기하여 상충,공지/적용 시각을 구분하고 실제 패치 후 데이터만 사용,source_conflict,medium
+E004,S004,support Tucker level>=41 (3돌),3돌 이상 편성시 후반 건설 코스트 상한이 더 높음,서포트 돌파 수준을 필수 프로필 항목으로,mechanic_guide,medium
+E005,S005,champ / LoH,하이랜더 또는 변형 혼합 서포트 편성 권장,스피드5만 정답으로 고정 금지,strategy_guide,medium
+E006,S006,junior and classic normal turns,힌트 취득 또는 스킬 Pt 확보를 위한 레이스를 적극 비교,훈련과 레이스 선택을 같은 후보집합에 포함,strategy_guide,high
+E007,S006,friendship ready island ticket,우정 3곳 이상 발생이 섬 훈련의 기본 목표,우정 장소 수와 보유 티켓·만료 리스크 동시 계산,strategy_guide,high
+E008,S006,bond not ready,인연도가 충분하지 않을 때는 인연도 쌓는 섬 훈련도 가능,3곳 미만이면 무조건 금지 규칙은 오판 가능,strategy_guide,high
+E009,S006,weak turn + Tucker outing,약한 훈련 시 외출하여 다음 강한 훈련을 준비,외출 다음 턴 버프를 상태에 저장,strategy_guide,high
+E010,S006,ticket would expire on duplication,레이스/외출을 통해 발전Pt 증가와 티켓 갱신 시점을 조정할 수 있음,티켓 만료 예상일과 행동별 발전Pt 차이를 측정,strategy_guide,high
+E011,S006,island construction,"해변의 집 건설 시기와 본능 경로 권장, 편성별 건설 순서 달라짐",건설은 정적 순서가 아닌 조건부 계획으로,strategy_guide,high
+E012,S014,2025 July 2200m CM candidate,"하이랜더로 실제 육성, 부족한 스태미나를 보고 시설 우선순위 변경",중간 스탯 예측에 따라 건설 우선순위 변경,single_player_case,medium
+E013,S014,2025 July 2200m CM candidate,"스탯 상한 도달·스킬 Pt 6400 초과 보고, 사용 가능한 적합 스킬 부족",스킬 Pt 총량보다 획득 가능한 유효 스킬도 측정,single_player_case,medium
+E014,S015,2025-07-05 forum comment,첫 건설에서 계획 오류를 깨닫고 재시작했다는 경험담,도축 후보: 되돌릴 수 없는 건설 선택. 빈도는 불명,anecdote_abandon,low
+E015,S016,2025-07-01 self report,하이랜더에서 우정 2곳 이하가 반복돼 성과가 약했고 스피드2 변형으로 개선했다고 기록,편성별 실패 조건이 같다고 가정하지 않음,single_player_case,medium
+E016,S017,2025 Sep CM actual competitive result,거리 적성S·높은 스탯을 갖춰도 금 스킬 이벤트 미완주가 실전 경쟁력 손실이었음을 경험담으로 보고,스킬 완주/대체 가능 여부를 도축 판단 항목으로,single_player_case,medium
+E017,S017,2025 Sep CM finished Gentildonna candidate,거리S와 금스킬 모두 확보했으나 스탯 부족해 출전에서 제외한 사례,스킬 완주만으로 완주 성공 판정하지 않음,single_player_abandoned_candidate,high
+E018,S017,2025 Sep CM multiple builds,스티ル/젠틸/불본마다 최종 시설 레벨이 서로 달랐음,목표캐릭터와 편성별 건설 경로를 분리,single_player_case,high
+E019,S017,race-heavy construction one build,해변의 집 Lv2+힌트와 출전 약25회가 스킬 확보 계획으로 언급되나 발전Pt 부족 위험 경고,레이스만 밀지 않고 발전Pt 부족 하한선 계산,single_player_case,medium
+E020,S018,2025 Aug LoH match,육성 횟수 적은 실전 참가에서 450점 손실로 종료했다고 보고,최종 성능은 육성 성적과 대회 결과를 구분 저장,single_player_outcome,high
+E021,S021,Aug 2600m LoH chaser build,추입 권장 스탯/회복기 조건 제시(한 공략의 목표치),"거리·각질·코스별 목표 템플릿, 고정 범용 수치 금지",strategy_guide,medium
+E022,S022,team stadium ranking only,스킬 미완주·성장/스킬Pt 부진·계승 실패·S부재 등이 폐기 기준이라고 플레이어가 기술,"조건 후보에만 등록, 챔미·LoH 기본 도축 규칙으로 적용 금지",out_of_scope_anecdote,low
+E023,S023,island>=3 friendship in late stage,"주니어 인연 우선, 클래식/시니어 3인 이상 우정 활용 권장",시기별 행동 점수 가중치 후보,strategy_guide,medium
+E024,S010,US1 Maya 2025-07-03 run,제작자가 US1 달성 후 전 턴 운영 의도를 설명했다고 안내,고점 성공 영상으로 우선 프레임 검수. 실전 성적은 미확인,video_description,medium
+E025,S008,JP after patch guide,공식 영상 설명에 건설 단계③ 정정 메모가 존재,유튜브 영상도 정정사항이 있는지 기록,video_description,high
+E026,S011,2025 July CM UA demonstration,무과금 환경의 7월 챔미 UA 달성 방법을 다루는 영상,예산/서포트 보유 차이별 분류에 활용하되 턴 데이터는 미확보,video_description,medium
+E027,S020,2025 Aug LoH 2600m,무인도 육성과 장거리 적성S 목표를 권장,경기조건 기반 적성S 목표를 설정 가능하게,strategy_guide,medium
+E028,S025,2025 July player discussion,스킬 Pt가 높아도 필요한 스킬 힌트·인자 미확보로 소비하지 못할 수 있다는 반응,실전 스킬 Pt 활용률을 성능 피처로 포함,community_discussion,low

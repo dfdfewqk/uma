@@ -1,0 +1,1327 @@
+{
+  "schema": "r13.v1",
+  "dataset": "japan_2025_post_june30_island_4_events",
+  "region": "JP",
+  "applied_to_KR": false,
+  "patch_after": "2025-06-30",
+  "events": [
+    {
+      "id": "jp-2025-07-cm",
+      "label": "2025년 7월 일본 챔미 · 한신 2200m",
+      "year_month": "2025-07",
+      "kind": "챔피언스 미팅",
+      "venue": "한신",
+      "meters": 2200,
+      "surface": "잔디",
+      "direction": "우회전",
+      "course_layout": "내측",
+      "season": "여름",
+      "weather": "흐림",
+      "ground": "다습",
+      "end": "코너",
+      "hills": "있음",
+      "course_note": "내리막이 초반과 종반을 가로지름. 내리막 랜덤 가속은 언제나 유효한 것이 아님. 디버프 제한 공지 확인",
+      "source_ids": [
+        "july_course"
+      ],
+      "status": "2025년 일본 확정 기록"
+    },
+    {
+      "id": "jp-2025-08-loh",
+      "label": "2025년 8월 일본 리오히 · 삿포로 2600m",
+      "year_month": "2025-08",
+      "kind": "리그 오브 히어로즈",
+      "venue": "삿포로",
+      "meters": 2600,
+      "surface": "잔디",
+      "direction": "우회전",
+      "course_layout": "미정",
+      "season": "여름",
+      "weather": "미정",
+      "ground": "미정",
+      "end": "코너",
+      "hills": "없음",
+      "course_note": "오르막·내리막 없음. 날씨와 마장 상태 랜덤. 안정적인 순위 조건 스킬을 우선 검토",
+      "source_ids": [
+        "aug_course"
+      ],
+      "status": "2025년 일본 확정 기록"
+    },
+    {
+      "id": "jp-2025-09-cm",
+      "label": "2025년 9월 일본 챔미 · 교토 2000m",
+      "year_month": "2025-09",
+      "kind": "챔피언스 미팅",
+      "venue": "교토",
+      "meters": 2000,
+      "surface": "잔디",
+      "direction": "우회전",
+      "course_layout": "내측",
+      "season": "가을",
+      "weather": "맑음",
+      "ground": "양호",
+      "end": "코너",
+      "hills": "있음",
+      "course_note": "종반 진입과 내리막이 겹침. 선행 直滑降 / 선입 駆け降り 검토",
+      "source_ids": [
+        "sep_course"
+      ],
+      "status": "2025년 일본 확정 기록"
+    },
+    {
+      "id": "jp-2025-10-cm",
+      "label": "2025년 10월 일본 챔미 · 니가타 1200m",
+      "year_month": "2025-10",
+      "kind": "챔피언스 미팅",
+      "venue": "니가타",
+      "meters": 1200,
+      "surface": "잔디",
+      "direction": "좌회전",
+      "course_layout": "내측",
+      "season": "가을",
+      "weather": "흐림",
+      "ground": "양호",
+      "end": "직선",
+      "hills": "없음",
+      "course_note": "평탄한 코스라 오르막·내리막 조건의 스킬은 제외. 종반 직선 가속 검토",
+      "source_ids": [
+        "oct_course"
+      ],
+      "status": "2025년 일본 확정 기록"
+    }
+  ],
+  "cards": [
+    {
+      "id": "almond-sp",
+      "name_jp": "アーモンドアイ SSR",
+      "type": "스피드",
+      "styles": [
+        "도주",
+        "선행",
+        "선입",
+        "추입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "2025 무인도 기본 스피드 고성능 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "still-sp",
+      "name_jp": "スティルインラブ SSR",
+      "type": "스피드",
+      "styles": [
+        "도주",
+        "선행",
+        "선입",
+        "추입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "무인도 스피드 및 중거리 스킬 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "journey-sp",
+      "name_jp": "ドリームジャーニー SSR",
+      "type": "스피드",
+      "styles": [
+        "추입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "추입 스킬 힌트와 스피드 확보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "airshakur-st",
+      "name_jp": "エアシャカール SSR",
+      "type": "스태미나",
+      "styles": [
+        "도주",
+        "선행",
+        "선입",
+        "추입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "기본 스태미나 카드 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "tamamo-pw",
+      "name_jp": "タマモクロス SSR",
+      "type": "파워",
+      "styles": [
+        "도주",
+        "선행",
+        "선입",
+        "추입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "무인도 기본 파워 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "orfe-gr",
+      "name_jp": "オルフェーヴル SSR",
+      "type": "근성",
+      "styles": [
+        "도주",
+        "선행",
+        "선입",
+        "추입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "공용 근성 후보; 타마모와 금스킬 중복 확인",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "fine-gr",
+      "name_jp": "ファインモーション SSR",
+      "type": "근성",
+      "styles": [
+        "선행",
+        "선입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "근성 후보. 여름 대회 인자작 힌트 유리",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "rudolf-wi",
+      "name_jp": "シンボリルドルフ SSR",
+      "type": "지능",
+      "styles": [
+        "도주",
+        "선행",
+        "선입",
+        "추입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "기본 지능 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "daiwa-wi",
+      "name_jp": "ダイワスカーレット SSR",
+      "type": "지능",
+      "styles": [
+        "도주"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "도주 특화 지능 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "daring-wi",
+      "name_jp": "デアリングタクト SSR",
+      "type": "지능",
+      "styles": [
+        "선입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "선입 특화 지능 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "tucker-fd",
+      "name_jp": "タッカーブライン SSR",
+      "type": "친구",
+      "styles": [
+        "도주",
+        "선행",
+        "선입",
+        "추입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "*"
+      ],
+      "target_skills": [],
+      "source_ids": [
+        "general"
+      ],
+      "note": "건설 코스트 최대 확보에는 3돌 이상 권장. 한국 카드 입수 확인",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "시나리오 필수 후보"
+    },
+    {
+      "id": "falcon-sp",
+      "name_jp": "スマートファルコン SSR",
+      "type": "스피드",
+      "styles": [
+        "도주"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "jp-2025-08-loh"
+      ],
+      "target_skills": [
+        "도주 직선○",
+        "도주 코너○"
+      ],
+      "source_ids": [
+        "general",
+        "aug_factor"
+      ],
+      "note": "도주 스킬 선택을 위한 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "mejiroparmer-sp",
+      "name_jp": "メジロパーマー SSR",
+      "type": "스피드",
+      "styles": [
+        "도주"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "jp-2025-08-loh"
+      ],
+      "target_skills": [
+        "장거리 직선○",
+        "장거리 코너○"
+      ],
+      "source_ids": [
+        "aug_factor"
+      ],
+      "note": "장거리 도주 스킬 힌트",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "admirer-sp",
+      "name_jp": "アドマイヤグルーヴ SSR",
+      "type": "스피드",
+      "styles": [
+        "선입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "jp-2025-09-cm"
+      ],
+      "target_skills": [
+        "駆け降り",
+        "天賦の才"
+      ],
+      "source_ids": [
+        "sep_sasi"
+      ],
+      "note": "선입 필수 가속을 제공하는 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "nishino-wi",
+      "name_jp": "ニシノフラワー SSR",
+      "type": "지능",
+      "styles": [
+        "선행"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "jp-2025-09-cm"
+      ],
+      "target_skills": [
+        "直滑降"
+      ],
+      "source_ids": [
+        "sep_factor"
+      ],
+      "note": "선행 내리막 가속 힌트",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "karen-gr",
+      "name_jp": "カレンチャン SSR",
+      "type": "근성",
+      "styles": [
+        "선행"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "jp-2025-10-cm"
+      ],
+      "target_skills": [
+        "丁々発止"
+      ],
+      "source_ids": [
+        "oct_course"
+      ],
+      "note": "단거리 선행 가속 확보 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "durandal-wi",
+      "name_jp": "デュランダル SSR",
+      "type": "지능",
+      "styles": [
+        "추입"
+      ],
+      "purpose": "본육성",
+      "events": [
+        "jp-2025-10-cm"
+      ],
+      "target_skills": [
+        "電光石火"
+      ],
+      "source_ids": [
+        "oct_oikomi"
+      ],
+      "note": "추입 자체 금스킬과 중복되는지 확인",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "fine-gr",
+      "name_jp": "ファインモーション SSR",
+      "type": "근성",
+      "styles": [
+        "선행"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-07-cm"
+      ],
+      "target_skills": [
+        "正面突破",
+        "夏ウマ娘○"
+      ],
+      "source_ids": [
+        "july_factor"
+      ],
+      "note": "왕도일도 하위·여름 인자",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "brian-sp",
+      "name_jp": "ナリタブライアン SSR",
+      "type": "스피드",
+      "styles": [
+        "선행"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-07-cm"
+      ],
+      "target_skills": [
+        "先行直線○"
+      ],
+      "source_ids": [
+        "july_factor"
+      ],
+      "note": "선행 직선 힌트",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "suzuka-gr",
+      "name_jp": "サイレンススズカ SSR",
+      "type": "근성",
+      "styles": [
+        "도주"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-07-cm"
+      ],
+      "target_skills": [
+        "地固め"
+      ],
+      "source_ids": [
+        "july_factor"
+      ],
+      "note": "도주 지고메 및 가속",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "seiun-pw",
+      "name_jp": "セイウンスカイ SSR",
+      "type": "파워",
+      "styles": [
+        "도주"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-07-cm"
+      ],
+      "target_skills": [
+        "右回り○",
+        "逃げ直線○"
+      ],
+      "source_ids": [
+        "july_factor"
+      ],
+      "note": "코스 녹색·도주 인자",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "nakayama-wi",
+      "name_jp": "ナカヤマフェスタ SSR (L’Arc)",
+      "type": "지능",
+      "styles": [
+        "도주",
+        "선행",
+        "선입",
+        "추입"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-07-cm",
+        "jp-2025-08-loh"
+      ],
+      "target_skills": [
+        "右回り○"
+      ],
+      "source_ids": [
+        "july_factor"
+      ],
+      "note": "우회전 인자 확보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "goldcity-gr",
+      "name_jp": "ゴールドシチー SSR",
+      "type": "근성",
+      "styles": [
+        "도주",
+        "선행",
+        "선입",
+        "추입"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-07-cm",
+        "jp-2025-08-loh"
+      ],
+      "target_skills": [
+        "夏ウマ娘○"
+      ],
+      "source_ids": [
+        "aug_factor"
+      ],
+      "note": "여름 인자 확보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "mejiroparmer-sp",
+      "name_jp": "メジロパーマー SSR",
+      "type": "스피드",
+      "styles": [
+        "도주"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-08-loh"
+      ],
+      "target_skills": [
+        "長距離直線○",
+        "長距離コーナー○"
+      ],
+      "source_ids": [
+        "aug_factor"
+      ],
+      "note": "장거리 도주 인자",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "falcon-sp",
+      "name_jp": "スマートファルコン SSR",
+      "type": "스피드",
+      "styles": [
+        "도주"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-08-loh"
+      ],
+      "target_skills": [
+        "逃げ直線○",
+        "逃げコーナー○"
+      ],
+      "source_ids": [
+        "aug_factor"
+      ],
+      "note": "도주 힌트",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "daiwa-wi",
+      "name_jp": "ダイワスカーレット SSR",
+      "type": "지능",
+      "styles": [
+        "도주"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-08-loh"
+      ],
+      "target_skills": [
+        "逃げコーナー○"
+      ],
+      "source_ids": [
+        "aug_factor"
+      ],
+      "note": "인자작과 본육성 사용 중복 확인",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "opera-wi",
+      "name_jp": "テイエムオペラオー SSR",
+      "type": "지능",
+      "styles": [
+        "도주",
+        "선행"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-08-loh"
+      ],
+      "target_skills": [
+        "長距離直線○",
+        "長距離コーナー○"
+      ],
+      "source_ids": [
+        "aug_factor"
+      ],
+      "note": "장거리 기반 인자",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "journey-sp",
+      "name_jp": "ドリームジャーニー SSR",
+      "type": "스피드",
+      "styles": [
+        "추입"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-07-cm",
+        "jp-2025-08-loh"
+      ],
+      "target_skills": [
+        "右回り○"
+      ],
+      "source_ids": [
+        "aug_factor"
+      ],
+      "note": "추입 범용 인자",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "taishin-wi",
+      "name_jp": "ナリタタイシン SSR",
+      "type": "지능",
+      "styles": [
+        "추입"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-08-loh"
+      ],
+      "target_skills": [
+        "追込直線○",
+        "直線一気"
+      ],
+      "source_ids": [
+        "aug_factor"
+      ],
+      "note": "추입 인자 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "nishino-wi",
+      "name_jp": "ニシノフラワー SSR",
+      "type": "지능",
+      "styles": [
+        "선행"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-09-cm"
+      ],
+      "target_skills": [
+        "直滑降"
+      ],
+      "source_ids": [
+        "sep_factor"
+      ],
+      "note": "내리막 가속 인자",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "karuston-sp",
+      "name_jp": "カルストンライトオ SSR",
+      "type": "스피드",
+      "styles": [
+        "도주",
+        "선행"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-10-cm"
+      ],
+      "target_skills": [
+        "譲れぬ一歩"
+      ],
+      "source_ids": [
+        "oct_factor"
+      ],
+      "note": "단거리 인자 후보",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "ruby-gr",
+      "name_jp": "ダイイチルビー SSR",
+      "type": "근성",
+      "styles": [
+        "선입",
+        "추입"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-10-cm"
+      ],
+      "target_skills": [
+        "電光石火"
+      ],
+      "source_ids": [
+        "oct_factor"
+      ],
+      "note": "후방 단거리 인자",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "durandal-wi",
+      "name_jp": "デュランダル SSR",
+      "type": "지능",
+      "styles": [
+        "추입"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-10-cm"
+      ],
+      "target_skills": [
+        "電光石火"
+      ],
+      "source_ids": [
+        "oct_factor"
+      ],
+      "note": "단거리 추입 인자",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    },
+    {
+      "id": "karen-gr",
+      "name_jp": "カレンチャン SSR",
+      "type": "근성",
+      "styles": [
+        "선행"
+      ],
+      "purpose": "인자작",
+      "events": [
+        "jp-2025-10-cm"
+      ],
+      "target_skills": [
+        "丁々発止"
+      ],
+      "source_ids": [
+        "oct_factor"
+      ],
+      "note": "선행 단거리 인자",
+      "evidence": "공략 추천 후보 (승률·강도 실측 아님)",
+      "tier": "공략 후보"
+    }
+  ],
+  "profiles": [
+    {
+      "event_id": "jp-2025-07-cm",
+      "style": "도주",
+      "skill_targets": [
+        "右回り○",
+        "夏ウマ娘○",
+        "地固め"
+      ],
+      "parents": [
+        {
+          "name": "세이운 스카이",
+          "unique_skill": "アングリング×スキーミング",
+          "priority": "조건부",
+          "source_ids": [
+            "july_course",
+            "july_factor",
+            "july_parent"
+          ]
+        }
+      ],
+      "note": "초반 선두 확보와 중후반 위치 조건을 확인",
+      "source_ids": [
+        "july_course",
+        "july_factor",
+        "july_parent"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-07-cm",
+      "style": "선행",
+      "skill_targets": [
+        "正面突破",
+        "夏ウマ娘○",
+        "先行直線○"
+      ],
+      "parents": [],
+      "note": "직접 가속·계승 분산. 내리막 랜덤 가속 과신 금지",
+      "source_ids": [
+        "july_factor",
+        "july_course"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-07-cm",
+      "style": "선입",
+      "skill_targets": [
+        "中距離コーナー○",
+        "右回り○"
+      ],
+      "parents": [],
+      "note": "캐릭터 고유 가속과 전개 의존성을 따로 확인",
+      "source_ids": [
+        "july_course"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-07-cm",
+      "style": "추입",
+      "skill_targets": [
+        "ウマ好み",
+        "追込直線○"
+      ],
+      "parents": [
+        {
+          "name": "메지로 도베르",
+          "unique_skill": "彼方、その先へ…",
+          "priority": "조건부",
+          "source_ids": [
+            "july_oikomi"
+          ]
+        }
+      ],
+      "note": "추입 특성상 전개에 따른 가속 확보가 중요",
+      "source_ids": [
+        "july_oikomi"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-08-loh",
+      "style": "도주",
+      "skill_targets": [
+        "長距離直線○",
+        "長距離コーナー○",
+        "地固め",
+        "右回り○",
+        "夏ウマ娘○"
+      ],
+      "parents": [],
+      "note": "순위 변동을 줄이는 도주 안정성 중점",
+      "source_ids": [
+        "aug_factor",
+        "aug_course"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-08-loh",
+      "style": "선행",
+      "skill_targets": [
+        "長距離直線○",
+        "長距離コーナー○",
+        "右回り○"
+      ],
+      "parents": [],
+      "note": "회복과 스태미나 조건을 먼저 확인",
+      "source_ids": [
+        "aug_course",
+        "aug_factor"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-08-loh",
+      "style": "선입",
+      "skill_targets": [
+        "長距離コーナー○",
+        "右回り○"
+      ],
+      "parents": [],
+      "note": "선입 전용 가속의 순위 조건 검증 필요",
+      "source_ids": [
+        "aug_course"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-08-loh",
+      "style": "추입",
+      "skill_targets": [
+        "追込直線○",
+        "直線一気",
+        "右回り○"
+      ],
+      "parents": [
+        {
+          "name": "크리스마스 나리타 탑 로드",
+          "unique_skill": "Joy to the World",
+          "priority": "추천 후보",
+          "source_ids": [
+            "aug_factor",
+            "aug_oikomi"
+          ]
+        }
+      ],
+      "note": "중반 위치 확보와 종반 가속 분리",
+      "source_ids": [
+        "aug_factor",
+        "aug_oikomi"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-09-cm",
+      "style": "도주",
+      "skill_targets": [
+        "右回り○",
+        "秋ウマ娘○",
+        "アングリング×スキーミング"
+      ],
+      "parents": [
+        {
+          "name": "세이운 스카이",
+          "unique_skill": "アングリング×スキーミング",
+          "priority": "조건부",
+          "source_ids": [
+            "sep_course",
+            "sep_parent"
+          ]
+        },
+        {
+          "name": "신년 키타산 블랙",
+          "unique_skill": "あっぱれ大盤振る舞い！",
+          "priority": "조건부",
+          "source_ids": [
+            "sep_course",
+            "sep_parent"
+          ]
+        },
+        {
+          "name": "신의상 라인 크래프트",
+          "unique_skill": "ずっとずっと輝いて",
+          "priority": "핵심 후보",
+          "source_ids": [
+            "sep_course",
+            "sep_parent"
+          ]
+        }
+      ],
+      "note": "도주·선행 선두/순위 충족 여부 중요",
+      "source_ids": [
+        "sep_course",
+        "sep_parent"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-09-cm",
+      "style": "선행",
+      "skill_targets": [
+        "直滑降",
+        "右回り○",
+        "秋ウマ娘○"
+      ],
+      "parents": [
+        {
+          "name": "신의상 라인 크래프트",
+          "unique_skill": "ずっとずっと輝いて",
+          "priority": "핵심 후보",
+          "source_ids": [
+            "sep_course",
+            "sep_factor",
+            "sep_parent"
+          ]
+        },
+        {
+          "name": "신년 키타산 블랙",
+          "unique_skill": "あっぱれ大盤振る舞い！",
+          "priority": "조건부",
+          "source_ids": [
+            "sep_course",
+            "sep_factor",
+            "sep_parent"
+          ]
+        }
+      ],
+      "note": "내리막 구간에서 가속 발동 타이밍 검토",
+      "source_ids": [
+        "sep_course",
+        "sep_factor",
+        "sep_parent"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-09-cm",
+      "style": "선입",
+      "skill_targets": [
+        "駆け降り",
+        "天賦の才",
+        "右回り○",
+        "秋ウマ娘○"
+      ],
+      "parents": [
+        {
+          "name": "신의상 라인 크래프트",
+          "unique_skill": "ずっとずっと輝いて",
+          "priority": "핵심 후보",
+          "source_ids": [
+            "sep_sasi",
+            "sep_parent"
+          ]
+        },
+        {
+          "name": "메지로 도베르",
+          "unique_skill": "彼方、その先へ…",
+          "priority": "조건부",
+          "source_ids": [
+            "sep_sasi",
+            "sep_parent"
+          ]
+        }
+      ],
+      "note": "스틸 인 러브 등 자체 가속 유무에 따라 외장 가속 우선순위 변경",
+      "source_ids": [
+        "sep_sasi",
+        "sep_parent"
+      ],
+      "stats_reference": {
+        "스피드": 1850,
+        "스태미나": 1200,
+        "파워": 1700,
+        "근성": 1300,
+        "지능": 1200
+      },
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-09-cm",
+      "style": "추입",
+      "skill_targets": [
+        "追込直線○",
+        "右回り○"
+      ],
+      "parents": [
+        {
+          "name": "신의상 라인 크래프트",
+          "unique_skill": "ずっとずっと輝いて",
+          "priority": "핵심 후보",
+          "source_ids": [
+            "sep_parent",
+            "sep_course"
+          ]
+        },
+        {
+          "name": "메지로 도베르",
+          "unique_skill": "彼方、その先へ…",
+          "priority": "조건부",
+          "source_ids": [
+            "sep_parent",
+            "sep_course"
+          ]
+        }
+      ],
+      "note": "자체 진화가속 보유 캐릭터인지 확인",
+      "source_ids": [
+        "sep_parent",
+        "sep_course"
+      ],
+      "stats_reference": {},
+      "avoid_skills": []
+    },
+    {
+      "event_id": "jp-2025-10-cm",
+      "style": "도주",
+      "skill_targets": [
+        "地固め",
+        "左回り○",
+        "秋ウマ娘○"
+      ],
+      "parents": [
+        {
+          "name": "신의상 사쿠라 바쿠신 오",
+          "unique_skill": "CHERRY☆スクランブル",
+          "priority": "조건부",
+          "source_ids": [
+            "oct_course"
+          ]
+        }
+      ],
+      "note": "니가타 1200m 평탄. 내리막/오르막 스킬 제외",
+      "source_ids": [
+        "oct_course"
+      ],
+      "stats_reference": {},
+      "avoid_skills": [
+        "直滑降",
+        "駆け降り",
+        "登竜門"
+      ]
+    },
+    {
+      "event_id": "jp-2025-10-cm",
+      "style": "선행",
+      "skill_targets": [
+        "丁々発止",
+        "真っ向勝負",
+        "左回り○"
+      ],
+      "parents": [
+        {
+          "name": "니시노 플라워",
+          "unique_skill": "つぼみ、ほころぶ時",
+          "priority": "조건부",
+          "source_ids": [
+            "oct_course",
+            "oct_factor"
+          ]
+        }
+      ],
+      "note": "가속 발동 순위 조건과 Pt 확보",
+      "source_ids": [
+        "oct_course",
+        "oct_factor"
+      ],
+      "stats_reference": {},
+      "avoid_skills": [
+        "直滑降",
+        "駆け降り"
+      ]
+    },
+    {
+      "event_id": "jp-2025-10-cm",
+      "style": "선입",
+      "skill_targets": [
+        "電光石火",
+        "左回り○",
+        "秋ウマ娘○"
+      ],
+      "parents": [
+        {
+          "name": "니시노 플라워",
+          "unique_skill": "つぼみ、ほころぶ時",
+          "priority": "조건부",
+          "source_ids": [
+            "oct_course",
+            "oct_factor"
+          ]
+        },
+        {
+          "name": "메지로 라이언",
+          "unique_skill": "レッツ・アナボリック！",
+          "priority": "조건부",
+          "source_ids": [
+            "oct_course",
+            "oct_factor"
+          ]
+        }
+      ],
+      "note": "순위가 중요한 후방 가속",
+      "source_ids": [
+        "oct_course",
+        "oct_factor"
+      ],
+      "stats_reference": {},
+      "avoid_skills": [
+        "直滑降",
+        "駆け降り"
+      ]
+    },
+    {
+      "event_id": "jp-2025-10-cm",
+      "style": "추입",
+      "skill_targets": [
+        "電光石火",
+        "迫る影",
+        "左回り○"
+      ],
+      "parents": [
+        {
+          "name": "니시노 플라워",
+          "unique_skill": "つぼみ、ほころぶ時",
+          "priority": "조건부",
+          "source_ids": [
+            "oct_oikomi",
+            "oct_course"
+          ]
+        },
+        {
+          "name": "메지로 라이언",
+          "unique_skill": "レッツ・アナボリック！",
+          "priority": "조건부",
+          "source_ids": [
+            "oct_oikomi",
+            "oct_course"
+          ]
+        }
+      ],
+      "note": "듀란달 자체 전용스킬이 있으면 중복을 피함",
+      "source_ids": [
+        "oct_oikomi",
+        "oct_course"
+      ],
+      "stats_reference": {
+        "스피드": 1850,
+        "스태미나": 700,
+        "파워": 1700,
+        "근성": 1400,
+        "지능": 1200
+      },
+      "avoid_skills": [
+        "直滑降",
+        "駆け降り",
+        "登竜門"
+      ]
+    }
+  ],
+  "provenance": {
+    "general": "https://gamewith.jp/uma-musume/article/show/505327",
+    "patch": "https://gamewith.jp/uma-musume/article/show/270350",
+    "july_course": "https://gamewith.jp/uma-musume/article/show/506494",
+    "july_factor": "https://umamusumelabo.com/chara_support/chanmi-insisupport-202507",
+    "july_parent": "https://umamusumelabo.com/ikusei/chanmi-insigensen-202507",
+    "july_oikomi": "https://umamusumelabo.com/ikusei/chanmi-oikomiikusei-202507",
+    "aug_course": "https://gamewith.jp/uma-musume/article/show/506953",
+    "aug_factor": "https://umamusumelabo.com/event/loh/loh-insisupport-202508",
+    "aug_oikomi": "https://umamusumelabo.com/ikusei/loh-oikomiikusei-202508",
+    "sep_course": "https://gamewith.jp/uma-musume/article/show/512814",
+    "sep_factor": "https://umamusumelabo.com/chara_support/chanmi-insisupport-202509",
+    "sep_parent": "https://umamusumelabo.com/ikusei/keisyou-202509",
+    "sep_sasi": "https://umamusumelabo.com/ikusei/chanmi-sasiikusei-202509",
+    "sep_senkou": "https://umamusumelabo.com/ikusei/chanmi-senkouikusei-202509",
+    "oct_course": "https://gamewith.jp/uma-musume/article/show/518724",
+    "oct_factor": "https://umamusumelabo.com/event/champions-meeting/insi-support-202510",
+    "oct_oikomi": "https://umamusumelabo.com/ikusei/chanmi-oikomi-202510",
+    "factor_principles": "https://gamewith.jp/uma-musume/article/show/258843"
+  },
+  "note": "현장 시나리오 기록은 일본 2025년 대회이며 한국 개최 일정을 뜻하지 않음. 각질별 후보·출처는 공략 근거, 발동률/승률 추정값 아님.",
+  "collected_on": "2026-10-15",
+  "updated_from": "R12",
+  "model_training_complete": false,
+  "verified_real_race_samples": 0
+}

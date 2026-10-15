@@ -1,0 +1,19 @@
+{
+  "id": "island_post_patch_v1",
+  "server_basis": "JP",
+  "reference_patch_date": "2025-06-30",
+  "korean_server_numbers_verified": false,
+  "data_status": "experimental_unvalidated",
+  "description": "게임 내부 수치가 아닌 테스트용 점수 가중치. 실전 자료로 보정 필요.",
+  "heuristic_weights": {
+    "early_phase_remaining_turns": 26,
+    "development_point_weight": 0.18,
+    "island_three_friend_bonus": 20.0,
+    "per_additional_friend_bonus": 7.0,
+    "island_two_friend_penalty": -12.0,
+    "island_few_friend_penalty": -28.0,
+    "next_ticket_today_bonus": 26.0,
+    "next_ticket_tomorrow_bonus": 12.0,
+    "unused_ticket_penalty": -10.0
+  }
+}

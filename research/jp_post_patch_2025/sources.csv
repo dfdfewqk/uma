@@ -1,0 +1,26 @@
+source_id,source_kind,published_date,title_ko,author,url,scope,evidence_tier,checked_depth,research_priority
+S001,patch_summary,2025-06-30,무인도 2025-06-30 시설 변경 정리,GameWith,https://gamewith.jp/uma-musume/article/show/270350,mechanics,secondary_patch,text_reviewed,high
+S002,patch_archive,2025-06-30,공지 아카이브: 23:20 발표 문구,공략 Wiki,https://umamusume.wikiru.jp/index.php?%E3%82%A2%E3%83%83%E3%83%97%E3%83%87%E3%83%BC%E3%83%88%E5%B1%A5%E6%AD%B4%2F5th+Year=,mechanics,notice_archive,search_extract_only,medium
+S003,official,2025-06-27,무인도 시나리오 공식 안내,Cygames,https://umamusume.jp/news/detail?id=2629,mechanics,official_notice,search_extract_only,high
+S004,strategy_guide,,무인도 시스템·건설·터커 3돌 차이,Game8,https://game8.jp/umamusume/700415,champ_loh,maintained_guide,text_reviewed,high
+S005,strategy_guide,,무인도 챔미/리오히 서포트 편성,Game8,https://game8.jp/umamusume/701149,champ_loh,maintained_guide,search_extract_only,high
+S006,strategy_guide,2025-07-14,실전 육성 선택: 힌트·레이스·섬트레,ウマ娘ラボ,https://umamusumelabo.com/ikusei/mujintou-stepupguide,champ_loh,dated_author_guide,text_reviewed,high
+S007,patch_analysis,2025-07-01,무인도 밸런스 수정 해설,ウマ娘ラボ,https://umamusumelabo.com/news/mujintou-newbalance,mechanics,dated_analysis,search_extract_only,high
+S008,video_guide,2025-07-04,수정 후 무인도 공략 하이랜더/건설법,セリル,https://www.youtube.com/watch?v=U4bo3wrcF6c,general_score,video_description,description_reviewed_frames_unread,medium
+S009,video_guide,2025-07-03,수정 후 US/UA 육성법,NottinTV,https://www.youtube.com/watch?v=SrqljDUuFc4,general_score,video_description_plus_third_party_transcript,summary_reviewed_frames_unread,medium
+S010,video_case,2025-07-04,US1 마야노 탑건 육성 전편 해설,レイミン,https://www.youtube.com/watch?v=fPFkjDu5CL4,general_score,video_description_chapters,description_reviewed_frames_unread,high
+S011,video_guide,2025-07-23,7월 챔미 UA 육성 전구간 해설,ポムトム,https://www.youtube.com/watch?v=XqNuSH6RQh0,champ,video_description,description_reviewed_frames_unread,high
+S012,video_stream,2025-07-09,8월 LoH 인자 작업 스트림,しゃふチャンネル,https://www.youtube.com/watch?v=Lk-XvD1GdpE,loh_factor,video_description,description_reviewed_frames_unread,medium
+S013,video_guide,2025-07-03,수정 후 7월 챔미 분석 스트림,しゃふチャンネル,https://www.youtube.com/watch?v=X41Z0N67kE0,champ,video_description,description_reviewed_frames_unread,medium
+S014,player_report,2025-07-02,수정 후 젠틸 육성 실측 사례,Merci,https://merci-splatoon.com/mujinto2/,champ,dated_player_run,text_reviewed,high
+S015,community_report,2025-07-05,초기 시설 선택 실수 후 재시작 경험담,ウマ娘まとめちゃんねる,https://umamusume.net/archives/234533,general,dated_user_comment,text_reviewed,medium
+S016,community_report,2025-07-01,하이랜더 실패 느낌/스피드2 재시도,ウマ娘まとめちゃんねる,https://umamusume.net/archives/234456,general,dated_admin_article,text_reviewed,medium
+S017,player_report,2025-10-03,2025 9월 챔미 실전 보고 및 건설 사례,ダブゼ,https://note.com/dabuze_notebook/n/n5835d281f7d6,champ,dated_player_run_and_race,text_reviewed,high
+S018,player_report,2025-08-22,2025 8월 LoH 삿포로 2600 후기,やろし,https://note.com/yaroshi_1025/n/nb0ce9993c8c6,loh,dated_player_race_report,text_reviewed,high
+S019,strategy_guide,2025-08-06,8월 LoH 선행 육성론,ウマ娘ラボ,https://umamusumelabo.com/ikusei/loh-senkouikusei-202508,loh,dated_author_guide,search_extract_only,medium
+S020,strategy_guide,,8월 LoH 2600m 요구 조건,Game8,https://game8.jp/umamusume/701629,loh,maintained_guide,search_extract_only,high
+S021,strategy_guide,,8월 LoH 추입 목표 스탯 기준,ウマ娘ラボ,https://umamusumelabo.com/ikusei/loh-oikomiikusei-202508,loh,dated_author_guide,search_extract_only,medium
+S022,player_report,2025-10-28,팀레이스 고점 육성 폐기 기준(대인 이벤트 외부 참고),kskb,https://note.com/kskb_spsbsaiko/n/n99428321dc03,team_stadium_only,dated_player_report_out_of_scope,text_reviewed,low
+S023,strategy_guide,2025-07-03,무인도 건설/섬트레 플레이 팁,おろぶろぐ,https://www.orooroktgameblog.net/entry/2025/07/03/065445,general,dated_author_guide,text_reviewed,medium
+S024,player_guide,2025-07-20,US 달성 개인 육성법(실전/평가점 분리 경고),みつるん,https://miturunn-pocketbook.com/%E3%80%90%E3%82%A6%E3%83%9E%E5%A8%98%E3%80%91%E7%84%A1%E4%BA%BA%E5%B3%B6%E3%82%B7%E3%83%8A%E3%83%AA%E3%82%AA%E3%81%A7us%EF%BD%9Eua%E3%83%A9%E3%83%B3%E3%82%AF%E8%82%B2%E6%88%90%E3%81%99%E3%82%8B/,general_score,dated_player_report,search_extract_only,low
+S025,community_report,2025-07-22,스킬 Pt 7000 공략 관련 플레이어 반응,あげません,https://agemasen.com/archives/202730,champ,anonymous_community_discussion,text_reviewed,low

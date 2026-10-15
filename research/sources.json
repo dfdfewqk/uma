@@ -1,0 +1,60 @@
+{
+  "dataset_status": "sources-index-only; no video frames, transcripts, or run outcomes extracted",
+  "patch_base": "Japanese 2025-06-30 facility rebalancing; Korea deployment requires verification",
+  "sources": [
+    {
+      "category": "official_scenario_mechanics",
+      "name": "Cygames - 무인도 시나리오 공식 소개",
+      "url": "https://umamusume.jp/contents/game/scenario/designyourisland/",
+      "takeaways": [
+        "건설계획",
+        "발전Pt",
+        "섬 트레이닝 티켓",
+        "평가회"
+      ],
+      "verified_as": "official overview"
+    },
+    {
+      "category": "patch",
+      "name": "GameWith - 2025년 6월 30일 밸런스 조정 정리",
+      "url": "https://gamewith.jp/uma-musume/article/show/270350",
+      "takeaways": [
+        "스태미나/파워/근성/지능 시설 강화",
+        "복수 우정 발생 시설 수에 비례하는 해변의 집 보너스"
+      ],
+      "verified_as": "secondary patch summary"
+    },
+    {
+      "category": "guide_post_patch",
+      "name": "Game8 - 무인도 서포트 편성",
+      "url": "https://game8.jp/umamusume/701149",
+      "takeaways": [
+        "챔미/리오히용 하이랜더 및 변형 편성",
+        "스피드 5장 편성 자체가 하향된 것은 아님"
+      ],
+      "verified_as": "guide; may change over time"
+    },
+    {
+      "category": "guide_post_patch",
+      "name": "2025-07-04 セリル - 수정 후 무인도 공략",
+      "url": "https://www.youtube.com/watch?v=U4bo3wrcF6c",
+      "takeaways": [
+        "하이랜더 편성",
+        "시나리오 시설 강화 경로 예시",
+        "훈련 상황별 판단"
+      ],
+      "verified_as": "video description only; not turn-by-turn data"
+    },
+    {
+      "category": "guide_post_patch",
+      "name": "2025-07-03 NottinTV - 수정 후 US 육성법",
+      "url": "https://www.youtube.com/watch?v=SrqljDUuFc4",
+      "takeaways": [
+        "수정 후 운영법과 티켓 사용 시점 연구 후보"
+      ],
+      "verified_as": "public summary; not turn-by-turn data"
+    }
+  ],
+  "r27_evidence_review_file": "research/nagi_video_audit_r27/claims.json",
+  "nagi_video_caption_status": "unavailable; not trained; needs verified transcript and screen review"
+}

@@ -1,0 +1,19 @@
+{
+  "version": "0.23.0",
+  "verified_files_sha256": {
+    "offline_replay_r23.py": "39b71f7a1ab7f22636a419bb8e6889d63d4b50ca74ed2f1460c14c2732fd37c6",
+    "offline_replay_ui_r23.py": "99c1c530bff6362088bd56f2adbffe1d025c723a3cb0ac7a9fb965dca3ca0329",
+    "preflight_r23.py": "5028feadcc15cde845eebcf5918c031e8eebbddfcc322c1f5e3b3717b3c01707",
+    "tests/test_offline_replay_r23.py": "97906ef387a8d9df2def14dc2ef72de3b919be0dfc732149adc7451d0a42e3c7",
+    "tests/test_preflight_r23.py": "dc4ab99ae915c9d58d832b1c659872588da39056b329b50d089d1c6c52cd8212",
+    "examples/r23_demo_manifest.json": "bf9b089ddfe372dbf2b84e42b4e0964744b4ae55536485a884f4dc2b340266db",
+    "R23_먼저읽기.txt": "c380eb1e091b3e61272f25c1bc9c0a004d6b98cf49267cda4cee93b8bf644320",
+    "docs/R23_기술구조_검증기준.md": "dd173809eebb251f80fa5a068ee5cb2109362db1f799d77d75c5289744729c9f",
+    "companion.py": "7b5ac3ea43554f94ab29e88e1f4c04958a51b944f04beb59755aa8881ded88ee",
+    "UmaTrainerKR_Setup.iss": "4632b10cd8114395ca1b1df7a3ad21b3c424b8e1127d0fb7e1f04d19bd240cde",
+    "VERSION.txt": "9140ac54ed91f0d1e4eeb3632c59bf50407b9a5f81ad7b5cf4b505d3ccc04ec2",
+    "Windows_EXE_빌드.bat": "0f267dd488acccc83c8e901a03f1fca0829e28b5d64bd87bac5849350cb5d0c8",
+    "Windows_실시간도우미_EXE_수동빌드.bat": "ed0159c8c51099051214ea18a6b4e9f0767132bb2d12fa22a90febd6172c4fee",
+    ".github/workflows/windows-exe.yml": "1e0e2e22ba923182ea5d7a47539cdd49dee9c159725bb082830843426b606903"
+  }
+}

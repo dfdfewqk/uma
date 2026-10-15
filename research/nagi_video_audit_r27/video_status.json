@@ -1,0 +1,13 @@
+{
+  "video_id": "L7zlNFfm8aY",
+  "url": "https://youtu.be/L7zlNFfm8aY",
+  "title_user_reported": "도파민이 넘치는 무인도 시나리오",
+  "creator_user_reported": "나기",
+  "automatic_captions_obtained": false,
+  "creator_spoken_claims_verified": 0,
+  "manual_speaker_labels_verified": 0,
+  "visual_frames_verified": 0,
+  "training_rows_approved": 0,
+  "status": "awaiting_transcript_or_uploaded_video",
+  "reason": "Youtube page and third-party transcript endpoint did not provide actual video captions in this session."
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "uma_r28_modified_files_sha256_v1",
+  "base_revision": "R27",
+  "version": "0.28.0",
+  "automated_tests_passed": 478,
+  "tested_on_windows": false,
+  "korean_game_verified": false,
+  "automated_click_enabled": false,
+  "creator_video_transcript_verified": false,
+  "purpose": "R22 verified training comparison to read-only companion overlay",
+  "files": [
+    {
+      "path": "companion.py",
+      "bytes": 19992,
+      "sha256": "81136d4e1799c812a1739fe2ddeddc973e571b000ad4f44da7bb56bc771d8720"
+    },
+    {
+      "path": "live_training_r22.py",
+      "bytes": 11669,
+      "sha256": "45435ffdab2724140c80db3d146767a34591a3c94ccb409d7a9f8d1644f48008"
+    },
+    {
+      "path": "live_test_ui_r22.py",
+      "bytes": 24947,
+      "sha256": "c28197d2941795fa5b21a7a71b135c7c31989884434008801e9ffe94278017a6"
+    },
+    {
+      "path": "recommendation_bridge_r28.py",
+      "bytes": 9666,
+      "sha256": "7542390692011abbbb878578163cc105842692c38a3099fe562cb93361878ca1"
+    },
+    {
+      "path": "game_overlay_r28.py",
+      "bytes": 3572,
+      "sha256": "b4d7cbddbeb0cac6baeda3cfd0c882b2fc4f719849ce0b58ab4227c43d02e543"
+    },
+    {
+      "path": "tests/test_recommendation_bridge_r28.py",
+      "bytes": 6708,
+      "sha256": "0d87a12bd56ad100403ec324f20d94868934ff950749d1f2f0ca60aeed313e09"
+    },
+    {
+      "path": "tests/test_r24_build_package.py",
+      "bytes": 1482,
+      "sha256": "2ae5364a59e6e3493f455dd60efb52e38924860e267be7174b8fc9f2dc8f8cbf"
+    },
+    {
+      "path": "VERSION.txt",
+      "bytes": 35,
+      "sha256": "72761c43a1afffa290e107266f097f40173ad40d4ce24704cb7002634148eb3f"
+    },
+    {
+      "path": "UmaTrainerKR_Setup.iss",
+      "bytes": 1936,
+      "sha256": "6f0ff7aec403add1326dc16eefaa2e18a1db5bb53fb63efc316bb0f17ae30008"
+    },
+    {
+      "path": "R28_먼저읽기.txt",
+      "bytes": 2580,
+      "sha256": "d62304bc8654a2ff09a03a0c0be1cdbcb5bb3850033a5a51a4d0de0c489995e7"
+    },
+    {
+      "path": "docs/R28_훈련추천_게임화면연결_설계및검증.md",
+      "bytes": 2445,
+      "sha256": "9e271bbb84ca6721e08ff4685aa027c9a7783aa7679d81b8666ebccfa1f1aa31"
+    },
+    {
+      "path": "examples/R28_작은도우미_실제실행화면.png",
+      "bytes": 54549,
+      "sha256": "f02ea9403665f03555466037900b0851444c3d2dbb0d97adcf5d5166d19c8f70"
+    }
+  ]
+}

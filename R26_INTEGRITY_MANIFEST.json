@@ -1,0 +1,61 @@
+{
+  "schema": "uma_r26_changed_files_sha256_v1",
+  "revision": "R26",
+  "claims": {
+    "unit_tests_executed": 452,
+    "windows_exe_built": false,
+    "korean_game_tested": false
+  },
+  "files": [
+    {
+      "path": ".github/workflows/windows-exe.yml",
+      "sha256": "1009a70ce4e66ef6657d00f696f0f30745b7f2c993668a0fd692057b5ab4a87e",
+      "bytes": 9708
+    },
+    {
+      "path": "UmaTrainerKR_Setup.iss",
+      "sha256": "87fd8f6812905eb32f82c6e08bc63228e46a4d2fe5ae670a2edfe9437bf7c8f1",
+      "bytes": 1936
+    },
+    {
+      "path": "VERSION.txt",
+      "sha256": "910671f340c7f8a8a28ad800fdce97ba25ba09d029df6d98560096bbb2486c26",
+      "bytes": 35
+    },
+    {
+      "path": "companion.py",
+      "sha256": "c1f2b1e3ed821bec5f3cb7791ad0b25f4b44290e8065855eb25656d161d160f8",
+      "bytes": 16553
+    },
+    {
+      "path": "screen_r4.py",
+      "sha256": "2fecc90cdeaa310a967a33c6a0a2d1683f273cf528acdfb56fe7aecbcde13045",
+      "bytes": 13309
+    },
+    {
+      "path": "runtime_probe_r26.py",
+      "sha256": "cf76d6a565c8d3bad55dead9e1b41c4db189db806882f5d92a2fb755d0d9e5c3",
+      "bytes": 2054
+    },
+    {
+      "path": "tests/test_runtime_probe_r26.py",
+      "sha256": "4b040731e319fdd01a0f2b87abec1579e3cdc0fca8c1559957efa28ec9f99820",
+      "bytes": 3972
+    },
+    {
+      "path": "tests/test_r24_build_package.py",
+      "sha256": "22273f14d36d51ad9f93f0a71147ced9e11b13bca2867306b4cf6bcdbb24b906",
+      "bytes": 1390
+    },
+    {
+      "path": "R26_먼저읽기.txt",
+      "sha256": "35c61c457deb69b40c5248f23c8e02c93a6edb0d5bc234dc240ee90aa47a0bcd",
+      "bytes": 2696
+    },
+    {
+      "path": "docs/R26_설치와실게임_검증절차.md",
+      "sha256": "123fd55fe657ff410cf24e768ab36a0d5cc6e8030fcc8d941547a100d5237522",
+      "bytes": 3974
+    }
+  ]
+}

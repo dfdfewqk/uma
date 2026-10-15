@@ -1,0 +1,14 @@
+hypothesis_id,topic,hypothesis_not_rule,supporting_evidence_ids,status,verification_needed,integration_priority
+H001,3곳 우정 훈련 기준,섬티켓 사용을 3곳 이상 우정 발생 때 우선 검토,E007|E008|E023,not_calibrated,우정 위치 0~5별 즉시 이득+다음티켓 손실 계산,priority_high
+H002,초반 인연 vs 레이스,주니어 인연/힌트/레이스 중 예상 최종가치 비교,E006|E008,not_calibrated,초반 장기 기대값 및 힌트 누락 로그,priority_high
+H003,터커 외출 타이밍,취약 훈련/합숙 전/티켓 만료 직전에 외출 점수 상향 후보,E009|E010,not_calibrated,외출 후 실제 배치 분포 비교,priority_high
+H004,건설 계획 동적 수정,캐릭터 성장률/부족스탯에 따라 시설 강화 순서 변경,E011|E012|E018,not_calibrated,시설 코스트와 남은 평가회 비용,priority_high
+H005,스킬Pt 활용도,획득 Pt만이 아니라 확보한 힌트/필수 스킬/스킬Pt 지출 가능량 고려,E013|E016|E028,not_calibrated,유효 스킬 목록 및 코스트 데이터 필요,priority_high
+H006,도축: 건설 되돌릴 수 없음,초반 건설 오류 시 목표 달성 가능성 낮은지 경고,E014,anecdote_only,다수 시도 대비 완주/재시작 결과 검증,do_not_auto_abort
+H007,도축: 금스킬 이벤트 누락,필수 금스킬 미완주 시 대체 스킬·남은 가능성 검토,E016|E022,not_calibrated,장거리/각질별 스킬 대체 가치량 추정,do_not_auto_abort
+H008,도축: 스탯 부족,목표 충족 확률에 따라 계속/주의/재시작 안내,E017|E022,not_calibrated,남은 턴별 최종스탯 분포 확보,do_not_auto_abort
+H009,LoH 일관성,리오히는 총 점수 손실/스킬 발동 안정성 별도 평가,E020|E021|E027,not_calibrated,코스별 회복·적성·실제 경기 데이터,priority_high
+H010,레이스 남발 위험,일반 훈련이 약해도 레이스는 발전Pt 고갈 가능성과 함께 평가,E006|E019,not_calibrated,잔여 건설 코스트/발전Pt 예측,priority_high
+H011,지원 편성 변형,혼합 편성을 기본 후보로 하되 스피드2 등 변형 탐색,E005|E015,not_calibrated,서포트 카드와 성장률별 성능 조건부 비교,priority_medium
+H012,패치 혼입 방지,무인도 JP after 2025-06-30 자료만 본 학습에 사용,E001|E002|E003,safety_guard,각 근거에 서버/패치 기준 태그 필수,priority_high
+H013,후반 스킬/스탯 위험,시니어 후반 성장 기대값과 미획득 필수 스킬을 분리 예측,E016|E017|E019,not_calibrated,남은 이벤트·레이스·턴 세부 수치,do_not_auto_abort

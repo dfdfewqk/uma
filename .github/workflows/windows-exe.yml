@@ -1,0 +1,164 @@
+name: Build and verify Windows installer (manual only)
+
+# Intentionally no pushes, PR triggers, tags, schedule, or automatic release.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-package:
+    runs-on: windows-2022
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install application and build dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check -r requirements.txt
+          python -m pip install --disable-pip-version-check "pyinstaller>=6.10,<7"
+          if ($LASTEXITCODE -ne 0) { throw 'Dependency setup failed' }
+
+      - name: Run all source tests and syntax checks
+        shell: pwsh
+        run: |
+          python -m unittest discover -s tests -v
+          if ($LASTEXITCODE -ne 0) { throw 'Tests failed; no build will proceed' }
+          python -m compileall -q .
+          if ($LASTEXITCODE -ne 0) { throw 'Python syntax check failed' }
+
+      - name: Build full research and settings EXE
+        shell: pwsh
+        run: |
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR `
+            --add-data 'examples\synthetic_r4.png;examples' `
+            --add-data 'examples\synthetic_roi.json;examples' `
+            --add-data 'research\sources.json;research' `
+            --add-data 'research\r13\japan_island_2025_events.json;research/r13' `
+            --add-data 'research\r14\lineage_and_calendar.json;research/r14' `
+            --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' `
+            --add-data 'research\video_reviews\verified_turns.csv;research/video_reviews' `
+            --add-data 'research\video_reviews\review_queue.csv;research/video_reviews' `
+            --add-data 'research\jp_post_patch_2025\sources.csv;research/jp_post_patch_2025' `
+            --add-data 'research\jp_post_patch_2025\video_chapters.csv;research/jp_post_patch_2025' app.py
+          if ($LASTEXITCODE -ne 0) { throw 'Main EXE build failed' }
+
+      - name: Build companion, live test and offline preflight EXEs
+        shell: pwsh
+        run: |
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_Companion --hidden-import=screen_r4 --hidden-import=cv2 --hidden-import=numpy companion.py
+          if ($LASTEXITCODE -ne 0) { throw 'Companion build failed' }
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_GameTest `
+            --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' live_test_ui_r22.py
+          if ($LASTEXITCODE -ne 0) { throw 'GameTest build failed' }
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_Preflight `
+            --add-data 'examples\r23_demo_manifest.json;examples' `
+            --add-data 'examples\r22_mock_roi.json;examples' `
+            --add-data 'examples\r22_mock_1.png;examples' `
+            --add-data 'examples\r22_mock_2.png;examples' `
+            --add-data 'examples\r22_mock_3.png;examples' `
+            --add-data 'examples\r22_mock_4.png;examples' `
+            --add-data 'examples\r22_mock_5.png;examples' offline_replay_ui_r23.py
+          if ($LASTEXITCODE -ne 0) { throw 'Preflight build failed' }
+
+      - name: Run the real Windows EXEs with no GUI and verify bundled resources
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path 'dist/smoke-reports' -Force | Out-Null
+          $programs = @('UmaTrainerKR','UmaTrainerKR_Companion','UmaTrainerKR_GameTest','UmaTrainerKR_Preflight')
+          foreach ($name in $programs) {
+            $exe = (Resolve-Path "dist/$name.exe").Path
+            $report = Join-Path (Resolve-Path 'dist/smoke-reports').Path "$name.json"
+            $p = Start-Process -FilePath $exe -ArgumentList @('--self-check-report', "`"$report`"") -PassThru -Wait
+            if ($p.ExitCode -ne 0) { throw "$name self-check failed with $($p.ExitCode)" }
+            if (-not (Test-Path $report)) { throw "$name did not produce a report" }
+          }
+
+      - name: Validate first-run diagnostic without connecting to a game
+        shell: pwsh
+        run: |
+          $exe = (Resolve-Path 'dist/UmaTrainerKR_Companion.exe').Path
+          $report = (Join-Path (Resolve-Path 'dist/smoke-reports').Path 'first_run_no_game.json')
+          $proc = Start-Process -FilePath $exe -ArgumentList @('--first-run-report', "`"$report`"") -PassThru -Wait
+          if ($proc.ExitCode -ne 0 -or -not (Test-Path $report)) { throw 'First-run diagnostic did not execute' }
+          $data = Get-Content $report -Raw | ConvertFrom-Json
+          if ($data.schema -ne 'uma_r26_windows_first_run_v1') { throw 'Unexpected diagnostic schema' }
+          if ($data.automatic_clicks_enabled -ne $false -or $data.real_game_ocr_verified -ne $false) { throw 'Unsafe readiness claim' }
+
+      - name: Install Inno Setup compiler
+        shell: pwsh
+        run: |
+          $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE -ne 0) { throw 'Inno Setup install failed' }
+          }
+          if (-not (Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
+
+      - name: Build installer and test actual silent installation
+        shell: pwsh
+        run: |
+          $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'
+          $rawVersion = Get-Content VERSION.txt -Raw
+          $match = [regex]::Match($rawVersion, '(?m)^Version:\s*(\d+\.\d+\.\d+)\s*$')
+          if (-not $match.Success) { throw 'Invalid version in VERSION.txt' }
+          $version = $match.Groups[1].Value
+          & $iscc "/DAppVersion=$version" 'UmaTrainerKR_Setup.iss'
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+          $setup = (Resolve-Path "dist/installer/UmaTrainerKR_Setup_$version.exe").Path
+          $installPath = Join-Path $env:RUNNER_TEMP 'UmaTrainerKR_SmokeInstall'
+          $proc = Start-Process -FilePath $setup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',"/DIR=`"$installPath`"") -PassThru -Wait
+          if ($proc.ExitCode -ne 0) { throw "Silent install failed with $($proc.ExitCode)" }
+          foreach ($name in @('UmaTrainerKR','UmaTrainerKR_Companion','UmaTrainerKR_GameTest','UmaTrainerKR_Preflight')) {
+            $installedExe = Join-Path $installPath "$name.exe"
+            if (-not (Test-Path $installedExe)) { throw "Missing $name after install" }
+            $originalExe = (Resolve-Path "dist/$name.exe").Path
+            $originalHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $originalExe).Hash
+            $installedHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $installedExe).Hash
+            if ($originalHash -ne $installedHash) { throw "Installed $name does not match verified build" }
+            $report = Join-Path (Resolve-Path 'dist/smoke-reports').Path "installed_$name.json"
+            $check = Start-Process -FilePath $installedExe -ArgumentList @('--self-check-report', "`"$report`"") -PassThru -Wait
+            if ($check.ExitCode -ne 0 -or -not (Test-Path $report)) { throw "Installed $name could not run its self-check" }
+          }
+          $companionExe = Join-Path $installPath 'UmaTrainerKR_Companion.exe'
+          $firstRun = Join-Path (Resolve-Path 'dist/smoke-reports').Path 'installed_first_run.json'
+          $firstRunCheck = Start-Process -FilePath $companionExe -ArgumentList @('--first-run-report', "`"$firstRun`"") -PassThru -Wait
+          if ($firstRunCheck.ExitCode -ne 0 -or -not (Test-Path $firstRun)) { throw 'Installed companion first-run report failed' }
+          $ready = Get-Content $firstRun -Raw | ConvertFrom-Json
+          if ($ready.schema -ne 'uma_r26_windows_first_run_v1') { throw 'Installed first-run diagnostic mismatch' }
+          if (-not (Test-Path (Join-Path $installPath 'unins000.exe'))) { throw 'Uninstaller missing' }
+          # Installer smoke only: never launch the game or make any in-game clicks.
+          $uninstall = Join-Path $installPath 'unins000.exe'
+          $p = Start-Process -FilePath $uninstall -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART') -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "Uninstall smoke failed with $($p.ExitCode)" }
+          foreach ($name in @('UmaTrainerKR','UmaTrainerKR_Companion','UmaTrainerKR_GameTest','UmaTrainerKR_Preflight')) {
+            if (Test-Path (Join-Path $installPath "$name.exe")) { throw "Uninstall left binary behind: $name" }
+          }
+
+      - name: Verify release artifacts and generate SHA-256 manifest
+        shell: pwsh
+        run: |
+          $rawVersion = Get-Content VERSION.txt -Raw
+          $version = ([regex]::Match($rawVersion, '(?m)^Version:\s*(\d+\.\d+\.\d+)\s*$')).Groups[1].Value
+          python scripts/verify_windows_package_r25.py dist $version
+          if ($LASTEXITCODE -ne 0) { throw 'Artifact verification failed' }
+
+      - name: Upload verified Windows builds (no release publication)
+        uses: actions/upload-artifact@v4
+        with:
+          name: UmaTrainerKR-R26-Windows-Verified
+          path: |
+            dist/UmaTrainerKR.exe
+            dist/UmaTrainerKR_Companion.exe
+            dist/UmaTrainerKR_GameTest.exe
+            dist/UmaTrainerKR_Preflight.exe
+            dist/installer/UmaTrainerKR_Setup_*.exe
+            dist/SHA256_MANIFEST.json
+            dist/smoke-reports/*.json
+          if-no-files-found: error
+          retention-days: 14

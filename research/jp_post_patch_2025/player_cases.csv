@@ -1,0 +1,10 @@
+case_id,source_id,record_type,reported_date,event_scope,character,support_config,facility_outcome,reported_observation,evidence_grade,run_completion,result_label,limitations
+C001,S010,video_report,2025-07-03,evaluation_score,마야노 탑건,미확인,미확인,제작자가 US1 달성을 설명한 영상,video_description_only,reported_complete,US1 reported,영상 프레임/전턴 선택 미추출; 챔미/LoH 성능이 아님
+C002,S014,player_run,2025-07-02,2025-07_CM_2200m,젠틸돈나,하이랜더,중간 스태미나 부족으로 건설 우선순위 조정,스피드/파워/지능 상한; 스킬Pt 6400+; 적합 스킬 부족,article_player_report,reported_complete,competitiveness_not_verified,최종 챔미 출전 결과/모든 턴 없음
+C003,S017,player_run,2025-10-03,2025-09_CM_course_inconsistent,미호노 부르봉(발렌타인),스피/파워/근성2/지능/친구,스피4/스태2/파워4/근성5/지능1/해변2,챔미 결승 출전; 일부 스킬 부족 보고,article_player_report,reported_complete,race_result_context_only,대회 결과는 팀 결과; 영상 전 턴 없음; 본문 코스 표기가 제목과 상충
+C004,S017,player_run,2025-10-03,2025-09_CM_course_inconsistent,젠틸돈나,스피/파워2/근성/지능/친구,스피5/스태1/파워4/근성5/지능2/해변1,일부 녹색 스킬 누락; 챔미 결승 출전,article_player_report,reported_complete,race_result_context_only,젠틸과 스틸 동시 출전 시 젠틸 승률 0 기록; 정확 비교 조건 불충분
+C005,S017,player_run,2025-10-03,2025-09_CM_course_inconsistent,스틸 인 러브,스피2/파워/근성/지능/친구,스피4/스태1/파워4/근성5/지능2/해변2,"거리S 및 스피1900+, 핵심 금스킬 2개 미완주 보고",article_player_report,reported_complete,champ_A_group_wins_reported,단독 결승 순위와 유효 스킬 수는 완전 계량 불가
+C006,S017,discarded_candidate,2025-10-03,2025-09_CM_course_inconsistent,젠틸돈나(다른 시도),미확인,미확인,거리S·금스킬 모두 확보했으나 스탯 부족으로 출전 제외,article_player_report,reported_complete_not_used,discarded_after_completion,중도 도축이 아니라 완주 후 폐기; 턴별 수치 미확인
+C007,S018,competition_result,2025-08-22,2025-08_LoH_sapporo_2600m,복수 캐릭터(세부 미추출),미확인,미확인,"육성 빈도 제한 참가, 최종 450점 손실 보고",article_player_report,competition_completed,loh_450_point_loss,각 캐릭 육성 전턴 미제공; 상관관계가 원인인 것은 아님
+C008,S016,player_report,2025-07-01,general,그란(글 설명),하이랜더→스피2 변형,미확인,하이랜더 성적이 약해 다른 편성을 소개,blog_self_report,reported_run,alternative_deck_helped_reportedly,개별 세부 스탯 OCR/전턴 없음
+C009,S015,abandon_anecdote,2025-07-05,general,미확인,미확인,첫 건설 계획 오류,댓글 작성자가 재시작했다고 진술,forum_comment,abandoned_reported,restarted,정확한 턴·횟수·수치 미공개

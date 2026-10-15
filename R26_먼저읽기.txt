@@ -1,0 +1,42 @@
+Uma Trainer KR R26 — Windows 설치·첫 실행 검증 준비본
+=====================================================
+
+현재 상태: Windows 설치파일을 만드는 코드는 준비됨. 실제 Windows EXE는 아직 생성하지 않음.
+이 ZIP 파일 자체가 Setup.exe는 아님. Python 없이 실행되는 설치파일은 Windows 빌드 후 제공 가능.
+
+사용자의 게임/육성 기록: 이 개발본에는 포함되지 않음.
+네트워크 자동 전송: 없음. 게임 자동 클릭: 없음.
+
+[바로 실행하려면]
+1) 별도 GitHub 저장소 UmaTrainerKR을 만든다. 기존 다른 프로젝트 저장소 사용 금지.
+2) 이 ZIP을 풀고 폴더 안의 파일을 저장소 루트에 올린다.
+   .github/workflows/windows-exe.yml 가 누락되지 않도록 한다.
+3) GitHub Actions → Build and verify Windows installer (manual only) → Run workflow를 한 번 실행한다.
+4) Actions 실행 결과가 성공일 때 Artifacts의 UmaTrainerKR-R26-Windows-Verified를 받는다.
+5) 안의 dist/installer/UmaTrainerKR_Setup_0.26.0.exe 설치파일을 사용한다.
+6) 설치 후 Uma Trainer KR 도우미를 실행하고 'R23 · 게임 없이 사전점검'에서 PC 상태를 확인한다.
+7) 게임 업데이트가 끝나면 R22 실게임 훈련 점검에서 실제 훈련 5개를 차례로 확인한다.
+
+빌드가 실패하면 Actions 로그를 확인한다. 성공 전에는 사용 가능하다고 간주하지 않는다.
+한국 서버 실제 화면/OCR/오버레이/게임 자동 클릭은 이 빌드로 검증되지 않는다.
+OCR에는 Tesseract가 따로 필요하다. Windows의 프로그램 설치 또는 앱 폴더 ocr/tesseract.exe(정상 설치형 파일 필요) 지원.
+
+[개발자 테스트]
+python -m unittest discover -s tests -q
+python companion.py --first-run-report <새_경로>.json
+위 검사는 빌드된 Windows 앱 테스트를 대체하지 못한다.
+
+[변경 핵심]
+- 설치 전후 EXE 4종 SHA256 일치 확인
+- 설치 후 첫 실행 진단, 설치 제거 후 바이너리 잔여 검사
+- 버전별 수동 GitHub Actions 빌드 (자동 Release 금지)
+- 간단한 첫 실행 상태 분류 (게임 없음/OCR 없음/화면 등록 필요 등)
+- OCR 엔진을 앱 옆 ocr/tesseract.exe 위치에서도 선택적으로 인식
+- 상세 설정 실행 파일 경로/실행 오류 처리 보완
+- 데이터나 창 제목/스크린샷을 첫 실행 진단 JSON에 포함하지 않음
+
+[유지 원칙]
+- 기존 R1~R25 정상 기능·연구 자료 보존
+- 기존 사용자 AppData 육성 기록 백업/보존
+- 실제 게임 화면을 확인하기 전 추천/자동 클릭 성공 주장 금지
+- 시나리오별 모델과 패치별 자료 분리 유지

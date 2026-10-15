@@ -1,0 +1,34 @@
+{
+  "schema": "uma_training_replay_r23_v1",
+  "scenario": "island_post_patch_v1",
+  "source_type": "synthetic_test",
+  "turn": "테스트 전용 (실제 육성 아님)",
+  "roi_profile": "r22_mock_roi.json",
+  "captures": [
+    {
+      "choice": "스피드",
+      "image": "r22_mock_1.png",
+      "sha256": "297ba1e0ad5ee34494b9cebece1be2cbda1fa40c423530de2ea20d300d634975"
+    },
+    {
+      "choice": "스태미나",
+      "image": "r22_mock_2.png",
+      "sha256": "1ca809bfeaefecfa2385149f17a09fb3eb8804ec63aaafa177588faf6dc09ac4"
+    },
+    {
+      "choice": "파워",
+      "image": "r22_mock_3.png",
+      "sha256": "b0da5fdbab01076f56fc9f63c0ea80f5c509b7272c3a0f842b5eda344794ce95"
+    },
+    {
+      "choice": "근성",
+      "image": "r22_mock_4.png",
+      "sha256": "0b8e0a316631972763db3d8f04ef67f274d5ce7bd4bbda95c4397543a0cc1e40"
+    },
+    {
+      "choice": "지능",
+      "image": "r22_mock_5.png",
+      "sha256": "5e2f34a77b38eb06c5e14a4bfaea2a079d612735e75765806870faf56f3dda39"
+    }
+  ]
+}

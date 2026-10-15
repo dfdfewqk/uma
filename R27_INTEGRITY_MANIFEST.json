@@ -1,0 +1,63 @@
+{
+  "schema": "uma_r27_changed_files_sha256_v1",
+  "revision": "R27 research review (R26 app preserved)",
+  "claims": {
+    "automated_tests_passed": 460,
+    "nagi_video_captions_verified": false,
+    "nagi_creator_statements_analyzed": 0,
+    "training_records_added": 0,
+    "windows_exe_built": false
+  },
+  "files": [
+    {
+      "path": "decision_r6.py",
+      "sha256": "4ea6923b32ea27c9d408d2f51d4c31e33a0246e0718bb37482caa500b23209f1",
+      "bytes": 12858
+    },
+    {
+      "path": "tests/test_decision_r6.py",
+      "sha256": "f90bcfc795bf4bdf6792460c142148eb84c044ef97f309f9fd37f4fb124fbc6c",
+      "bytes": 9444
+    },
+    {
+      "path": "tests/test_caption_audit_r27.py",
+      "sha256": "dd3cfc420cc45924fe2e84b5023b7b1d927e805c4705db220ad5d337f5e28a03",
+      "bytes": 1938
+    },
+    {
+      "path": "caption_audit_r27.py",
+      "sha256": "3690a602fa0ac15ed07add91ce7dc9ad5b039c468ecec4dd73ec82aee0c29130",
+      "bytes": 5829
+    },
+    {
+      "path": "research/sources.json",
+      "sha256": "bc4813e8d1fe306f323611d5b7a7e648497ea6ba0c262ea2ad201cdcd4595d5f",
+      "bytes": 2261
+    },
+    {
+      "path": "research/nagi_video_audit_r27/claims.json",
+      "sha256": "c899198cbc6f12659a2e4a2f840ecb44818cac58bec9d9181664a39f5ab59796",
+      "bytes": 2627
+    },
+    {
+      "path": "research/nagi_video_audit_r27/sources.json",
+      "sha256": "6c8f742c4eb1c612c166c564926ee119f7c9db28cad609d83407d8fd16aa98a0",
+      "bytes": 1613
+    },
+    {
+      "path": "research/nagi_video_audit_r27/video_status.json",
+      "sha256": "cad231941f2a2f59a8b83a153b18fda29948a1225e5e9f0b82a6ff028c75aba5",
+      "bytes": 536
+    },
+    {
+      "path": "research/nagi_video_audit_r27/비교검토_결과.md",
+      "sha256": "0ad06950694c09b53b4a0dede7f11bbcf7061c20a3f45caf022a3df4ac734405",
+      "bytes": 2854
+    },
+    {
+      "path": "R27_먼저읽기.txt",
+      "sha256": "4b6d50f881f7104265cc3da6eaed318b578fbeff40075d3af81bc4396ddb4e39",
+      "bytes": 931
+    }
+  ]
+}

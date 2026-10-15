@@ -1,0 +1,966 @@
+{
+  "schema": "uma_island_r7_plan_v1",
+  "experimental_only": true,
+  "verified_optimal": false,
+  "ml_training_label_verified": false,
+  "profile": {
+    "scenario": "island_post_patch_v1",
+    "event": "챔피언스 미팅",
+    "distance": "중거리",
+    "style": "선행",
+    "character": "",
+    "target_stats": {
+      "스피드": 1700,
+      "스태미나": 1200,
+      "파워": 1200,
+      "근성": 1100,
+      "지능": 1150
+    },
+    "target_skill_points": 2500,
+    "notes": "",
+    "course": "",
+    "surface": "잔디",
+    "course_direction": "미정",
+    "race_conditions": "",
+    "support_deck": "",
+    "inheritance_notes": ""
+  },
+  "state": {
+    "turn_label": "주니어급 6월 전반",
+    "remaining_turns": 70,
+    "energy": 70,
+    "mood": "보통",
+    "stats": {
+      "스피드": 300,
+      "스태미나": 300,
+      "파워": 300,
+      "근성": 300,
+      "지능": 300
+    },
+    "skill_points": 200,
+    "island_tickets": 0,
+    "turns_until_next_ticket": -1,
+    "development_points": 0,
+    "building_levels": {
+      "스피드": 0,
+      "스태미나": 0,
+      "파워": 0,
+      "근성": 0,
+      "지능": 0,
+      "해변의 집": 0
+    },
+    "core_skill_status": "미확인"
+  },
+  "options": {
+    "phase": 1,
+    "tucker": "Lv41~50",
+    "routes": {
+      "스피드": "미선택",
+      "스태미나": "미선택",
+      "파워": "미선택",
+      "근성": "미선택",
+      "지능": "미선택",
+      "해변의 집": "미선택"
+    },
+    "support_counts": {
+      "스피드": 1,
+      "스태미나": 1,
+      "파워": 1,
+      "근성": 1,
+      "지능": 1
+    },
+    "growth_bonus_stat": "없음",
+    "exam_target": null,
+    "exam_turns": null,
+    "expected_dp_per_turn": null,
+    "senior_september_or_later": false,
+    "friendship_locations": null
+  },
+  "result": {
+    "status": "건설 경로 비교 가능 (실험용)",
+    "candidates": [
+      {
+        "score_proxy": 165.77,
+        "phases": [
+          {
+            "phase": 1,
+            "title": "주니어 6월 평가회",
+            "capacity": 4,
+            "used": 4,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              }
+            ],
+            "levels_after": {
+              "스피드": 1,
+              "스태미나": 1,
+              "파워": 1,
+              "근성": 0,
+              "지능": 1,
+              "해변의 집": 0
+            },
+            "routes_after": {
+              "스피드": "미선택",
+              "스태미나": "미선택",
+              "파워": "미선택",
+              "근성": "미선택",
+              "지능": "미선택",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 2,
+            "title": "주니어 12월 평가회",
+            "capacity": 5,
+            "used": 5,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "근성",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              }
+            ],
+            "levels_after": {
+              "스피드": 2,
+              "스태미나": 2,
+              "파워": 2,
+              "근성": 1,
+              "지능": 2,
+              "해변의 집": 0
+            },
+            "routes_after": {
+              "스피드": "미선택",
+              "스태미나": "미선택",
+              "파워": "미선택",
+              "근성": "미선택",
+              "지능": "미선택",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 3,
+            "title": "클래식 6월 평가회",
+            "capacity": 6,
+            "used": 6,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "근성",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "해변의 집",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 2
+              }
+            ],
+            "levels_after": {
+              "스피드": 3,
+              "스태미나": 3,
+              "파워": 3,
+              "근성": 2,
+              "지능": 2,
+              "해변의 집": 1
+            },
+            "routes_after": {
+              "스피드": "기교",
+              "스태미나": "기교",
+              "파워": "기교",
+              "근성": "미선택",
+              "지능": "미선택",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 4,
+            "title": "클래식 12월 평가회",
+            "capacity": 6,
+            "used": 5,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "근성",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              }
+            ],
+            "levels_after": {
+              "스피드": 4,
+              "스태미나": 4,
+              "파워": 4,
+              "근성": 3,
+              "지능": 3,
+              "해변의 집": 1
+            },
+            "routes_after": {
+              "스피드": "기교",
+              "스태미나": "기교",
+              "파워": "기교",
+              "근성": "기교",
+              "지능": "기교",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 5,
+            "title": "시니어 6월 최종 평가회",
+            "capacity": 8,
+            "used": 8,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 5,
+                "route": "기교",
+                "cost": 2
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 5,
+                "route": "기교",
+                "cost": 2
+              },
+              {
+                "facility": "파워",
+                "new_level": 5,
+                "route": "기교",
+                "cost": 2
+              },
+              {
+                "facility": "근성",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              }
+            ],
+            "levels_after": {
+              "스피드": 5,
+              "스태미나": 5,
+              "파워": 5,
+              "근성": 4,
+              "지능": 4,
+              "해변의 집": 1
+            },
+            "routes_after": {
+              "스피드": "기교",
+              "스태미나": "기교",
+              "파워": "기교",
+              "근성": "기교",
+              "지능": "기교",
+              "해변의 집": "미선택"
+            }
+          }
+        ],
+        "final_levels": {
+          "스피드": 5,
+          "스태미나": 5,
+          "파워": 5,
+          "근성": 4,
+          "지능": 4,
+          "해변의 집": 1
+        },
+        "final_routes": {
+          "스피드": "기교",
+          "스태미나": "기교",
+          "파워": "기교",
+          "근성": "기교",
+          "지능": "기교",
+          "해변의 집": "미선택"
+        },
+        "explanation": [
+          "남은 단계의 건설 선택에 대한 가상 비교이며 정답 또는 최적 성장 수치가 아닙니다.",
+          "현재 시설 레벨은 사용자가 확인한 완료 상태를 기준으로 합니다."
+        ]
+      },
+      {
+        "score_proxy": 165.35,
+        "phases": [
+          {
+            "phase": 1,
+            "title": "주니어 6월 평가회",
+            "capacity": 4,
+            "used": 4,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              }
+            ],
+            "levels_after": {
+              "스피드": 1,
+              "스태미나": 1,
+              "파워": 1,
+              "근성": 0,
+              "지능": 1,
+              "해변의 집": 0
+            },
+            "routes_after": {
+              "스피드": "미선택",
+              "스태미나": "미선택",
+              "파워": "미선택",
+              "근성": "미선택",
+              "지능": "미선택",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 2,
+            "title": "주니어 12월 평가회",
+            "capacity": 5,
+            "used": 5,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "근성",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              }
+            ],
+            "levels_after": {
+              "스피드": 2,
+              "스태미나": 2,
+              "파워": 2,
+              "근성": 1,
+              "지능": 2,
+              "해변의 집": 0
+            },
+            "routes_after": {
+              "스피드": "미선택",
+              "스태미나": "미선택",
+              "파워": "미선택",
+              "근성": "미선택",
+              "지능": "미선택",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 3,
+            "title": "클래식 6월 평가회",
+            "capacity": 6,
+            "used": 6,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "근성",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "해변의 집",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 2
+              }
+            ],
+            "levels_after": {
+              "스피드": 3,
+              "스태미나": 2,
+              "파워": 3,
+              "근성": 2,
+              "지능": 3,
+              "해변의 집": 1
+            },
+            "routes_after": {
+              "스피드": "기교",
+              "스태미나": "미선택",
+              "파워": "기교",
+              "근성": "미선택",
+              "지능": "기교",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 4,
+            "title": "클래식 12월 평가회",
+            "capacity": 6,
+            "used": 5,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "근성",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              }
+            ],
+            "levels_after": {
+              "스피드": 4,
+              "스태미나": 3,
+              "파워": 4,
+              "근성": 3,
+              "지능": 4,
+              "해변의 집": 1
+            },
+            "routes_after": {
+              "스피드": "기교",
+              "스태미나": "기교",
+              "파워": "기교",
+              "근성": "기교",
+              "지능": "기교",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 5,
+            "title": "시니어 6월 최종 평가회",
+            "capacity": 8,
+            "used": 8,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 5,
+                "route": "기교",
+                "cost": 2
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 5,
+                "route": "기교",
+                "cost": 2
+              },
+              {
+                "facility": "근성",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 5,
+                "route": "기교",
+                "cost": 2
+              }
+            ],
+            "levels_after": {
+              "스피드": 5,
+              "스태미나": 4,
+              "파워": 5,
+              "근성": 4,
+              "지능": 5,
+              "해변의 집": 1
+            },
+            "routes_after": {
+              "스피드": "기교",
+              "스태미나": "기교",
+              "파워": "기교",
+              "근성": "기교",
+              "지능": "기교",
+              "해변의 집": "미선택"
+            }
+          }
+        ],
+        "final_levels": {
+          "스피드": 5,
+          "스태미나": 4,
+          "파워": 5,
+          "근성": 4,
+          "지능": 5,
+          "해변의 집": 1
+        },
+        "final_routes": {
+          "스피드": "기교",
+          "스태미나": "기교",
+          "파워": "기교",
+          "근성": "기교",
+          "지능": "기교",
+          "해변의 집": "미선택"
+        },
+        "explanation": [
+          "남은 단계의 건설 선택에 대한 가상 비교이며 정답 또는 최적 성장 수치가 아닙니다.",
+          "현재 시설 레벨은 사용자가 확인한 완료 상태를 기준으로 합니다."
+        ]
+      },
+      {
+        "score_proxy": 165.17,
+        "phases": [
+          {
+            "phase": 1,
+            "title": "주니어 6월 평가회",
+            "capacity": 4,
+            "used": 4,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              }
+            ],
+            "levels_after": {
+              "스피드": 1,
+              "스태미나": 1,
+              "파워": 1,
+              "근성": 0,
+              "지능": 1,
+              "해변의 집": 0
+            },
+            "routes_after": {
+              "스피드": "미선택",
+              "스태미나": "미선택",
+              "파워": "미선택",
+              "근성": "미선택",
+              "지능": "미선택",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 2,
+            "title": "주니어 12월 평가회",
+            "capacity": 5,
+            "used": 5,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "근성",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              }
+            ],
+            "levels_after": {
+              "스피드": 2,
+              "스태미나": 2,
+              "파워": 2,
+              "근성": 1,
+              "지능": 2,
+              "해변의 집": 0
+            },
+            "routes_after": {
+              "스피드": "미선택",
+              "스태미나": "미선택",
+              "파워": "미선택",
+              "근성": "미선택",
+              "지능": "미선택",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 3,
+            "title": "클래식 6월 평가회",
+            "capacity": 6,
+            "used": 6,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "근성",
+                "new_level": 2,
+                "route": "미선택",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "해변의 집",
+                "new_level": 1,
+                "route": "미선택",
+                "cost": 2
+              }
+            ],
+            "levels_after": {
+              "스피드": 3,
+              "스태미나": 3,
+              "파워": 2,
+              "근성": 2,
+              "지능": 3,
+              "해변의 집": 1
+            },
+            "routes_after": {
+              "스피드": "기교",
+              "스태미나": "기교",
+              "파워": "미선택",
+              "근성": "미선택",
+              "지능": "기교",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 4,
+            "title": "클래식 12월 평가회",
+            "capacity": 6,
+            "used": 5,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "파워",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "근성",
+                "new_level": 3,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              }
+            ],
+            "levels_after": {
+              "스피드": 4,
+              "스태미나": 4,
+              "파워": 3,
+              "근성": 3,
+              "지능": 4,
+              "해변의 집": 1
+            },
+            "routes_after": {
+              "스피드": "기교",
+              "스태미나": "기교",
+              "파워": "기교",
+              "근성": "기교",
+              "지능": "기교",
+              "해변의 집": "미선택"
+            }
+          },
+          {
+            "phase": 5,
+            "title": "시니어 6월 최종 평가회",
+            "capacity": 8,
+            "used": 8,
+            "upgrades": [
+              {
+                "facility": "스피드",
+                "new_level": 5,
+                "route": "기교",
+                "cost": 2
+              },
+              {
+                "facility": "스태미나",
+                "new_level": 5,
+                "route": "기교",
+                "cost": 2
+              },
+              {
+                "facility": "파워",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "근성",
+                "new_level": 4,
+                "route": "기교",
+                "cost": 1
+              },
+              {
+                "facility": "지능",
+                "new_level": 5,
+                "route": "기교",
+                "cost": 2
+              }
+            ],
+            "levels_after": {
+              "스피드": 5,
+              "스태미나": 5,
+              "파워": 4,
+              "근성": 4,
+              "지능": 5,
+              "해변의 집": 1
+            },
+            "routes_after": {
+              "스피드": "기교",
+              "스태미나": "기교",
+              "파워": "기교",
+              "근성": "기교",
+              "지능": "기교",
+              "해변의 집": "미선택"
+            }
+          }
+        ],
+        "final_levels": {
+          "스피드": 5,
+          "스태미나": 5,
+          "파워": 4,
+          "근성": 4,
+          "지능": 5,
+          "해변의 집": 1
+        },
+        "final_routes": {
+          "스피드": "기교",
+          "스태미나": "기교",
+          "파워": "기교",
+          "근성": "기교",
+          "지능": "기교",
+          "해변의 집": "미선택"
+        },
+        "explanation": [
+          "남은 단계의 건설 선택에 대한 가상 비교이며 정답 또는 최적 성장 수치가 아닙니다.",
+          "현재 시설 레벨은 사용자가 확인한 완료 상태를 기준으로 합니다."
+        ]
+      }
+    ],
+    "errors": [],
+    "warnings": [
+      "캐릭터 성장 보정 미입력. 시설 우선순위는 목표 스탯 부족량 위주로 계산합니다.",
+      "동일 회차에 한 시설을 최대 1레벨만 강화하는 보수적 탐색 가정을 사용합니다. 게임에서 추가 강화가 가능한 경우 실제 선택과 차이가 날 수 있습니다.",
+      "건설 진행 순서와 각 단계별 발전 Pt 획득 시점은 미모델링. 실제 보상·최적 성장 검증 전입니다."
+    ],
+    "progress": [
+      "평가회 발전 Pt 요구량·남은 턴·턴당 예상 획득량 중 미입력 값이 있어 달성 예측을 보류합니다."
+    ],
+    "ticket_advice": [
+      "현재 시기 보유 상한 1장 · 보유 0장."
+    ],
+    "context_hash": "1509521211db8191e05d09271a1e34a6038bd77cb17b8f956e9de99191e79a6d",
+    "experimental_only": true,
+    "verified_optimal": false
+  }
+}

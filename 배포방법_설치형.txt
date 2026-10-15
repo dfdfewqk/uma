@@ -1,0 +1,42 @@
+Uma Trainer KR V0.7 R7 — Python 없이 배포하는 방법
+==================================================
+
+[다른 사람이 설치할 때]
+- UmaTrainerKR_Setup_0.7.0.exe 다운로드 → 설치 → 시작 메뉴 실행.
+- 설치한 사람의 PC에 Python, pip, VS Code는 필요하지 않습니다.
+- 휴대용 파일 UmaTrainerKR.exe 하나만 배포해도 Python은 필요하지 않습니다.
+- 현재 R7도 수동 입력 기반의 실험판이며 실제 게임 화면 OCR 검증, 자동 육성, ML 학습은 미완료입니다.
+
+[개발자: GitHub에서 Windows용 빌드 — 본인 PC에 Python 불필요]
+1. 이 폴더의 내용을 새로운 GitHub 저장소 루트에 올립니다.
+   (중요: .github/workflows/windows-exe.yml 숨김 폴더 포함)
+2. 저장소 Actions 탭 → 'Build Windows EXE + Installer (manual only)'을 선택합니다.
+3. Run workflow 클릭합니다. 최초에는 publish_release=false를 유지합니다.
+4. 테스트·Windows 빌드가 성공하면 해당 실행 항목의 Artifacts에서
+   UmaTrainerKR-Windows 파일을 받을 수 있습니다.
+5. 실행 및 설치를 Windows PC에서 직접 검사한 다음, 공식 배포가 필요하면
+   Run workflow를 다시 실행하되 publish_release=true를 명시적으로 선택합니다.
+6. v0.7.0 GitHub Release가 생성되며 이때부터 Releases/latest 페이지에서
+   설치 파일과 EXE를 제공할 수 있습니다.
+
+[직접 Windows에서 빌드]
+- Python 3를 보유한 개발자는 Windows_EXE_빌드.bat를 사용할 수 있습니다.
+- 설치 파일까지 만들려면 Inno Setup 6 설치 후
+  ISCC.exe UmaTrainerKR_Setup.iss 실행 (dist/UmaTrainerKR.exe 생성 후).
+
+[업데이트 및 주의]
+- 지금 버전은 자동 업데이트 기능이 없습니다. 설치 파일은 기존 버전 위에 설치 가능하게 설계되었습니다.
+- GitHub Releases 페이지를 통일된 배포 주소로 사용할 수 있습니다.
+- 자동 배포를 막기 위해 GitHub Actions 워크플로는 수동 실행만 허용합니다.
+- Actions 파일 저장소에 반영 시 다른 GitHub Actions 워크플로와 중복 실행이 없는지 점검하세요.
+- 코드 서명이 없으므로 Windows SmartScreen 경고가 발생할 수 있습니다.
+  안전 경고를 무시하도록 안내하기보다 설치 파일의 출처와 무결성을 검증하고 배포용 서명을 검토하세요.
+- Windows 기반 실제 컴파일/실행은 현재 환경에서 확인하지 못했습니다.
+- 육성 기록은 사용자 프로필의 %LOCALAPPDATA%\UmaTrainerKR\runs.sqlite3에 저장됩니다.
+
+
+[R4 추가 주의]
+Windows 수동 빌드 시 Pillow 라이브러리를 빌드 EXE에 포함합니다.
+OCR(Tesseract)는 배포 EXE에 들어 있지 않으므로 사용자가 별도 설치해야 하며,
+설치하지 않은 경우에도 ROI 지정과 수동 검수·기존 R3 분석은 사용 가능합니다.
+합성 화면은 OCR 기능 테스트 전용이고 실제 한국 서버 판독을 증명하지 않습니다.

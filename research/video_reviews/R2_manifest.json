@@ -1,0 +1,18 @@
+{
+  "release": "R2 - offline frame reviewer and audit toolkit",
+  "base_release": "JP research R1",
+  "date": "2026-10-15",
+  "sources_inherited": 25,
+  "review_queue_items": 4,
+  "human_verified_turns_included": 0,
+  "downloaded_or_distributed_videos": 0,
+  "ml_model_trained": false,
+  "decision_engine_weights_changed": false,
+  "rules": [
+    "Only frame-evidenced values are recorded as observations",
+    "Partial turns are not treated as complete supervised training data",
+    "Human chosen action is not automatically labeled optimal",
+    "No video/image originals included in distributable ZIP",
+    "Only user-provided or licensed local video files may be sampled"
+  ]
+}

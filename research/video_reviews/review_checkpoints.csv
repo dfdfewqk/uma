@@ -1,0 +1,13 @@
+chapter_id,source_id,start_seconds,review_topic,source_link_with_timestamp,inspection_status,reviewer_note
+V001,S010,0,영상 도입/설명,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=0s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V002,S010,57,서포트/인자 구성,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=57s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V003,S010,81,1~5회 시설 강화 우선순위,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=81s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V004,S010,181,섬티켓/외출 사용 전략,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=181s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V005,S010,275,주니어 인연도와 목표,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=275s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V006,S010,583,1차 계승과 클래식 판단,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=583s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V007,S010,697,여름 합숙 선택,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=697s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V008,S010,939,시니어 스탯 보완,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=939s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V009,S010,1098,2차 계승과 최종 조정,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=1098s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V010,S010,1319,마무리 성장,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=1319s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V011,S010,1515,스킬 최종 선택,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=1515s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수
+V012,S010,1669,인자 상세,https://www.youtube.com/watch?v=fPFkjDu5CL4&t=1669s,not_frame_verified,시점·주제는 영상 설명을 이용해 기록. 게임 화면 미검수

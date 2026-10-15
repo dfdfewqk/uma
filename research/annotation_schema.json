@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "description": "향후 영상/육성 로그를 정리할 때 사용하는 빈 주석 템플릿. 현재 수집된 실전 턴 데이터는 0건.",
+  "case_template": {
+    "source_url": "",
+    "source_author": "",
+    "recorded_at": "",
+    "scenario_id": "island_post_patch_v1",
+    "server": "JP",
+    "patch_status": "post_2025-06-30_confirmed_or_unknown",
+    "competition_type": "champions_meeting_or_league_of_heroes",
+    "race_conditions": {
+      "course": "",
+      "distance": "",
+      "surface": "",
+      "direction": "",
+      "season": "",
+      "weather": ""
+    },
+    "character": "",
+    "support_cards": [],
+    "inheritance": [],
+    "complete_playthrough": false,
+    "abandoned": false,
+    "abandon_reason_by_player": "",
+    "final_stats": null,
+    "final_skills": [],
+    "race_results": [],
+    "turns": [
+      {
+        "turn_number": null,
+        "timestamp_in_video_seconds": null,
+        "state": {},
+        "visible_training_options": [],
+        "chosen_action": null,
+        "choice_reason_explicit": "",
+        "post_action_result": {},
+        "annotation_confidence": "unknown",
+        "occluded_or_missing_fields": []
+      }
+    ]
+  },
+  "notes": [
+    "영상에 없는 값은 추정값으로 채우지 말고 unknown으로 둡니다.",
+    "영상 제작자가 단순히 재시작했다는 사실을 반드시 최적 도축 시점의 정답으로 간주하지 않습니다.",
+    "수정 전후 영상, 챔미/리오히, 카드 편성, 거리별 데이터를 혼합할 때 구별합니다.",
+    "저작권 및 플랫폼 정책을 준수하여 원본 전체를 무단 배포하지 않습니다."
+  ]
+}

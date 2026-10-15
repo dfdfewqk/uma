@@ -1,0 +1,31 @@
+Uma Trainer KR V0.2 + 일본 무인도 연구 R2
+==============================================
+
+기존 V0.2 프로그램 엔진과 V0.1 호환 저장 기능은 변경하지 않았습니다.
+R1의 출처 25개, 주장 28건, 실전 사례 9건, 검수 챕터 12개가 그대로 보존됩니다.
+
+R2에서 새로 만든 것
+- 영상별 검수 우선순위와 검수 포인트 표
+- 로컬 영상에서 챕터 시점만 추출하는 ffmpeg 명령줄 도구
+- 캡처 이미지·턴별 실제 상황·사람이 선택한 행동·결과를 저장하는 검수 GUI
+- 선택 전/후 화면 SHA-256으로 변경 여부 감지
+- 기록 중복·부정확한 출처/JSON/행동/패치 버전 입력 차단
+- 부분 검수와 완전 검수 구분, ML 학습 불가 상태 명시
+- GitHub Actions의 수동 내부 검수기 EXE 빌드 설정(실제 Windows 미빌드)
+
+중요: 실제 유튜브 영상 프레임을 내려받거나 분석한 턴은 아직 0개입니다.
+실전 데이터가 없는데 학습된 ML 모델이 있다고 주장하지 않습니다.
+현재 일반 사용자용 실행파일은 기존 실험판에 해당하며 자동 육성 기능은 없습니다.
+
+연구도구 사용 방법:
+  research/video_reviews/README_R2_검수방법.md
+검수할 영상 목록:
+  research/video_reviews/review_queue.csv
+연구 데이터의 현재 상태:
+  research/video_reviews/R2_manifest.json
+
+검증:
+  python -m unittest discover -s tests -v
+  python research/review_tools/audit_cli.py
+
+배포와 관련하여 GitHub에 커밋·자동배포·Release 생성은 전혀 실행하지 않았습니다.

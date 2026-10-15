@@ -1,0 +1,151 @@
+{
+  "schema": "r14.v1",
+  "collected_on": "2026-10-15",
+  "note": "JP 개최 4개를 KR 확정 일정으로 둔갑시키지 말 것. 11월 한국 일정도 외부 2차 출처 기준으로 최종 공식 확인 필요.",
+  "sources": {
+    "generic_factor": "https://gamewith.jp/uma-musume/article/show/258843",
+    "generic_loop": "https://gamewith.jp/uma-musume/article/show/260515",
+    "dc_guide": "https://gall.dcinside.com/mgallery/board/view/?id=umamusu&no=5656351",
+    "dc_heritage": "https://gall.dcinside.com/mgallery/board/view/?id=umamusu&no=5612383",
+    "gametora_kr": "https://gametora.com/ko/umamusume/events/champions-meeting?cm=39",
+    "korean_guide": "https://swallow91.tistory.com/594",
+    "jp_history": "https://gametora.com/umamusume/events/champions-meeting",
+    "jp_loh": "https://gamewith.jp/uma-musume/article/show/396435"
+  },
+  "generic_grandparents": [
+    {
+      "name": "스페셜 위크",
+      "role": "범용 계승 후보",
+      "source_ids": [
+        "generic_factor"
+      ]
+    },
+    {
+      "name": "오구리 캡",
+      "role": "범용 계승 후보",
+      "source_ids": [
+        "generic_factor"
+      ]
+    },
+    {
+      "name": "비와 하야히데",
+      "role": "범용 계승 후보",
+      "source_ids": [
+        "generic_factor"
+      ]
+    },
+    {
+      "name": "나리타 브라이언",
+      "role": "범용 계승 후보",
+      "source_ids": [
+        "generic_factor"
+      ]
+    },
+    {
+      "name": "신년 티엠 오페라 오",
+      "role": "범용 계승 후보",
+      "source_ids": [
+        "generic_factor"
+      ]
+    },
+    {
+      "name": "수영복 아그네스 타키온",
+      "role": "범용 계승 후보",
+      "source_ids": [
+        "generic_factor"
+      ]
+    },
+    {
+      "name": "크리스마스 나리타 탑 로드",
+      "role": "범용 계승 후보",
+      "source_ids": [
+        "generic_factor"
+      ]
+    },
+    {
+      "name": "스틸 인 러브",
+      "role": "범용 계승 후보",
+      "source_ids": [
+        "generic_factor"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "event_id": "jp-2025-07-cm",
+      "jp_start": "2025-07-25",
+      "jp_end": "2025-07-31",
+      "kr_start": "2026-11-13",
+      "kr_end": "2026-11-19",
+      "kr_estimate_month": null,
+      "status": "한국 외부 일정 확인·공식 최종 확인 필요",
+      "sources": [
+        "gametora_kr",
+        "korean_guide",
+        "jp_history"
+      ]
+    },
+    {
+      "event_id": "jp-2025-08-loh",
+      "jp_start": "2025-08-15",
+      "jp_end": "2025-08-21",
+      "kr_start": null,
+      "kr_end": null,
+      "kr_estimate_month": "2026-12",
+      "status": "한국 개최 월 추정·일자 미확정",
+      "sources": [
+        "dc_guide",
+        "jp_loh"
+      ]
+    },
+    {
+      "event_id": "jp-2025-09-cm",
+      "jp_start": "2025-09-22",
+      "jp_end": "2025-09-28",
+      "kr_start": null,
+      "kr_end": null,
+      "kr_estimate_month": "2027-01",
+      "status": "한국 개최 월 추정·일자 미확정",
+      "sources": [
+        "dc_guide",
+        "jp_history"
+      ]
+    },
+    {
+      "event_id": "jp-2025-10-cm",
+      "jp_start": "2025-10-23",
+      "jp_end": "2025-10-29",
+      "kr_start": null,
+      "kr_end": null,
+      "kr_estimate_month": "2027-02",
+      "status": "한국 개최 월 추정·일자 미확정",
+      "sources": [
+        "dc_guide",
+        "jp_history"
+      ]
+    }
+  ],
+  "prep_offsets": [
+    {
+      "phase": "코스·각질·계승 목표 설계",
+      "days_before": 42
+    },
+    {
+      "phase": "조부모 인자작",
+      "days_before": 35
+    },
+    {
+      "phase": "부모 인자작",
+      "days_before": 21
+    },
+    {
+      "phase": "본육성 및 대체 주자 확보",
+      "days_before": 14
+    },
+    {
+      "phase": "스킬·스탯 최종 점검",
+      "days_before": 3
+    }
+  ],
+  "prep_note": "일정 역산 오프셋은 프로그램 운영을 위한 사용자 조정 가능 제안치로, 공식 일정/확정 공략이 아님. 한국 일정이 미확인인 대회는 정확한 준비 일자를 생성하지 않음."
+}

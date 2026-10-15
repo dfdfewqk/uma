@@ -1,0 +1,25 @@
+Uma Trainer KR V0.2 + 일본 무인도 연구자료 R1
+===========================================
+
+기존 V0.2 앱 기능/추천 가중치는 변경하지 않았습니다.
+일본 서버 무인도 2025-06-30 대규모 밸런스 수정 후 데이터를
+연구자료 폴더로 추가한 개발용 통합 보관본입니다.
+
+핵심 위치:
+- docs/R1_일본실전데이터_조사보고서.md
+- research/jp_post_patch_2025/연구데이터_일본무인도_R1.xlsx
+- research/jp_post_patch_2025/sources.csv
+- research/jp_post_patch_2025/evidence.csv
+- research/jp_post_patch_2025/player_cases.csv
+- research/jp_post_patch_2025/facility_builds.csv
+- research/jp_post_patch_2025/hypotheses.csv
+- research/jp_post_patch_2025/turn_annotations.csv (검수된 턴 0건, 의도적 빈 템플릿)
+
+출처 25건, 근거 28건, 식별 사례 9건, 조건부 가설 13건,
+건설 사례 3건, 영상 설명란 챕터 12건.
+
+실제 게임 영상에서 판독한 턴 데이터는 0건이므로 ML 학습 준비는 미완료입니다.
+게임 화면 자동 인식 / 자동육성 / 학습완료 모델은 이 버전에 포함되지 않습니다.
+
+19개 테스트 통과. 프로그램은 이전 V0.2와 동일하게 Python 실행 구성이며,
+배포용 Windows EXE는 이전에 준비한 별도 Windows 빌드 환경에서 생성해야 합니다.

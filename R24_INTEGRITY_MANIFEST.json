@@ -1,0 +1,21 @@
+{
+  "release": "R24",
+  "base": "R23",
+  "manual_release_only": true,
+  "real_kr_game_tested": false,
+  "windows_exe_tested": false,
+  "tests_passed": 427,
+  "files": {
+    "companion.py": "735f3c37457e3d49b646039da28630ce02a13618955548d2b42de5ba6d586760",
+    "live_state_r24.py": "72b59d33865400671213f4164f3baff7d3fa6d2292e58cdb675317368c3306da",
+    "capture_integrity_r24.py": "03fa8085bcee2e8e413acb3c234519cc2f355145f3d9263b979b70efa51682e9",
+    "offline_replay_r23.py": "a0ad00e3ee9718e0ddf047c1285a6d8dc418c35fdba247ca414f8ad0d93d9211",
+    "offline_replay_ui_r23.py": "e30c19635e022bafbade5c8d4258fbf4507139220fe1b9e1f6bcf984cd1fe043",
+    "Windows_EXE_빌드.bat": "28074b0f2007fa1a6b02424a2c90ca69b5462260e54edb3f0d2c556c7586b6e6",
+    "Windows_실시간도우미_EXE_수동빌드.bat": "7da82b7d5ca23ce028b3c36830a093ec3381d7fbb72bce1814e4cd8d459efa1a",
+    "UmaTrainerKR_Setup.iss": "42d50ce4426166cec7ebe3cc4cc0239885de2cc53529579e307d6f835015e867",
+    ".github/workflows/windows-exe.yml": "b411c0e1d0a5434646f1f474b1162c6d048248059c8b2dddc7d0df3ea4467ee6",
+    "R24_먼저읽기.txt": "698a3eff4d6c4eb48d9e3f2e722698d530ba4e64d7eb555e58ca25ceaf540630",
+    "R24_변경내역.md": "ecd7bc2fdf6fed712c3a45aea9bee1e055b40162f9d744d441812ae4401ce2f2"
+  }
+}

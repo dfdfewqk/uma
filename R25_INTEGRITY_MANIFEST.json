@@ -1,0 +1,25 @@
+{
+  "schema": "uma_r25_source_change_manifest_v1",
+  "version": "0.25.0",
+  "reference_version": "R24",
+  "game_validation": "not_run",
+  "windows_exe_validation": "not_run",
+  "modified_or_new_files": {
+    "VERSION.txt": "966ed613fb3085e100acd91d41325e9f7998d66d1bec09d504d9765695232c65",
+    ".github/workflows/windows-exe.yml": "bbac0d827e0bc015be1ae25cf8dcf22ab168fa20cc4dfa5da6c30ae00e6da5eb",
+    "UmaTrainerKR_Setup.iss": "0361f949e337599040ed6e964816e09e2a69abd14b30f1e47ff667e95534ecef",
+    "Windows_EXE_빌드.bat": "fac2eb7d31c2ce3d08cc87d4e5d06f34bccdf746730d674cda8127163deea77f",
+    "Windows_실시간도우미_EXE_수동빌드.bat": "9ba311e029f44976f78fb15acfe66ae1dbd0da4523cf0bdffabb233625524344",
+    "package_selftest_r25.py": "074bd52f400b31600566107ff5c0eb3b6b019a286970a29e8a2ff621530af789",
+    "scripts/verify_windows_package_r25.py": "6f02aa22ba7c1cd937869f52e396473e2f3f9fd7ec78095cc66c679c069127b5",
+    "app.py": "08b61d46c8d24fefd79aa8fc744e2ec6eaea67c5033a06516bbfe65d255c7cef",
+    "companion.py": "622476b1390901fea823e6be7f1a11b7b9581dd26308f87f803acbe1e43e1039",
+    "live_test_ui_r22.py": "175bee6fab2c19f4b574d36e8bbad2d5d9a399980937e3f6ff55a51871c8eb73",
+    "offline_replay_ui_r23.py": "c417477e39eb738a8ebdf51aa3a73978b373b6f02456f61d9a09685d80e31fae",
+    "tests/test_package_selftest_r25.py": "1827ab58b09c92cd5b59b616ca228555a1d210938445eed3b7922f7ea7e16f65",
+    "tests/test_r24_build_package.py": "b837ee00639a3c708b24dc67b9250732bfed5f37b5a0593fffab106bfe33930b",
+    "R25_먼저읽기.txt": "2d3c9f5934b1dcf21d26b0ed03205bf93ab6ab73f0e0a8e83777f5ad9f5d0383",
+    "R25_변경내역.md": "59b2dbae9e4b126465b683a397a53d00bb5a50de244eb75eadbe6256f1f21f22",
+    "docs/R25_Windows_검증가이드.md": "214521357cc0783a97b29d86426dd2439d9945e919b818bb5d378d239a434f9c"
+  }
+}

@@ -1,0 +1,1 @@
+sample_id,run_id,source_type,source_url,frame_sha256,captured_date,server,patch_status,scenario,purpose,phase,training,character,support_deck_key,context_key,facility_levels_json,facility_routes_json,friendship_counts_json,verified,synthetic,g_speed,g_stamina,g_power,g_guts,g_wisdom,skill_points,reviewer_note

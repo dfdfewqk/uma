@@ -1,0 +1,681 @@
+{
+  "release": "V0.17 R17 research build",
+  "parent_release_sha256": "ac9db4688e7c949dd0f3b3f188a861e63bd638c8e23ca0566507a5013637f1c8",
+  "validation": {
+    "unittest_passed": 343,
+    "windows_exe_executed": false,
+    "kr_game_ocr_tested": false,
+    "actual_verified_video_turns": 0,
+    "actual_ml_trained": false
+  },
+  "files": {
+    ".github/workflows/windows-exe.yml": {
+      "sha256": "4f0e3259ce760d2377fc0cb3169341eee5e6138c302ad64d9c433257fbaa819c",
+      "bytes": 6194
+    },
+    ".gitignore": {
+      "sha256": "4a19c7cbb897d3f6843240843312c1e9c26fc18b9b8b00b015d8895218c31aa3",
+      "bytes": 200
+    },
+    "R5_%ED%99%94%EB%A9%B4_%EB%AF%B8%EB%A6%AC%EB%B3%B4%EA%B8%B0.png": {
+      "sha256": "406ab59541980a2bcc50f7c069ede8a881f58793f31e161c3606e7d05e892e8a",
+      "bytes": 115126
+    },
+    "R5_비교영역_미리보기.png": {
+      "sha256": "452711e4cb5893d4d3e197e5908e620935c25ebe5cc27234ae1b81d2c2a20ad7",
+      "bytes": 94132
+    },
+    "R5_화면_미리보기.png": {
+      "sha256": "406ab59541980a2bcc50f7c069ede8a881f58793f31e161c3606e7d05e892e8a",
+      "bytes": 115126
+    },
+    "README_사용방법.txt": {
+      "sha256": "484b7ec14d045cd2696f3894a3cfe3f21725bac60f2639fb67069c5903377c01",
+      "bytes": 16799
+    },
+    "UmaTrainerKR_Setup.iss": {
+      "sha256": "fc4f407bb82d4efb5596a15cbad6555d8da9e9598cf92a6c68b16a0e8aed32c3",
+      "bytes": 1342
+    },
+    "VERSION.txt": {
+      "sha256": "750d8e5a755a47528fdf263d20eeec97dcea9ed59091a62b5dbf4d7ed684cbe1",
+      "bytes": 16
+    },
+    "Windows_EXE_빌드.bat": {
+      "sha256": "f3e811ae1a788e0c4ae0edd597fab61f8bc3d67ebbf5a4e353ec8f1aeba83111",
+      "bytes": 1126
+    },
+    "analytics_r3.py": {
+      "sha256": "8a2515f2e41f2bcd6c4829b0f9b6f27dc23e90c9533f782e578be19560f66804",
+      "bytes": 14969
+    },
+    "app.py": {
+      "sha256": "e2fe3d7d1c970c6f714ca428269142f27c30c1a0081baaa68c7f042c0d934a51",
+      "bytes": 62954
+    },
+    "calibration_r9.py": {
+      "sha256": "e9177345d45d341dae3ae711cda9d2a8053d245fd08f56d9e5ff0bafa9ead1c6",
+      "bytes": 12587
+    },
+    "calibration_ui_r9.py": {
+      "sha256": "9c93f2dc30cff92ea7200e04a98146c5b1e650d8a875bfe7f85c2fa979aed6d9",
+      "bytes": 9499
+    },
+    "course_advisor_r12.py": {
+      "sha256": "f620546c9b31d7c1bd7372a5d5ef5332680d3e181688512a9c0dfeb866559d5d",
+      "bytes": 15626
+    },
+    "course_ui_r12.py": {
+      "sha256": "5f60c420ef03a97e3e3963419741a2b14f5a2599bebfbae9e9455937fddd5dca",
+      "bytes": 13379
+    },
+    "dataset.py": {
+      "sha256": "9058395aeffca6983e50c04cf7ec9c1fa255ad5b5086bdeb7070726a8e05a1f7",
+      "bytes": 2934
+    },
+    "decision_r6.py": {
+      "sha256": "2e56d9386d17f0665159a131036ddcdf8704083ca6637f69e319dcbb42160fd9",
+      "bytes": 12248
+    },
+    "decision_ui_r6.py": {
+      "sha256": "22696fd8586dadc5b54d21c7ef2a5dcd707f4feac8df128f1106df3bd6332ace",
+      "bytes": 13108
+    },
+    "docs/R10_개발결과_검증보고서.md": {
+      "sha256": "bc0b239a96fa4e40a2b302b15c573fd1b0abc56517b40427cbdffb6cca3bff62",
+      "bytes": 4214
+    },
+    "docs/R10_실PC_검증_체크리스트.md": {
+      "sha256": "5c40cd044795ed7749fe75e24b9ec9f9400f0cd58565e0d2a5bc52d9ad224389",
+      "bytes": 1502
+    },
+    "docs/R11_개발검증보고서.md": {
+      "sha256": "9ae7881760bd8bd58b14b3b3e5271391afd8883a9b97bdd93c425862e20f61ee",
+      "bytes": 3747
+    },
+    "docs/R11_실PC검증_체크리스트.md": {
+      "sha256": "1b8206eadd3cbaeddcb20e67b0b536c677a4a25086d1ee0f6b1d725d5d730d69",
+      "bytes": 1440
+    },
+    "docs/R12_개발검증보고서.md": {
+      "sha256": "b9515c8717266f97cd5b17a07949b0fcd00bf5a986eaa586ff759347d95dc98b",
+      "bytes": 2241
+    },
+    "docs/R12_코스스킬_설계및제약.md": {
+      "sha256": "55fe276d202b75e410305d862e544cdec4e19579a482d8a1a5f7e19c1e57386f",
+      "bytes": 4058
+    },
+    "docs/R13_데이터_조사_개발보고서.md": {
+      "sha256": "cb50af2f23bfb681452e4aa892aa716c2f6696460c9ba388c735c3a60ae5efe7",
+      "bytes": 4614
+    },
+    "docs/R14_계승_미래시_개발검증.md": {
+      "sha256": "e21a712118b782936658c427256d87cf0003225f8adabd1b63599ba595f2e00b",
+      "bytes": 3343
+    },
+    "docs/R15_학습데이터_확장설계.md": {
+      "sha256": "62c48094ff690d7e895747bfceccc3d2f6b7fd092fda47d01fdf54c14323f527",
+      "bytes": 6810
+    },
+    "docs/R16_로컬ML_개발검증_및_시나리오확장.md": {
+      "sha256": "b0b72003ba5b989ebbcad4b3b24f2ce1d965a1628771e0281f2039a8565c95a2",
+      "bytes": 6311
+    },
+    "docs/R17_모델버전관리_결과자료_시나리오확장.md": {
+      "sha256": "c2a76382c57ff26714408f21a80590ec5b618031c601c5480650e1abf5bb8a41",
+      "bytes": 5928
+    },
+    "docs/R1_일본실전데이터_조사보고서.md": {
+      "sha256": "fa4f861316bdd95635de4bcf56369a524921b43fc5fd18b6cc2a55db10b14ae6",
+      "bytes": 3369
+    },
+    "docs/R2_개발결과_검증보고서.md": {
+      "sha256": "f9367086b2b591de46e498e48f67dcb424cc3d2df3ccd31f987ef2901c3ed16b",
+      "bytes": 3866
+    },
+    "docs/R3_개발결과_검증보고서.md": {
+      "sha256": "227e14bd5faefe0b0e983f5f470139a7f06c3a07e2a907e9194ad375d50e28f0",
+      "bytes": 3440
+    },
+    "docs/R4_기능_검증보고서.md": {
+      "sha256": "5938be6f0bc659d51fdd386255e2b76f62d007ad552a940811fd5f252e6839a4",
+      "bytes": 3212
+    },
+    "docs/R4_나중에_PC에서_확인할_것.md": {
+      "sha256": "ca7ae44535e7be4e8f6ae4fe6f21058344f3b9cb50db474473d965e887f8b181",
+      "bytes": 1909
+    },
+    "docs/R5_기능_검증보고서.md": {
+      "sha256": "109a88e026c4a27c8459ff6b3b526ddb9b6bebd550b242405d9749025471cec9",
+      "bytes": 2573
+    },
+    "docs/R5_실PC_검증_체크리스트.md": {
+      "sha256": "21b3f9fd5856b78d4852a5d66caeceb0ad467887ec293e99ce73b45d00efd220",
+      "bytes": 1302
+    },
+    "docs/R6_기능_검증보고서.md": {
+      "sha256": "f0e736fb6966501fd47868cca8c9d1e63655124c5fd0e3c97f69dca1cecdeb15",
+      "bytes": 3887
+    },
+    "docs/R6_실PC_검증_체크리스트.md": {
+      "sha256": "12bcdaa14db4c60e89e50395a7f6da20690fe54ce1517a2a9bad59fddada4761",
+      "bytes": 1798
+    },
+    "docs/R7_개발결과_검증보고서.md": {
+      "sha256": "7b3524db6ae9a6051610d5e73bd7bbd9938683b2ff80955732b2152d7c022398",
+      "bytes": 2044
+    },
+    "docs/R7_검증자료.md": {
+      "sha256": "f6d00dc6087eaf566f54af7c881b2f5fe7338ba3add403c9055aec3ba7bbfe15",
+      "bytes": 3549
+    },
+    "docs/R7_실PC_검증_체크리스트.md": {
+      "sha256": "462e0fab17598d69e81900891fbe92366fad8eb13fa6125d973bd761d4cc8f9c",
+      "bytes": 1282
+    },
+    "docs/R8_개발결과_검증보고서.md": {
+      "sha256": "4790d59eebd9924a3817abc81749760b7e40da5efe26ebb703f67455ee46e0dc",
+      "bytes": 3531
+    },
+    "docs/R8_실PC_검증_체크리스트.md": {
+      "sha256": "f9630b05974ec522daba56c3bdf18530bd680183801f05201d32b30e7ba67f8b",
+      "bytes": 1166
+    },
+    "docs/R9_개발결과_검증보고서.md": {
+      "sha256": "fca129c9ac2e76726d8062b3a1d583beb4b5bb01e59a90d95c5bb34595ee29e8",
+      "bytes": 3607
+    },
+    "docs/V0.2_변경내역.md": {
+      "sha256": "a3e138d8934b1550e358e92386b56d4e359e334b6661040b7a693384ee5cf06a",
+      "bytes": 1341
+    },
+    "docs/시나리오_추가_방법.md": {
+      "sha256": "69d32ab7402349760fa820a824a3addb8854b76431784b1ccb79ff4be9b86fe4",
+      "bytes": 2654
+    },
+    "docs/실제_PC_검증_체크리스트.md": {
+      "sha256": "a486120a10f200a36296dd474939f03f6c7c0f0f8b79d0e6d7e34507a6fb23e8",
+      "bytes": 3444
+    },
+    "examples/R10_%EC%98%81%EC%83%81%EA%B2%80%EC%88%98_%EC%8B%A4%ED%96%89%ED%99%94%EB%A9%B4.png": {
+      "sha256": "0e3abb53e470bd0ce2950b2025c70d4c2b0efba821b6e34a57ef28983e701bdd",
+      "bytes": 158853
+    },
+    "examples/R10_영상검수_실행화면.png": {
+      "sha256": "0e3abb53e470bd0ce2950b2025c70d4c2b0efba821b6e34a57ef28983e701bdd",
+      "bytes": 158853
+    },
+    "examples/R11_%EC%8B%A4%ED%96%89%ED%99%94%EB%A9%B4_%EA%B0%80%EC%83%81%EB%AA%A9%ED%91%9C.png": {
+      "sha256": "1f718d2ad45b9b72dfe3214cd16ef4cd24efbe963f97e4390498809dcba2e8cc",
+      "bytes": 125324
+    },
+    "examples/R11_실행화면_가상목표.png": {
+      "sha256": "1f718d2ad45b9b72dfe3214cd16ef4cd24efbe963f97e4390498809dcba2e8cc",
+      "bytes": 125324
+    },
+    "examples/R12_%EC%8A%A4%ED%82%AC%EA%B5%AC%EB%A7%A4_%EC%B6%94%EC%B2%9C_%EB%AF%B8%EB%A6%AC%EB%B3%B4%EA%B8%B0.png": {
+      "sha256": "dd36776c2375c08cd98db1dbba5cf2620470fd893b919e10773f250c089f1ea8",
+      "bytes": 172493
+    },
+    "examples/R12_%EC%BD%94%EC%8A%A4%EB%B3%84_%EC%9C%A1%EC%84%B1%EC%A0%84_%EB%AF%B8%EB%A6%AC%EB%B3%B4%EA%B8%B0.png": {
+      "sha256": "0224b472c086260bc37358f4595422b23155ddf2b7c4e482a968951c38f106e2",
+      "bytes": 175012
+    },
+    "examples/R12_스킬구매_추천_미리보기.png": {
+      "sha256": "dd36776c2375c08cd98db1dbba5cf2620470fd893b919e10773f250c089f1ea8",
+      "bytes": 172493
+    },
+    "examples/R12_코스별_육성전_미리보기.png": {
+      "sha256": "0224b472c086260bc37358f4595422b23155ddf2b7c4e482a968951c38f106e2",
+      "bytes": 175012
+    },
+    "examples/R13_%EC%84%A0%EC%9E%85_%EA%B5%90%ED%86%A0%EC%B6%94%EC%B2%9C.png": {
+      "sha256": "9d9bba42ae62df55b872b2c083041a2c5bcc7c1fa5a602ce55f718d9cf701b96",
+      "bytes": 154418
+    },
+    "examples/R13_대회별_추천실행.png": {
+      "sha256": "15d402c5745146838f5ee204c29329c431607b02b5101da65d6b1dc1e279cc4d",
+      "bytes": 156102
+    },
+    "examples/R13_선입_교토추천.png": {
+      "sha256": "9d9bba42ae62df55b872b2c083041a2c5bcc7c1fa5a602ce55f718d9cf701b96",
+      "bytes": 154418
+    },
+    "examples/R14_%EA%B3%84%EC%8A%B9_%EB%AF%B8%EB%9E%98%EC%8B%9C_%EC%8B%A4%ED%96%89%ED%99%94%EB%A9%B4.png": {
+      "sha256": "1bde77d5eb7dd94660bbe6200d5943c3d26efa8ae1cf0e71b1f529c1ecb854a5",
+      "bytes": 163753
+    },
+    "examples/R14_계승_미래시_실행화면.png": {
+      "sha256": "1bde77d5eb7dd94660bbe6200d5943c3d26efa8ae1cf0e71b1f529c1ecb854a5",
+      "bytes": 163753
+    },
+    "examples/R15_학습검수_실행화면.png": {
+      "sha256": "3765d32fafcc04c9ca3382c22afd3582ef55d18e405be744dec7591ef5897f54",
+      "bytes": 115229
+    },
+    "examples/R16_실행화면_학습보류.png": {
+      "sha256": "9ea0aafe06163443b534facd3ae2c823903c0d2db3189d1a8f47a2efa0554dde",
+      "bytes": 87634
+    },
+    "examples/R17_모델관리_결과검수_실행화면.png": {
+      "sha256": "8e139a7f697eeddec9760bd6c9646adc379cff933fe5b7673aa9de41ff48784f",
+      "bytes": 112047
+    },
+    "examples/R6_%EC%8B%A4%ED%96%89%ED%99%94%EB%A9%B4_%EA%B0%80%EC%83%81%EB%8D%B0%EC%9D%B4%ED%84%B0.png": {
+      "sha256": "b35d7ee6e66180eb263a0e68a8e949794505b2ef1fd3e0b7f31ca17cbe34c42a",
+      "bytes": 149603
+    },
+    "examples/R6_실행화면_가상데이터.png": {
+      "sha256": "b35d7ee6e66180eb263a0e68a8e949794505b2ef1fd3e0b7f31ca17cbe34c42a",
+      "bytes": 149603
+    },
+    "examples/R7_%EC%8B%9C%EC%84%A4%EA%B3%84%ED%9A%8D_%EA%B0%80%EC%83%81%EB%8D%B0%EC%9D%B4%ED%84%B0.png": {
+      "sha256": "d1508d48111bcf795c26086a5a175493b321cab78c01a6f59bbf652aaa0b4b39",
+      "bytes": 129404
+    },
+    "examples/R7_가상건설계획.json": {
+      "sha256": "973c46eb3996f04cabd688087d9e0faca866db75112ee3cd76db0b55beae77d5",
+      "bytes": 27467
+    },
+    "examples/R7_시설계획_가상데이터.png": {
+      "sha256": "d1508d48111bcf795c26086a5a175493b321cab78c01a6f59bbf652aaa0b4b39",
+      "bytes": 129404
+    },
+    "examples/R8_%EC%8B%A4%ED%96%89%ED%99%94%EB%A9%B4_%EA%B0%80%EC%83%81%EB%8D%B0%EC%9D%B4%ED%84%B0.png": {
+      "sha256": "9156701b21986e33faadf6211eb1c6eef30115436dc5b8ff055abfcf1b44198f",
+      "bytes": 112073
+    },
+    "examples/R8_실행화면_가상데이터.png": {
+      "sha256": "9156701b21986e33faadf6211eb1c6eef30115436dc5b8ff055abfcf1b44198f",
+      "bytes": 112073
+    },
+    "examples/R9_%EC%8B%A4%EC%B8%A1%EC%9E%90%EB%A3%8C_%EA%B0%90%EC%82%AC%ED%99%94%EB%A9%B4.png": {
+      "sha256": "39a7225b15288c0069cef49dda5f9c6873dc7aaf4d0055997ebd7a53a6d9edda",
+      "bytes": 81942
+    },
+    "examples/R9_실측자료_감사화면.png": {
+      "sha256": "39a7225b15288c0069cef49dda5f9c6873dc7aaf4d0055997ebd7a53a6d9edda",
+      "bytes": 81942
+    },
+    "examples/synthetic_r4.png": {
+      "sha256": "21637f975b74ae536405a10cb1930be1d4787c3cd732318f7b3dfb7f0f1171a1",
+      "bytes": 41772
+    },
+    "examples/synthetic_roi.json": {
+      "sha256": "ada82d37370ef6239394aa3de666b515bdf7219a0e6c40fc4170a9419cdff4e7",
+      "bytes": 1753
+    },
+    "goal_tracker_r11.py": {
+      "sha256": "defdf9b24bedd09d2ef62b82c24e1ddb35757d39bc823cbb5ac798c75fe87c63",
+      "bytes": 20750
+    },
+    "goal_ui_r11.py": {
+      "sha256": "8f268f6e8ba1c942583339f08b47746a73b6e5a8c742fd1891133ca4f9a3448e",
+      "bytes": 14711
+    },
+    "island_impact_r8.py": {
+      "sha256": "346c304175c78da86261a9933a123fe8e60c9166be59c322f467d0ad91912a6b",
+      "bytes": 12984
+    },
+    "island_planner_r7.py": {
+      "sha256": "67f9ec5cfaecd9bc506bf0f1fb42a85dcdfd69e7b3aa6a81255b5ab81e8a43c5",
+      "bytes": 17881
+    },
+    "island_ui_r7.py": {
+      "sha256": "cecf42bdec78b536214fc7aacc2003febdd6a9cd11476651802ed54fb5303716",
+      "bytes": 12915
+    },
+    "island_ui_r8.py": {
+      "sha256": "53b9f4439fc5cadc29da602315bf70469b230a8b8a9ab9c8fbc84f20b9c00709",
+      "bytes": 10489
+    },
+    "learning_data_r15.py": {
+      "sha256": "71874b513cdc59905b1b2f181708ecd0a77b276d55539cb7441f513927624d6b",
+      "bytes": 16827
+    },
+    "learning_ui_r15.py": {
+      "sha256": "962f3136a0553851d91770285bbe5e64e39699a6df1aca7bebd3d05f054b3d1b",
+      "bytes": 10097
+    },
+    "learning_ui_r16.py": {
+      "sha256": "4096ff1d830eaf005ccb1052f8a027798ed0601f10c4a38e20a0317aad75a76b",
+      "bytes": 7282
+    },
+    "learning_ui_r17.py": {
+      "sha256": "bcd376700f9d71f1eac492d07650361339b8b0156209345f4719407805388bc1",
+      "bytes": 10805
+    },
+    "lineage_r14.py": {
+      "sha256": "fed6f8f2308a407c49f0b39438a7ee0bd26cba4958edb26b3b682540652340fa",
+      "bytes": 9060
+    },
+    "lineage_ui_r14.py": {
+      "sha256": "0d955651c52049347a7b55ecf752ff04838105b500d9734639ca7124ed0087ed",
+      "bytes": 6823
+    },
+    "ml_cli_r16.py": {
+      "sha256": "ca13ac8cafcfb11c6c23fa6f5feae277b142b217009e3887d1db230b4fd66081",
+      "bytes": 1806
+    },
+    "ml_engine_r16.py": {
+      "sha256": "3fb2574273a25307d2a013e48faef06db9d4e1d2f92420c4478d357218028763",
+      "bytes": 18171
+    },
+    "model_registry_r17.py": {
+      "sha256": "5efb3f493c63f7cb8d6f38931145d08bf7a93bdf66fd0f547340fe9b7396deba",
+      "bytes": 10983
+    },
+    "plan_r13.py": {
+      "sha256": "70a9291e3752dbcc8aa3236bdeead780fe1b430ae211000e316b3f4a5eafd2a2",
+      "bytes": 7551
+    },
+    "plan_ui_r13.py": {
+      "sha256": "24ed056468a1ad901bd77a13dfb1ffbe497dec186ab0b7dec61d6563a1c627d2",
+      "bytes": 8034
+    },
+    "r4_screen_preview.png": {
+      "sha256": "e0cb34d06c3ad0f66cde7c6677521d8295222fb2158ffa699343ee6854ff4dd8",
+      "bytes": 172020
+    },
+    "requirements.txt": {
+      "sha256": "a6aa4945334d7e5c05151676e8dfca726780a9e4d154310a34df06f4137f1c92",
+      "bytes": 17
+    },
+    "research/annotation_schema.json": {
+      "sha256": "e8815119ba38c06301bdf568ad437cc9779e5864a9881a1be3f1b73204f3ac3c",
+      "bytes": 1678
+    },
+    "research/jp_post_patch_2025/README_연구설명.md": {
+      "sha256": "f7a790bd4ab6c04cb69f4abda2bbc64757d106c1609fc7354051c246fea3c7ab",
+      "bytes": 2916
+    },
+    "research/jp_post_patch_2025/evidence.csv": {
+      "sha256": "0278c5532146496e8a94fb1f6ab3070bf67c5914ab0b04381cb26b15674c783c",
+      "bytes": 5879
+    },
+    "research/jp_post_patch_2025/facility_builds.csv": {
+      "sha256": "e066f48b773b12e63fd640b17f61ca90be8455926cec9953cee4fec08e620a30",
+      "bytes": 1212
+    },
+    "research/jp_post_patch_2025/hypotheses.csv": {
+      "sha256": "c82f87dc0b49923ec3603ad47e4f53df548359f3ad809fe3561e26dea15c07bc",
+      "bytes": 2625
+    },
+    "research/jp_post_patch_2025/manifest.json": {
+      "sha256": "61e4473e3ba84fa72b414f1d23dffd80298dbb8e35eab01154b8a949e05c8418",
+      "bytes": 1293
+    },
+    "research/jp_post_patch_2025/player_cases.csv": {
+      "sha256": "c3a6746d8f79c027549d46f21a43d07230e32de3cc28bda98b9e41d091597b0b",
+      "bytes": 3022
+    },
+    "research/jp_post_patch_2025/sources.csv": {
+      "sha256": "231de5330bca38e9086177ddca1b2dc9f60b1968de012599b4a4f833036a2429",
+      "bytes": 5053
+    },
+    "research/jp_post_patch_2025/turn_annotations.csv": {
+      "sha256": "751a6359d807d07b66a7f5ebc3063ffff01ff8554113ec03c7e0195d0f546a4a",
+      "bytes": 350
+    },
+    "research/jp_post_patch_2025/validate_research.py": {
+      "sha256": "c974ddd103b953dd6c135f692c851ab67d51c80b89774ca2486a5c50e3101edb",
+      "bytes": 1929
+    },
+    "research/jp_post_patch_2025/video_chapters.csv": {
+      "sha256": "a153185fbc9bb5cf5437c0082da8bb1f395519e554de8105abbb3978fc2cce4c",
+      "bytes": 843
+    },
+    "research/jp_post_patch_2025/연구데이터_일본무인도_R1.xlsx": {
+      "sha256": "0dae950bc2a54bf9b2d091ee8a2819d0fdaeda3ba744d4f58d8ab17a05a76d13",
+      "bytes": 21909
+    },
+    "research/r10_workflow/R10_수동표시값_검수양식.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3
+    },
+    "research/r10_workflow/README_수집절차.md": {
+      "sha256": "bdbc99337d062ac534f041578f161816a353331ce3c7fd77c00d7abb74e9a458",
+      "bytes": 2619
+    },
+    "research/r13/japan_island_2025_events.json": {
+      "sha256": "a9de31f49d32a42b8a2d3e953a565df5753c33ad3a88c4188dc60239dbc4ea0a",
+      "bytes": 33641
+    },
+    "research/r13/sources.json": {
+      "sha256": "4f3b447be8efa5c0b6d404b18b119e299b5fa687081450a34b1db7e692204309",
+      "bytes": 1358
+    },
+    "research/r14/lineage_and_calendar.json": {
+      "sha256": "701842004d016064d8a757f1ee725018382c9f92563ec0b7459306730d070b93",
+      "bytes": 4101
+    },
+    "research/r15/README.md": {
+      "sha256": "5ca18179f6f05e2f107fb6d56b6d15f9f42ac407aa4f4a600f27f937c540a2a1",
+      "bytes": 744
+    },
+    "research/r9_calibration/README_검수양식.md": {
+      "sha256": "824eddbdc140587ee14b3ecd387963d21483973a5587dafc8ec99cce1dd310f9",
+      "bytes": 2408
+    },
+    "research/r9_calibration/verified_observations_blank.csv": {
+      "sha256": "7048b09ed72636888622018b0b4d8b58e014c8bae4b3deba9af07983acb57fac",
+      "bytes": 315
+    },
+    "research/review_tools/annotation_core.py": {
+      "sha256": "bc544b7ac2046d12d2795629d54b18643ba8bae683f0eed583b67fea07c44d45",
+      "bytes": 12781
+    },
+    "research/review_tools/audit_cli.py": {
+      "sha256": "02d4286dfd4675698995f3f6a218a1a3cb4c94b72063d19136e59067262f5a13",
+      "bytes": 546
+    },
+    "research/review_tools/frame_sampler.py": {
+      "sha256": "4f4b0664fe539aa9943f07807dd73cb5dc645cd1fca5c27f093e97b101695fac",
+      "bytes": 3966
+    },
+    "research/review_tools/reviewer_ui.py": {
+      "sha256": "6c1d4e28b3e0799eab3b2e824a02011ac48946bd39e7e384a1e45674087d28ba",
+      "bytes": 9947
+    },
+    "research/sources.json": {
+      "sha256": "9e622300d4f0f3478598acc02777694abf2cd2194b657bcec042173954d10344",
+      "bytes": 1946
+    },
+    "research/video_reviews/R10_검수_작업표.csv": {
+      "sha256": "5d6f36f052a94a71956caf920d4a7475eeb04d3ca1aec7485bfa190681da2657",
+      "bytes": 5471
+    },
+    "research/video_reviews/R2_manifest.json": {
+      "sha256": "d92a9268dfbacb5a065defa723291dc501e9cc20cd0842c05b140c7760e4f18d",
+      "bytes": 683
+    },
+    "research/video_reviews/R3_audit_현황.json": {
+      "sha256": "d91a33b2180481f2410561aca90d6cb4bbc16596830794533193e1dc3005fc9d",
+      "bytes": 293
+    },
+    "research/video_reviews/README_R2_검수방법.md": {
+      "sha256": "ed028d4eaacaa20d2cf51966bb6f09a81618b794649e860ad553a00cb948f96c",
+      "bytes": 4955
+    },
+    "research/video_reviews/review_checkpoints.csv": {
+      "sha256": "4ed927a768de810f142d092904407cea22e35eaa63a3dd469dc842ed8294eed4",
+      "bytes": 2353
+    },
+    "research/video_reviews/review_queue.csv": {
+      "sha256": "01e5b31252e25b1fb90e2484350b498469e50fff37b38aedc9ff9641dcb7026f",
+      "bytes": 754
+    },
+    "research/video_reviews/verified_turns.csv": {
+      "sha256": "e8fb04f7c5e3bb25ac7afcd1e8406a5d8c88a9c598c1bc209b20726dac7d4124",
+      "bytes": 458
+    },
+    "result_labels_r17.py": {
+      "sha256": "fdb189753b2ca1ea1b63d273ee53d0653921270bc2d8ac09d30636e06f6cad36",
+      "bytes": 8289
+    },
+    "review_pipeline_r10.py": {
+      "sha256": "e5c25dcda2f3ec3b35ad6e951110e7d7438bc9aee4f87885dcf72d408510cf43",
+      "bytes": 16698
+    },
+    "review_ui_r10.py": {
+      "sha256": "f49636df9d26fc40d04e376dc6ab37f495fb72d0c5b2830c25a43a697c9b80b5",
+      "bytes": 8523
+    },
+    "scenario_features_r15.py": {
+      "sha256": "098268cad4a8f089858de5c000009a4af8f4676190aef3ce03f4d64060fa610c",
+      "bytes": 1044
+    },
+    "scenario_ml_features_r16.py": {
+      "sha256": "fe82ca8e5af5e755e270b5bac8f1eefd2a8cc70395e3d9f7311d29f47296bc4b",
+      "bytes": 1382
+    },
+    "scenario_policies/__init__.py": {
+      "sha256": "7a65f8693451b518e1921e99410e6831836c62c81b08db95ca21c19e64f4f42f",
+      "bytes": 248
+    },
+    "scenario_policies/island.py": {
+      "sha256": "7f47dc3ff33f27aafeda8eb957f3dfc5bef21985e0c169dab8f7742ad4e7e025",
+      "bytes": 3069
+    },
+    "scenario_policies/island_post_patch_v1.json": {
+      "sha256": "bf18eb1a4671a5b5618e3216502ff84119d848bc5fa51e9806bb798c180c1d3a",
+      "bytes": 679
+    },
+    "screen_r4.py": {
+      "sha256": "d228018ec5e9fd811ef2fd85dc92f5be3e123578b03b7ddd8f1e49abd9f93f3a",
+      "bytes": 12895
+    },
+    "screen_ui_r4.py": {
+      "sha256": "93978190f210524f2df1f7a7e70f0815677296f863d0d57c122fcd415b5632d8",
+      "bytes": 16352
+    },
+    "storage.py": {
+      "sha256": "87f1ad9f9a3407bf7dd7247391aad89c43fc4d733841d6b9a9b6582f8a00963e",
+      "bytes": 7390
+    },
+    "tests/test_analytics_r3.py": {
+      "sha256": "b662fa746a673d2145a39b40af9699ef93161ab11c831112c9a19adeaa87c3e6",
+      "bytes": 7985
+    },
+    "tests/test_calibration_r9.py": {
+      "sha256": "9d37d12ff9cf53643df04f17b12c732b714576f16ffd83f6a2376eee55c96e84",
+      "bytes": 9311
+    },
+    "tests/test_core.py": {
+      "sha256": "6ff4e1c57d3ea7bc90aab0e5d690ac72e71c57041a42249ce544da0fcbf0d08f",
+      "bytes": 3258
+    },
+    "tests/test_course_advisor_r12.py": {
+      "sha256": "9890ab99fc290f77a3bd60cf7f654955d103a5622cce81164ea50ebf4345115a",
+      "bytes": 4898
+    },
+    "tests/test_dataset.py": {
+      "sha256": "d6efa4fb078390196468019729a44c8105638a00771595317f9019d7f4707826",
+      "bytes": 1547
+    },
+    "tests/test_decision_r6.py": {
+      "sha256": "3b55acf8b08df5f7ead43269e2d7eeb7592217bb17ed21301a1014b03c461055",
+      "bytes": 9101
+    },
+    "tests/test_goal_tracker_r11.py": {
+      "sha256": "be724549b16fb240cf266b532876c0bd4e360d493b8a4898b72b9602329687b8",
+      "bytes": 12429
+    },
+    "tests/test_island_impact_r8.py": {
+      "sha256": "530d59a4eb6296b1121b5aae2bd5de8d6ef8de523bfd3a3e22a3b7a441bcfbef",
+      "bytes": 8624
+    },
+    "tests/test_island_planner_r7.py": {
+      "sha256": "5b61cafb29d194bc73d7580acc5f7e3301f4042566ec3e4664aee4037a468342",
+      "bytes": 8278
+    },
+    "tests/test_learning_data_r15.py": {
+      "sha256": "48eff6d283e85197bcb8234d41f20fa1ceb7bb6387b78c0776c76ccb92638070",
+      "bytes": 8161
+    },
+    "tests/test_lineage_r14.py": {
+      "sha256": "34335942a3438987aa8fb476c2b5085490162007eab17c68a3c4f0cb68fd8691",
+      "bytes": 5261
+    },
+    "tests/test_ml_engine_r16.py": {
+      "sha256": "f669cec6da45f5977cb0278f348f1125989cd528cb1c8097b3709bab274de600",
+      "bytes": 10006
+    },
+    "tests/test_plan_r13.py": {
+      "sha256": "cc4c46ed83394c31ee0c0012d348f196189f31859e99e25e44b0dd201f0df2dd",
+      "bytes": 5738
+    },
+    "tests/test_r17_model_registry.py": {
+      "sha256": "a9bd50a85fa917f1606e0449e66fb7910f47210daeb2daa76d6cd9cc41939d91",
+      "bytes": 6600
+    },
+    "tests/test_r17_outcome_labels.py": {
+      "sha256": "ca76da9acea9ebca1e4b932e9ab1199add99de6e71dba813e93d482a4c8af4eb",
+      "bytes": 5181
+    },
+    "tests/test_r2_pack.py": {
+      "sha256": "954f39981096345c95d7db3258bf055db6083e3b7e9e7c6b50bdd4db877071ff",
+      "bytes": 819
+    },
+    "tests/test_research_r1.py": {
+      "sha256": "1cba5337b61a2ef09c59fa12032f9327cc420cfc33650f65ec976958fec3939c",
+      "bytes": 573
+    },
+    "tests/test_review_pipeline_r10.py": {
+      "sha256": "64b4187c35a29cde17fda9133a59497e9c667542a0e6bbd9d5d8b1fc0982afa7",
+      "bytes": 12555
+    },
+    "tests/test_review_r2.py": {
+      "sha256": "eb2f5f8c7fec7fa60509f6bf4690ab2e11edbdadb676aac608f827e56a9913fc",
+      "bytes": 5238
+    },
+    "tests/test_screen_r4.py": {
+      "sha256": "0ae46a519c30d94870f996eae52e4108eb83a7eda248fbd6c5da0774b6e011b7",
+      "bytes": 5279
+    },
+    "tests/test_storage_r6.py": {
+      "sha256": "e503a24904718c6e6b49ef60655fb70198a6d3626bfa5a6b6289ee44488d3321",
+      "bytes": 2660
+    },
+    "tests/test_training_r5.py": {
+      "sha256": "de989380ab025ec3ff4fec70c6c6edc25f021e9a88cb8f636d56c6cbbe33ed57",
+      "bytes": 8418
+    },
+    "tests/test_v02.py": {
+      "sha256": "1f9933b2dd713b8d4b448ae9b214565ccdc0c56d003bca6a88fca2dc733a0a32",
+      "bytes": 5274
+    },
+    "training_r5.py": {
+      "sha256": "7320acab33492993f75b3b4b811d614f0d35fa01ea624c71e41b760e90092f08",
+      "bytes": 9653
+    },
+    "training_ui_r5.py": {
+      "sha256": "3bb64519ed44f9e8179566d551b55a47a8654a4d24e0dce95ec6d2739a493d47",
+      "bytes": 16018
+    },
+    "uma_core.py": {
+      "sha256": "018179812add5882983f009dad8957ba935d16d00f921e75155234340b3c1aea",
+      "bytes": 9664
+    },
+    "배포방법_설치형.txt": {
+      "sha256": "15ccd2899e53b39892ab52faead5a768b00622d6a2ebbbb62357129396aa335b",
+      "bytes": 3009
+    },
+    "실행.bat": {
+      "sha256": "94515a1ef4bc9e0a1f6b1279ccabdc1787aa38b5b5c50cae6f71bcec54997e03",
+      "bytes": 603
+    },
+    "이번버전_R1_안내.txt": {
+      "sha256": "b2e4640efa0b8b531c31431d9217ab5e7d83122fa012d70b4066f3a8a7ce1893",
+      "bytes": 1326
+    },
+    "이번버전_R2_안내.txt": {
+      "sha256": "65730cdedea5008fe27a47afaf840fd247e2ba7b67ed81276aee63b2b1b52b59",
+      "bytes": 1590
+    },
+    "이번버전_R4_안내.txt": {
+      "sha256": "4683cf966cf02f186340a75080a6aea20b7c589bc8cb3cbc7eb6cf5e7bee652a",
+      "bytes": 788
+    }
+  }
+}

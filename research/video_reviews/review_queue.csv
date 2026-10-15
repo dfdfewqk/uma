@@ -1,0 +1,5 @@
+priority,source_id,scope,review_target,allowed_label,why,source_url
+1,S011,챔미,육성 중반~후반의 훈련과 시설 선택,needs_frame_review,챔미 실전 목표에 직접 연결,https://www.youtube.com/watch?v=XqNuSH6RQh0
+2,S010,일반 평가점,설명란 챕터별 시설/우정 선택,needs_frame_review,실전 챔미 최적행동으로 자동 전환 금지,https://www.youtube.com/watch?v=fPFkjDu5CL4
+3,S012,리오히 관련 방송,육성 목표·실제 조작 구간,needs_frame_review,인자 육성과 실전 본육성을 분리,https://www.youtube.com/watch?v=Lk-XvD1GdpE
+4,S008,일반 공략,수정 후 건설 전략 영상 내용,metadata_only,이미 영상 설명 기반 전략 자료 존재,https://www.youtube.com/watch?v=U4bo3wrcF6c

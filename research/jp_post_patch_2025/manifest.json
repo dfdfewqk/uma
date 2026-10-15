@@ -1,0 +1,38 @@
+{
+  "release": "JP research R1",
+  "research_date": "2026-10-15",
+  "filter": {
+    "scenario": "island",
+    "server_basis": "JP",
+    "reference_patch": "2025-06-30",
+    "korean_server_patch_verified": false
+  },
+  "counts": {
+    "sources": 25,
+    "evidence_items": 28,
+    "player_cases": 9,
+    "video_chapters": 12,
+    "verified_frame_or_turn_annotations": 0,
+    "hypotheses": 13
+  },
+  "provenance_notice": "제목/소개/본문에서 확인한 사실만 수록. 미확인 영상 프레임·턴별 상태·최종 스탯은 생성하거나 추정하지 않음.",
+  "training_readiness": "NOT_TRAINABLE_TURN_LEVEL; do not treat claims, guides, heuristics or simulation as supervised labels",
+  "known_conflicts": [
+    {
+      "id": "TIMING",
+      "description": "2025-06-30 공지 시각 23:20 vs GameWith 적용시각 12:00경. 공지와 적용시각이 달랐을 가능성. 실제 적용 시각 미확정."
+    },
+    {
+      "id": "COURSE",
+      "description": "S017 2025년 9월 CM 회고의 제목은 Kyoto 2000m이나 본문은 Hanshin 2000m으로 서로 다름. 경기장 특정 금지."
+    }
+  ],
+  "do_not_train_on": [
+    "video_metadata",
+    "guide_rules",
+    "anonymous_comments",
+    "hypotheses",
+    "unverified_chapter_positions",
+    "gameplay_simulation"
+  ]
+}

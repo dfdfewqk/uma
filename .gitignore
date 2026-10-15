@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+build/
+dist/
+*.spec
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+uma_r15_*.jsonl
+uma_r15_audit.json
+.env
+
+# R17 research evidence exports (remain local)
+uma_r17_*.jsonl
+
+# R23 local game frames / private diagnostics (never commit player captures)
+UmaTrainerKR_R23_실게임점검*/
+R23_검수목록.json
+UmaTrainerKR_R23_진단*.json

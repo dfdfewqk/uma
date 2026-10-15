@@ -1,0 +1,47 @@
+{
+  "schema": "uma_r27_sources_v1",
+  "sources": [
+    {
+      "id": "cygames_scenario",
+      "title": "Cygames: 무인도 시나리오 설명",
+      "url": "https://umamusume.jp/contents/game/scenario/designyourisland/",
+      "source_type": "official_scenario_overview"
+    },
+    {
+      "id": "cygames_patch",
+      "title": "Cygames: 무인도 밸런스 조정 공지",
+      "url": "https://umamusume.jp/news/detail?id=2640",
+      "source_type": "official_notice_dynamic_text_unavailable"
+    },
+    {
+      "id": "dengekionline_patch",
+      "title": "전격 온라인: 2025-06-30 수정 공지 보도",
+      "url": "https://dengekionline.com/article/202507/46134",
+      "source_type": "contemporary_news"
+    },
+    {
+      "id": "gamewith_post_patch",
+      "title": "GameWith: 수정 후 무인도 공략",
+      "url": "https://gamewith.jp/uma-musume/article/show/499493",
+      "source_type": "guide_updated"
+    },
+    {
+      "id": "silvervine_post_patch",
+      "title": "2025-07-02 긴급 조정 후기",
+      "url": "https://silvervine0822.hatenablog.com/entry/2025/07/02/003000",
+      "source_type": "contemporary_guide"
+    },
+    {
+      "id": "gamewith_patch_index",
+      "title": "GameWith: 밸런스 변경 목록(시간 표기 상충)",
+      "url": "https://gamewith.jp/uma-musume/article/show/270350",
+      "source_type": "guide_conflicting_time"
+    },
+    {
+      "id": "nagi_video",
+      "title": "나기: 도파민이 넘치는 무인도 시나리오",
+      "url": "https://youtu.be/L7zlNFfm8aY",
+      "source_type": "user_supplied_video_not_yet_transcribed"
+    }
+  ]
+}
