@@ -51,7 +51,7 @@ class TestR24CaptureEvidence(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             path,_,_=self.bundle(Path(td))
             doc=load_manifest(path)
-            path.write_text(path.read_text(encoding='utf8')+' ')
+            path.write_text(path.read_text(encoding='utf8')+' ',encoding='utf8')
             with patch('offline_replay_r23.load_manifest',return_value=doc):
                 with self.assertRaisesRegex(ReplayError,'목록'):
                     replay(path,use_ocr=False)

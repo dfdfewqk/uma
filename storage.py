@@ -107,8 +107,12 @@ def save_run_outcome(conn: sqlite3.Connection, run_id: int, outcome: dict) -> No
 
 def backup_database(conn: sqlite3.Connection, dest: Path) -> None:
     """Use SQLite's online backup API for a consistent snapshot."""
-    with sqlite3.connect(str(dest)) as dst:
+    # sqlite3's context manager does not close connections; Windows locks the backup.
+    dst = sqlite3.connect(str(dest))
+    try:
         conn.backup(dst)
+    finally:
+        dst.close()
 
 
 def list_turns(conn: sqlite3.Connection, run_id: int) -> list:

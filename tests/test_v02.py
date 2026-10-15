@@ -87,6 +87,20 @@ class V02Tests(unittest.TestCase):
             self.assertEqual(len(list_runs(other)), 2)
             other.close(); conn.close()
 
+    def test_sqlite_backup_releases_windows_file_handle(self):
+        # A leaked SQLite backup connection prevents rename and deletion on Windows.
+        with TemporaryDirectory() as tmp:
+            conn = connect(Path(tmp) / 'source.sqlite3')
+            try:
+                backup = Path(tmp) / 'backup.sqlite3'
+                backup_database(conn, backup)
+                moved = Path(tmp) / 'renamed.sqlite3'
+                backup.rename(moved)
+                self.assertTrue(moved.is_file())
+                moved.unlink()
+            finally:
+                conn.close()
+
     def test_abandon_reason_required(self):
         with TemporaryDirectory() as tmp:
             conn = connect(Path(tmp)/'x.sqlite3')

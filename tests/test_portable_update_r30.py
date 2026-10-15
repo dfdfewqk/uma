@@ -91,7 +91,7 @@ class PortableUpdaterTests(unittest.TestCase):
             archive=self._create_zip(root)
             sha=hashlib.sha256(archive.read_bytes()).hexdigest()
             updated=deploy_verified_archive(archive,self.release,current,expected_sha256=sha)
-            self.assertEqual(updated.parent,root/'UmaTrainerKR_Portable_v0.32.0')
+            self.assertEqual(updated.parent.resolve(), (root/'UmaTrainerKR_Portable_v0.32.0').resolve())
             self.assertTrue(updated.exists())
             self.assertEqual(current.read_bytes(),b'ORIGINAL STAYS')
             self.assertEqual(old_data.read_text(),'unchanged')

@@ -51,9 +51,9 @@ class CapturePackTests(unittest.TestCase):
         with self.assertRaises(CaptureError): load_pack(self.pack)
 
     def test_rejects_parent_path(self):
-        p = self.pack / 'manifest.json'; obj = json.loads(p.read_text())
+        p = self.pack / 'manifest.json'; obj = json.loads(p.read_text(encoding='utf-8'))
         obj['captures'] = [{'scene_label':'훈련','detected_scene':None,'file':'../frame_01.png','sha256':'a'*64}]
-        p.write_text(json.dumps(obj))
+        p.write_text(json.dumps(obj, ensure_ascii=False), encoding='utf-8')
         with self.assertRaises(CaptureError): load_pack(self.pack)
 
     def test_starts_empty_and_unverified(self):
