@@ -21,9 +21,9 @@ permissions:
 jobs:
   windows-package:
     runs-on: windows-2022
-    timeout-minutes: 50
+    timeout-minutes: 35
     env:
-      PYTHONUTF8: '1'  # Use UTF-8 across Windows runners.
+      PYTHONUTF8: '1'  # Make text encoding deterministic on Windows runners.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -79,29 +79,14 @@ jobs:
             --add-data 'examples\r22_mock_5.png;examples' offline_replay_ui_r23.py
           if ($LASTEXITCODE -ne 0) { throw 'Preflight build failed' }
 
-      - name: Run the real Windows EXEs with no GUI and verify bundled resources
+      # The bounded helper validates uma_r26_windows_first_run_v1 via --first-run-report.
+      # All four EXEs must pass --self-check-report; no live game input.
+      # .ps1 exceptions fail the step; $LASTEXITCODE is not reliable for a PowerShell script.
+      # The child EXE is terminated at the deadline rather than waited on indefinitely.
+      - name: Bounded Windows EXE smoke checks (four apps + first run)
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path 'dist/smoke-reports' -Force | Out-Null
-          $programs = @('UmaTrainerKR','UmaTrainerKR_Companion','UmaTrainerKR_GameTest','UmaTrainerKR_Preflight')
-          foreach ($name in $programs) {
-            $exe = (Resolve-Path "dist/$name.exe").Path
-            $report = Join-Path (Resolve-Path 'dist/smoke-reports').Path "$name.json"
-            $p = Start-Process -FilePath $exe -ArgumentList @('--self-check-report', "`"$report`"") -PassThru -Wait
-            if ($p.ExitCode -ne 0) { throw "$name self-check failed with $($p.ExitCode)" }
-            if (-not (Test-Path $report)) { throw "$name did not produce a report" }
-          }
-
-      - name: Validate first-run diagnostic without connecting to a game
-        shell: pwsh
-        run: |
-          $exe = (Resolve-Path 'dist/UmaTrainerKR_Companion.exe').Path
-          $report = (Join-Path (Resolve-Path 'dist/smoke-reports').Path 'first_run_no_game.json')
-          $proc = Start-Process -FilePath $exe -ArgumentList @('--first-run-report', "`"$report`"") -PassThru -Wait
-          if ($proc.ExitCode -ne 0 -or -not (Test-Path $report)) { throw 'First-run diagnostic did not execute' }
-          $data = Get-Content $report -Raw | ConvertFrom-Json
-          if ($data.schema -ne 'uma_r26_windows_first_run_v1') { throw 'Unexpected diagnostic schema' }
-          if ($data.automatic_clicks_enabled -ne $false -or $data.real_game_ocr_verified -ne $false) { throw 'Unsafe readiness claim' }
+          ./scripts/windows_smoke_r31.ps1 -Mode built -TimeoutSeconds 90
 
       - name: Install Inno Setup compiler (optional)
         if: ${{ inputs.build_installer == true }}
@@ -127,8 +112,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
           $setup = (Resolve-Path "dist/installer/UmaTrainerKR_Setup_$version.exe").Path
           $installPath = Join-Path $env:RUNNER_TEMP 'UmaTrainerKR_SmokeInstall'
-          $proc = Start-Process -FilePath $setup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',"/DIR=`"$installPath`"") -PassThru -Wait
-          if ($proc.ExitCode -ne 0) { throw "Silent install failed with $($proc.ExitCode)" }
+          ./scripts/windows_smoke_r31.ps1 -Mode install -Executable $setup -InstallPath $installPath -TimeoutSeconds 120
           foreach ($name in @('UmaTrainerKR','UmaTrainerKR_Companion','UmaTrainerKR_GameTest','UmaTrainerKR_Preflight')) {
             $installedExe = Join-Path $installPath "$name.exe"
             if (-not (Test-Path $installedExe)) { throw "Missing $name after install" }
@@ -136,21 +120,12 @@ jobs:
             $originalHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $originalExe).Hash
             $installedHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $installedExe).Hash
             if ($originalHash -ne $installedHash) { throw "Installed $name does not match verified build" }
-            $report = Join-Path (Resolve-Path 'dist/smoke-reports').Path "installed_$name.json"
-            $check = Start-Process -FilePath $installedExe -ArgumentList @('--self-check-report', "`"$report`"") -PassThru -Wait
-            if ($check.ExitCode -ne 0 -or -not (Test-Path $report)) { throw "Installed $name could not run its self-check" }
           }
-          $companionExe = Join-Path $installPath 'UmaTrainerKR_Companion.exe'
-          $firstRun = Join-Path (Resolve-Path 'dist/smoke-reports').Path 'installed_first_run.json'
-          $firstRunCheck = Start-Process -FilePath $companionExe -ArgumentList @('--first-run-report', "`"$firstRun`"") -PassThru -Wait
-          if ($firstRunCheck.ExitCode -ne 0 -or -not (Test-Path $firstRun)) { throw 'Installed companion first-run report failed' }
-          $ready = Get-Content $firstRun -Raw | ConvertFrom-Json
-          if ($ready.schema -ne 'uma_r26_windows_first_run_v1') { throw 'Installed first-run diagnostic mismatch' }
+          ./scripts/windows_smoke_r31.ps1 -Mode installed -InstallPath $installPath -TimeoutSeconds 90
           if (-not (Test-Path (Join-Path $installPath 'unins000.exe'))) { throw 'Uninstaller missing' }
           # Installer smoke only: never launch the game or make any in-game clicks.
           $uninstall = Join-Path $installPath 'unins000.exe'
-          $p = Start-Process -FilePath $uninstall -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART') -Wait -PassThru
-          if ($p.ExitCode -ne 0) { throw "Uninstall smoke failed with $($p.ExitCode)" }
+          ./scripts/windows_smoke_r31.ps1 -Mode uninstall -Executable $uninstall -TimeoutSeconds 120
           foreach ($name in @('UmaTrainerKR','UmaTrainerKR_Companion','UmaTrainerKR_GameTest','UmaTrainerKR_Preflight')) {
             if (Test-Path (Join-Path $installPath "$name.exe")) { throw "Uninstall left binary behind: $name" }
           }
