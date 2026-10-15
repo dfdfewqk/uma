@@ -15,7 +15,7 @@ from portable_update_r30 import (
 
 class PortableUpdaterTests(unittest.TestCase):
     def setUp(self):
-        self.version='0.31.0'
+        self.version='0.32.0'
         self.asset=f'UmaTrainerKR-Portable-v{self.version}.zip'
         self.url=f'https://github.com/dfdfewqk/uma/releases/download/v{self.version}/'
         self.meta={'tag_name':'v'+self.version,'draft':False,'prerelease':False,
@@ -24,16 +24,16 @@ class PortableUpdaterTests(unittest.TestCase):
         self.release=Release(self.version,self.url+self.asset,self.url+self.asset+'.sha256','')
 
     def test_parse_versions(self):
-        self.assertTrue(parse_version('0.31.0') > parse_version('0.30.0'))
-        for version in ('v0.31.0','0.31','0.031.0','../../../x','0.31.0-rc1',''):
+        self.assertTrue(parse_version('0.32.0') > parse_version('0.31.0'))
+        for version in ('v0.32.0','0.32','0.032.0','../../../x','0.31.0-rc1',''):
             with self.assertRaises(UpdateError):parse_version(version)
 
     def test_release_exact_assets(self):
         self.assertEqual(parse_release(self.meta).version,self.version)
 
     def test_same_old_release(self):
-        self.assertIsNone(parse_release(self.meta,current='0.31.0'))
         self.assertIsNone(parse_release(self.meta,current='0.32.0'))
+        self.assertIsNone(parse_release(self.meta,current='0.33.0'))
 
     def test_draft_or_prerelease_not_offered(self):
         for value in ('draft','prerelease'):
@@ -81,7 +81,7 @@ class PortableUpdaterTests(unittest.TestCase):
 
     def test_zip_different_version_refused(self):
         with tempfile.TemporaryDirectory() as td:
-            with self.assertRaises(UpdateError):_check_zip(self._create_zip(Path(td),version='0.32.0'),self.version)
+            with self.assertRaises(UpdateError):_check_zip(self._create_zip(Path(td),version='0.33.0'),self.version)
 
     def test_deploy_side_by_side_and_preserve_old(self):
         with tempfile.TemporaryDirectory() as td:
@@ -91,7 +91,7 @@ class PortableUpdaterTests(unittest.TestCase):
             archive=self._create_zip(root)
             sha=hashlib.sha256(archive.read_bytes()).hexdigest()
             updated=deploy_verified_archive(archive,self.release,current,expected_sha256=sha)
-            self.assertEqual(updated.parent,root/'UmaTrainerKR_Portable_v0.31.0')
+            self.assertEqual(updated.parent,root/'UmaTrainerKR_Portable_v0.32.0')
             self.assertTrue(updated.exists())
             self.assertEqual(current.read_bytes(),b'ORIGINAL STAYS')
             self.assertEqual(old_data.read_text(),'unchanged')
@@ -110,7 +110,7 @@ class PortableUpdaterTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td);old=root/'old';old.mkdir()
             current=old/'UmaTrainerKR_Companion.exe';current.write_bytes(b'old')
-            (root/'UmaTrainerKR_Portable_v0.31.0').mkdir()
+            (root/'UmaTrainerKR_Portable_v0.32.0').mkdir()
             archive=self._create_zip(root)
             with self.assertRaises(UpdateError):
                 deploy_verified_archive(archive,self.release,current,expected_sha256=hashlib.sha256(archive.read_bytes()).hexdigest())

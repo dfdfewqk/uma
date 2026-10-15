@@ -20,7 +20,7 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def verify(directory: Path, version: str) -> dict:
+def verify(directory: Path, version: str, *, require_installer: bool = True) -> dict:
     directory=Path(directory)
     if not version or any(c not in '0123456789.' for c in version):
         raise ValueError('version is invalid')
@@ -41,14 +41,16 @@ def verify(directory: Path, version: str) -> dict:
         if any(not item.get('ok') for item in report.get('required_resources',[])):
             raise ValueError(f'{name} missing runtime asset')
         results[f'{name}.exe']={'size':exe.stat().st_size,'sha256':sha256(exe)}
-    installer=directory/'installer'/f'UmaTrainerKR_Setup_{version}.exe'
-    if not installer.is_file() or installer.stat().st_size<10_000:
-        raise ValueError('Installer missing')
-    results[f'installer/{installer.name}']={'size':installer.stat().st_size,'sha256':sha256(installer)}
+    if require_installer:
+        installer=directory/'installer'/f'UmaTrainerKR_Setup_{version}.exe'
+        if not installer.is_file() or installer.stat().st_size<10_000:
+            raise ValueError('Installer missing')
+        results[f'installer/{installer.name}']={'size':installer.stat().st_size,'sha256':sha256(installer)}
     return {
         'schema':'uma_r25_windows_package_manifest_v1',
         'version':version,
-        'verification':'real_windows_runner_exe_startup_and_installer_created',
+        'verification':('real_windows_runner_exe_startup_and_installer_created' if require_installer
+                        else 'real_windows_runner_exe_startup_portable_only'),
         'korean_game_tested':False,
         'automation_enabled':False,
         'files':results,
@@ -60,8 +62,10 @@ def main():
     parser.add_argument('directory',type=Path)
     parser.add_argument('version')
     parser.add_argument('--output',type=Path,default=None)
+    parser.add_argument('--portable-only', action='store_true',
+                        help='Verify four actual Windows EXEs without requiring an Inno Setup installer')
     a=parser.parse_args()
-    info=verify(a.directory,a.version)
+    info=verify(a.directory,a.version, require_installer=not a.portable_only)
     target=a.output or (a.directory/'SHA256_MANIFEST.json')
     if target.exists():
         raise SystemExit('Refusing to overwrite an existing verification manifest')

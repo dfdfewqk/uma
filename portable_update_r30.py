@@ -23,7 +23,7 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 import zipfile
 
-CURRENT_VERSION = '0.30.0'
+CURRENT_VERSION = '0.31.0'
 REPOSITORY = 'dfdfewqk/uma'
 RELEASES_API = f'https://api.github.com/repos/{REPOSITORY}/releases/latest'
 VERSION_PATTERN = re.compile(r'^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$')
@@ -100,7 +100,7 @@ def parse_release(payload: object, current: str = CURRENT_VERSION) -> Release | 
 def _request(url: str, *, timeout: int = 15):
     # All input URLs are constructed or matched against exact pinned GitHub paths.
     req = Request(url, headers={
-        'User-Agent': 'UmaTrainerKR-PortableUpdater/0.30',
+        'User-Agent': 'UmaTrainerKR-PortableUpdater/0.31',
         'Accept': 'application/vnd.github+json' if url == RELEASES_API else 'application/octet-stream',
         'X-GitHub-Api-Version': '2022-11-28',
     })

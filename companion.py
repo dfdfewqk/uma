@@ -51,7 +51,7 @@ class Companion(tk.Tk):
         self.update_queue=queue.Queue()
         self.update_release=None
         self.update_busy=False
-        self.update_status=tk.StringVar(value=f'현재 R30 · v{CURRENT_VERSION} · 업데이트 확인 대기')
+        self.update_status=tk.StringVar(value=f'현재 R31 · v{CURRENT_VERSION} · 업데이트 확인 대기')
         self.event_var=tk.StringVar(value='챔피언스 미팅')
         self.mode_var=tk.StringVar(value='고점작 헬퍼')
         self.status=tk.StringVar(value='게임 창 찾는 중…')
@@ -155,7 +155,7 @@ class Companion(tk.Tk):
                   bg='#344766',fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
         tk.Button(row,text='상세 설정·자료 관리 열기',command=self._launch_advanced,bg='#263754',fg=TEXT,relief='flat').pack(fill='x')
         u=self._card()
-        self._label(u,'R30 · 무설치 업데이트',AQUA,10,'bold').pack(anchor='w')
+        self._label(u,'R31 · 무설치 업데이트',AQUA,10,'bold').pack(anchor='w')
         tk.Label(u,textvariable=self.update_status,bg=CARD,fg=TEXT,wraplength=290,
                  justify='left',anchor='w').pack(anchor='w',pady=(5,4))
         self.update_check_button=tk.Button(u,text='GitHub 최신 버전 확인',

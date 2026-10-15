@@ -1,4 +1,4 @@
-name: Build Windows portable and installer (manual only)
+name: Build Windows portable (installer optional, manual only)
 
 # Manual-only. No push, PR, tag, or schedule trigger; publication is explicit opt-in.
 on:
@@ -6,6 +6,11 @@ on:
     inputs:
       publish_release:
         description: 'Publish tested ZIP as GitHub Release for in-app updater (explicit opt-in)'
+        type: boolean
+        required: true
+        default: false
+      build_installer:
+        description: 'Also build and verify the optional setup installer (slower)'
         type: boolean
         required: true
         default: false
@@ -96,7 +101,8 @@ jobs:
           if ($data.schema -ne 'uma_r26_windows_first_run_v1') { throw 'Unexpected diagnostic schema' }
           if ($data.automatic_clicks_enabled -ne $false -or $data.real_game_ocr_verified -ne $false) { throw 'Unsafe readiness claim' }
 
-      - name: Install Inno Setup compiler
+      - name: Install Inno Setup compiler (optional)
+        if: ${{ inputs.build_installer == true }}
         shell: pwsh
         run: |
           $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'
@@ -106,7 +112,8 @@ jobs:
           }
           if (-not (Test-Path $iscc)) { throw 'Inno Setup compiler not found' }
 
-      - name: Build installer and test actual silent installation
+      - name: Build installer and test actual silent installation (optional)
+        if: ${{ inputs.build_installer == true }}
         shell: pwsh
         run: |
           $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'
@@ -151,7 +158,11 @@ jobs:
         run: |
           $rawVersion = Get-Content VERSION.txt -Raw
           $version = ([regex]::Match($rawVersion, '(?m)^Version:\s*(\d+\.\d+\.\d+)\s*$')).Groups[1].Value
-          python scripts/verify_windows_package_r25.py dist $version
+          if ('${{ inputs.build_installer }}' -eq 'true') {
+            python scripts/verify_windows_package_r25.py dist $version
+          } else {
+            python scripts/verify_windows_package_r25.py dist $version --portable-only
+          }
           if ($LASTEXITCODE -ne 0) { throw 'Artifact verification failed' }
 
       - name: Create and verify portable ZIP and SHA-256
@@ -163,7 +174,7 @@ jobs:
       - name: Upload verified Windows builds (no automatic release publication)
         uses: actions/upload-artifact@v4
         with:
-          name: UmaTrainerKR-R30-Windows-Verified
+          name: UmaTrainerKR-R31-Windows-Verified
           path: |
             dist/UmaTrainerKR.exe
             dist/UmaTrainerKR_Companion.exe
@@ -178,7 +189,7 @@ jobs:
           retention-days: 14
 
   publish-portable:
-    name: Publish reviewed R30 portable archive (opt-in only)
+    name: Publish reviewed R31 portable archive (opt-in only)
     needs: windows-package
     if: ${{ inputs.publish_release == true }}
     runs-on: ubuntu-latest
@@ -188,7 +199,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: UmaTrainerKR-R30-Windows-Verified
+          name: UmaTrainerKR-R31-Windows-Verified
           path: dist
       - name: Publish tested portable release (only when explicitly requested)
         shell: pwsh
