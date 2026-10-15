@@ -151,7 +151,7 @@ jobs:
       - name: Upload verified Windows builds (no release publication)
         uses: actions/upload-artifact@v4
         with:
-          name: UmaTrainerKR-R26-Windows-Verified
+          name: UmaTrainerKR-R29-Windows-Verified
           path: |
             dist/UmaTrainerKR.exe
             dist/UmaTrainerKR_Companion.exe
