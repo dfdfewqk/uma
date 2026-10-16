@@ -32,6 +32,7 @@ class WindowsSmokeTests(unittest.TestCase):
         self.assertNotIn('--gui-smoke-report', self.helper)
         self.assertIn('xvfb-run -a python app.py --gui-smoke-report', self.workflow)
         self.assertIn('needs: linux-gui-preflight', self.workflow)
+        self.assertIn('xvfb-run -a python companion.py --helper-smoke-report', self.workflow)
         self.assertIn('validate_gui_r36.py',self.workflow)
         self.assertIn('Missing startup report after',self.helper)
 

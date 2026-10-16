@@ -14,6 +14,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from package_selftest_r25 import ASSETS, ESSENTIAL_DEPS
 from scripts.validate_gui_r36 import validate as validate_source_gui
+from scripts.validate_helper_r37 import validate as validate_click_only_helper
 
 PROGRAMS = ('UmaTrainerKR', 'UmaTrainerKR_Companion',
             'UmaTrainerKR_GameTest', 'UmaTrainerKR_Preflight')
@@ -83,6 +84,11 @@ def verify(directory: Path, version: str, *, require_installer: bool = True) -> 
     if not source_report.is_file():
         raise ValueError('R36 source Tk GUI smoke report missing')
     validate_source_gui(json.loads(source_report.read_text(encoding='utf-8')))
+    # R37 click-only helper proof is a separate Tk interaction check.
+    helper_report = directory / 'smoke-reports' / 'UmaTrainerKR_helper.json'
+    if not helper_report.is_file():
+        raise ValueError('R37 click-only helper GUI report missing')
+    validate_click_only_helper(json.loads(helper_report.read_text(encoding='utf-8')))
     if require_installer:
         installer=directory/'installer'/f'UmaTrainerKR_Setup_{version}.exe'
         if not installer.is_file() or installer.stat().st_size<10_000:

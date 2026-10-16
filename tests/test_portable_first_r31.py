@@ -6,6 +6,7 @@ import unittest
 from package_selftest_r25 import inspect
 from scripts.verify_windows_package_r25 import verify, PROGRAMS
 from portable_update_r30 import CURRENT_VERSION
+from scripts.validate_helper_r37 import REQUIRED as R37_HELPER_PROOF
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -20,6 +21,7 @@ class PortableFirstTests(unittest.TestCase):
             (root/'smoke-reports'/f'{name}.json').write_text(json.dumps(report),encoding='utf-8')
             (root/'smoke-reports'/f'{name}_startup.json').write_text(json.dumps(report),encoding='utf-8')
         (root/'smoke-reports'/'UmaTrainerKR_gui.json').write_text(json.dumps({"schema":"uma_r36_windows_gui_synthetic_smoke_v1","result":"PASS","r6_reviewed_actions":2,"r34_panel_created":True,"r35_actions_rendered":2,"r35_stale_invalidation_checked":True,"r35_conflict_detected":True,"game_client_tested":False,"automatic_click_enabled":False,"synthetic_only":True,"gui_platform":"linux","frozen_binary":False}),encoding='utf-8')
+        (root/'smoke-reports'/'UmaTrainerKR_helper.json').write_text(json.dumps(R37_HELPER_PROOF),encoding='utf-8')
 
     def test_portable_only_works_without_installer(self):
         with tempfile.TemporaryDirectory() as td:
@@ -113,6 +115,25 @@ class PortableFirstTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'source Tk GUI smoke report invalid'):
                 verify(root,CURRENT_VERSION,require_installer=False)
 
+    def test_missing_helper_gui_report_blocks_release(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            self.build_mock_binary_reports(root)
+            (root/'smoke-reports'/'UmaTrainerKR_helper.json').unlink()
+            with self.assertRaisesRegex(ValueError,'R37 click-only helper GUI report missing'):
+                verify(root,CURRENT_VERSION,require_installer=False)
+
+    def test_forged_helper_gui_proof_blocks_release(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            self.build_mock_binary_reports(root)
+            path=root/'smoke-reports'/'UmaTrainerKR_helper.json'
+            bad=dict(R37_HELPER_PROOF)
+            bad['typeable_fields_in_helper']=1
+            path.write_text(json.dumps(bad),encoding='utf-8')
+            with self.assertRaisesRegex(ValueError,'R37 helper GUI report invalid'):
+                verify(root,CURRENT_VERSION,require_installer=False)
+
     def test_version_consistency(self):
         self.assertIn('Version: '+CURRENT_VERSION,(ROOT/'VERSION.txt').read_text('utf-8'))
         self.assertIn('"'+CURRENT_VERSION+'"',(ROOT/'UmaTrainerKR_Setup.iss').read_text('utf-8'))
@@ -122,7 +143,7 @@ class PortableFirstTests(unittest.TestCase):
         self.assertIn('build_installer:',workflow)
         self.assertIn("if: ${{ inputs.build_installer == true }}",workflow)
         self.assertIn('verify_windows_package_r25.py dist $version --portable-only',workflow)
-        self.assertIn('name: UmaTrainerKR-R36-Windows-Verified',workflow)
+        self.assertIn('name: UmaTrainerKR-R37-Windows-Verified',workflow)
         self.assertIn('if: ${{ inputs.publish_release == true }}',workflow)
         self.assertNotIn('  push:',workflow)
         self.assertNotIn('  schedule:',workflow)

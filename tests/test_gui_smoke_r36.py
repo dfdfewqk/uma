@@ -82,6 +82,7 @@ class R36GuiSmokeTests(unittest.TestCase):
         self.assertNotIn('--gui-smoke-report',script)
         workflow=(ROOT/'.github/workflows/windows-exe.yml').read_text(encoding='utf8')
         self.assertIn('xvfb-run -a python app.py --gui-smoke-report',workflow)
+        self.assertIn('xvfb-run -a python companion.py --helper-smoke-report',workflow)
         self.assertIn('R36 source Tk GUI smoke report missing',verifier)
         checker=(ROOT/'scripts/validate_gui_r36.py').read_text(encoding='utf8')
         self.assertIn('r35_conflict_detected',checker)

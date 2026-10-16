@@ -78,7 +78,7 @@ def float_safe(v, label, lo=0, hi=100):
 class UmaApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('Uma Trainer KR 0.31.2 — R35 조건부 행동 비교')
+        self.title('Uma Trainer KR 0.31.3 — R35 상세 검토')
         self.geometry('1280x830')
         self.minsize(1040, 720)
         self.configure(bg=DARK)
@@ -148,7 +148,7 @@ class UmaApp(tk.Tk):
         top = ttk.Frame(self)
         top.pack(fill='x', padx=20, pady=(16, 5))
         ttk.Label(top, text='Uma Trainer KR', style='Title.TLabel').pack(side='left')
-        ttk.Label(top, text=' v0.31.2 R36  |  무인도 조건별 검토',
+        ttk.Label(top, text=' v0.31.3 R37  |  세부 연구 도구',
                   style='Muted.TLabel').pack(side='left', padx=20, pady=10)
         self.show_details=tk.BooleanVar(value=False)
         ttk.Button(top,text='연구·상세 설정 보기 / 숨기기',command=self._toggle_details).pack(side='right',padx=(16,0))

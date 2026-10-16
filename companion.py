@@ -20,7 +20,8 @@ from pathlib import Path
 import subprocess
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from companion_core import choose_window, overlay_position, usable_ocr_values, recommendation_status
+from companion_core import choose_window, overlay_position, usable_ocr_values
+from helper_view_r37 import view_from_frame, paused_view, StableLowEnergy
 from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
                               store_capture, export_pack)
 from screen_r4 import user_dir
@@ -39,7 +40,7 @@ class Companion(tk.Tk):
     def __init__(self, demo=False):
         super().__init__()
         self.demo=demo
-        self.title('Uma Trainer KR · 실시간 도우미')
+        self.title(f'Uma Trainer KR v{CURRENT_VERSION} · 클릭형 헬퍼')
         self.geometry('344x790+750+75')
         self.minsize(310,680)
         self.configure(bg=BG)
@@ -60,27 +61,31 @@ class Companion(tk.Tk):
         self.update_queue=queue.Queue()
         self.update_release=None
         self.update_busy=False
-        self.update_status=tk.StringVar(value=f'현재 R31 · v{CURRENT_VERSION} · 업데이트 확인 대기')
-        self.event_var=tk.StringVar(value='챔피언스 미팅')
-        self.mode_var=tk.StringVar(value='고점작 헬퍼')
+        self.update_status=tk.StringVar(value=f'현재 R37 · v{CURRENT_VERSION} · 업데이트 확인 대기')
+        self.event_var=tk.StringVar(value='미확인')
+        self.monitoring=True
+        self.helper_switch=None
+        self.dev_visible=False
+        self.dev_panel=None
         self.status=tk.StringVar(value='게임 창 찾는 중…')
         self.detail=tk.StringVar(value='게임을 실행하면 자동으로 창을 찾습니다.')
-        self.action=tk.StringVar(value='훈련 선택지 분석 전')
-        self.reason=tk.StringVar(value='검증되지 않은 화면에는 추천을 표시하지 않습니다.')
+        self.action=tk.StringVar(value='게임 화면 자동 확인 중')
+        self.reason=tk.StringVar(value='육성 중 입력할 필요 없습니다. 확인되지 않은 화면에서는 추천을 보류합니다.')
         self.scene_info=tk.StringVar(value='화면 유형: 확인 전 (R20 기준 화면 필요)')
         self.scene_tracker=StableScene()
         self.hint_gate=HintGate()
         self.hint_overlay=TrainingOverlay(self)
         self.button_tracker=StableButtons()
         self.button_patterns=[]
-        self.button_info=tk.StringVar(value='훈련 버튼: 기준 등록 필요')
-        self.r28_info=tk.StringVar(value='R28 추천: 실게임 점검 창에서 훈련 검수 필요')
+        self.button_info=tk.StringVar(value='훈련 버튼 자동 확인 대기')
+        self.r28_info=tk.StringVar(value='훈련 추천: 화면 확인·검수 전')
         self.capture_label=tk.StringVar(value='훈련')
         self.capture_pack=None
         self.capture_pending=False
         self.scene_anchors=[]
         self.last_hwnd=None
         self.freshness=FreshnessGate()
+        self.low_energy=StableLowEnergy()
         self.statvals={name:tk.StringVar(value='—') for name in STATS}
         self.energy=tk.StringVar(value='—')
         self.skill=tk.StringVar(value='—')
@@ -116,65 +121,106 @@ class Companion(tk.Tk):
     def _draw(self):
         top=tk.Frame(self.body,bg=BG,padx=14,pady=13);top.pack(fill='x')
         self._label(top,'Uma Trainer KR',TEXT,17,'bold').pack(anchor='w')
-        self._label(top,'게임 옆에서 함께 작동하는 육성 도우미',MUTED,9).pack(anchor='w',pady=(2,0))
+        self._label(top,'화면은 자동으로 확인 · 선택과 클릭은 게임에서 직접',MUTED,9).pack(anchor='w',pady=(2,0))
         c=self._card()
         self._label(c,'게임 연결',AQUA,10,'bold').pack(anchor='w')
         tk.Label(c,textvariable=self.status,fg=TEXT,bg=CARD,anchor='w',font=('Malgun Gothic',10,'bold'),wraplength=290,justify='left').pack(anchor='w',pady=(5,1))
         tk.Label(c,textvariable=self.detail,fg=MUTED,bg=CARD,anchor='w',font=('Malgun Gothic',8),wraplength=290,justify='left').pack(anchor='w')
-        settings=self._card()
-        self._label(settings,'무인도 · 육성 대상',AQUA,10,'bold').pack(anchor='w')
-        cb=ttk.Combobox(settings,values=['챔피언스 미팅','리그 오브 히어로즈'],textvariable=self.event_var,state='readonly')
-        cb.pack(fill='x',pady=(6,0))
         c=self._card()
-        self._label(c,'R20 · 게임 화면 자동 구분',AQUA,10,'bold').pack(anchor='w')
-        tk.Label(c,textvariable=self.scene_info,fg=TEXT,bg=CARD,anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=4)
+        self._label(c,'지금 할 일 · 게임에서 직접 누르세요',AQUA,11,'bold').pack(anchor='w')
+        tk.Label(c,textvariable=self.action,bg=CARD,fg=YELLOW,
+                 font=('Malgun Gothic',14,'bold'),anchor='w',
+                 wraplength=290,justify='left').pack(anchor='w',pady=(7,4))
+        tk.Label(c,textvariable=self.reason,bg=CARD,fg=TEXT,
+                 font=('Malgun Gothic',9),wraplength=290,
+                 justify='left',anchor='w').pack(anchor='w',pady=(0,4))
+        self.helper_switch=tk.Button(c,text='화면 분석 일시 정지',command=self._helper,
+                 bg='#226F83',fg='white',relief='flat')
+        self.helper_switch.pack(fill='x',pady=(8,1))
+        self._label(c,'훈련·휴식·이벤트 선택은 게임에서만 클릭합니다. 프로그램은 입력하지 않습니다.',
+                    MUTED,8).pack(anchor='w',pady=(5,0))
+
         c=self._card()
-        self._label(c,'R21 · 훈련 버튼 위치 확인',AQUA,10,'bold').pack(anchor='w')
-        tk.Label(c,textvariable=self.button_info,fg=MUTED,bg=CARD,anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=4)
-        tk.Label(c,textvariable=self.r28_info,fg=AQUA,bg=CARD,anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=(0,4))
+        self._label(c,'게임 화면 자동 확인',AQUA,10,'bold').pack(anchor='w')
+        tk.Label(c,textvariable=self.scene_info,bg=CARD,fg=TEXT,
+                 anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=(5,2))
+        tk.Label(c,textvariable=self.button_info,bg=CARD,fg=MUTED,
+                 anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=2)
+        tk.Label(c,textvariable=self.r28_info,bg=CARD,fg=MUTED,
+                 anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=(0,4))
+
         c=self._card()
-        self._label(c,'현재 게임 화면 · OCR 후보',AQUA,10,'bold').pack(anchor='w',pady=(0,6))
+        self._label(c,'현재 수치 · 자동 관측 후보',AQUA,10,'bold').pack(anchor='w',pady=(0,6))
         grid=tk.Frame(c,bg=CARD);grid.pack(fill='x')
         for i,k in enumerate(STATS):
-            r=i//3;co=i%3
-            box=tk.Frame(grid,bg=CARD);box.grid(row=r,column=co,sticky='w',padx=(0,17),pady=(0,5))
+            box=tk.Frame(grid,bg=CARD)
+            box.grid(row=i//3,column=i%3,sticky='w',padx=(0,17),pady=(0,5))
             self._label(box,k,MUTED,8).pack(anchor='w')
-            tk.Label(box,textvariable=self.statvals[k],bg=CARD,fg=TEXT,font=('Malgun Gothic',10,'bold')).pack(anchor='w')
+            tk.Label(box,textvariable=self.statvals[k],bg=CARD,fg=TEXT,
+                     font=('Malgun Gothic',10,'bold')).pack(anchor='w')
         info=tk.Frame(c,bg=CARD);info.pack(fill='x',pady=(2,0))
         self._label(info,'체력 ',MUTED,9).pack(side='left')
         tk.Label(info,textvariable=self.energy,bg=CARD,fg=TEXT).pack(side='left')
         self._label(info,'      스킬 Pt ',MUTED,9).pack(side='left')
         tk.Label(info,textvariable=self.skill,bg=CARD,fg=TEXT).pack(side='left')
-        c=self._card()
-        self._label(c,'추천 행동',AQUA,10,'bold').pack(anchor='w')
-        tk.Label(c,textvariable=self.action,bg=CARD,fg=YELLOW,font=('Malgun Gothic',12,'bold'),anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=(5,3))
-        tk.Label(c,textvariable=self.reason,bg=CARD,fg=MUTED,font=('Malgun Gothic',8),anchor='w',wraplength=290,justify='left').pack(anchor='w')
-        foot=tk.Frame(self.body,bg=BG);foot.pack(fill='x',padx=12,pady=(0,8))
-        tk.Button(foot,text='고점작 헬퍼',bg='#226F83',fg='white',relief='flat',command=self._helper).pack(side='left',fill='x',expand=True,padx=(0,4))
-        tk.Button(foot,text='자동 클릭 (검증 전)',state='disabled',relief='flat').pack(side='left',fill='x',expand=True)
-        row=tk.Frame(self.body,bg=BG);row.pack(fill='x',padx=12,pady=(0,5))
+        self._label(c,'* 표시는 검수 전 OCR 후보 · 화면 전환 시 자동으로 지움',
+                    MUTED,8).pack(anchor='w',pady=(5,0))
+
+        tools=tk.Frame(self.body,bg=BG)
+        tools.pack(fill='x',padx=12,pady=(0,9))
+        tk.Button(tools,text='설정·개발자 점검 보기 (평소 사용 불필요)',
+                  command=self._toggle_dev_tools,bg='#263754',fg=TEXT,
+                  relief='flat').pack(fill='x')
+        self.dev_panel=tk.Frame(self.body,bg=BG)
+        advanced=self.dev_panel
+        settings=tk.Frame(advanced,bg=CARD,padx=12,pady=9)
+        settings.pack(fill='x',padx=12,pady=(0,9))
+        self._label(settings,'대회 구분 (선택 사항 · 추천 엔진 자동 연계 전)',
+                    AQUA,9,'bold').pack(anchor='w')
+        ttk.Combobox(settings,values=['미확인','챔피언스 미팅','리그 오브 히어로즈'],
+                     textvariable=self.event_var,state='readonly').pack(fill='x',pady=(6,0))
+
+        row=tk.Frame(advanced,bg=BG)
+        row.pack(fill='x',padx=12,pady=(0,5))
         tk.Button(row,text='실게임 훈련 점검 · R22',command=self._launch_game_test,
                   bg='#247368',fg='white',relief='flat').pack(fill='x',pady=(0,5))
-        tk.Button(row,text='R23 · 게임 없이 사전점검',command=self._launch_preflight,bg='#345778',fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
-        self._label(row,'R29 · 실게임 화면 자료 수집 (선택 기능)',AQUA,9,'bold').pack(anchor='w',pady=(3,2))
-        ttk.Combobox(row,values=SCENES,textvariable=self.capture_label,state='readonly').pack(fill='x',pady=(0,4))
-        tk.Button(row,text='4초 뒤 게임 화면 저장 · 게임 창으로 돌아가기',command=self._schedule_capture,
-                  bg='#346075',fg=TEXT,relief='flat').pack(fill='x',pady=(0,4))
-        tk.Button(row,text='저장된 화면 ZIP 내보내기 (직접 선택)',command=self._export_capture_pack,
-                  bg='#344766',fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
-        tk.Button(row,text='상세 설정·자료 관리 열기',command=self._launch_advanced,bg='#263754',fg=TEXT,relief='flat').pack(fill='x')
-        u=self._card()
-        self._label(u,'R31 · 무설치 업데이트',AQUA,10,'bold').pack(anchor='w')
-        tk.Label(u,textvariable=self.update_status,bg=CARD,fg=TEXT,wraplength=290,
-                 justify='left',anchor='w').pack(anchor='w',pady=(5,4))
+        tk.Button(row,text='R23 · 게임 없이 사전점검',
+                  command=self._launch_preflight,bg='#345778',fg=TEXT,
+                  relief='flat').pack(fill='x',pady=(0,5))
+        self._label(row,'R29 · 화면 자료 수집 (개발 검수용)',AQUA,9,'bold').pack(anchor='w',pady=(3,2))
+        ttk.Combobox(row,values=SCENES,textvariable=self.capture_label,
+                     state='readonly').pack(fill='x',pady=(0,4))
+        tk.Button(row,text='4초 뒤 게임 화면 저장 · 게임 창으로 돌아가기',
+                  command=self._schedule_capture,bg='#346075',fg=TEXT,
+                  relief='flat').pack(fill='x',pady=(0,4))
+        tk.Button(row,text='저장된 화면 ZIP 내보내기 (직접 선택)',
+                  command=self._export_capture_pack,bg='#344766',fg=TEXT,
+                  relief='flat').pack(fill='x',pady=(0,5))
+        tk.Button(row,text='상세 설정·자료 관리 열기',
+                  command=self._launch_advanced,bg='#263754',fg=TEXT,
+                  relief='flat').pack(fill='x')
+
+        u=tk.Frame(advanced,bg=CARD,padx=12,pady=9)
+        u.pack(fill='x',padx=12,pady=(0,9))
+        self._label(u,'무설치 프로그램 업데이트',AQUA,10,'bold').pack(anchor='w')
+        tk.Label(u,textvariable=self.update_status,bg=CARD,fg=TEXT,
+                 wraplength=290,justify='left',anchor='w').pack(anchor='w',pady=(5,4))
         self.update_check_button=tk.Button(u,text='GitHub 최신 버전 확인',
                      command=self._check_updates,bg='#345778',fg=TEXT,relief='flat')
         self.update_check_button.pack(fill='x',pady=(0,4))
         self.update_install_button=tk.Button(u,text='새 포터블 버전 받기 및 실행',
                      command=self._download_update,state='disabled',relief='flat')
         self.update_install_button.pack(fill='x')
-        self._label(u,'현재 버전은 그대로 보존 · 기록은 사용자 폴더에 유지',MUTED,8).pack(anchor='w',pady=(5,0))
-        self._label(self.body,'실제 게임 클릭은 아직 지원하지 않음 · 오인식 시 정지 우선',MUTED,8).pack(anchor='w',padx=14)
+        self._label(u,'기존 버전·기록 보존',MUTED,8).pack(anchor='w',pady=(5,0))
+        self._label(advanced,'고급 점검은 실게임 인식 검증을 위한 개발 도구이며 육성 중 필요하지 않습니다.',
+                    MUTED,8).pack(anchor='w',padx=14,pady=(0,8))
+
+    def _toggle_dev_tools(self):
+        self.dev_visible=not self.dev_visible
+        if self.dev_visible:
+            self.dev_panel.pack(fill='x')
+        else:
+            self.dev_panel.pack_forget()
 
     def _periodic_update_check(self):
         if not self.update_busy:
@@ -252,8 +298,25 @@ class Companion(tk.Tk):
             self.after(350,self._update_poll)
 
     def _helper(self):
-        self.action.set('헬퍼 모드')
-        self.reason.set(recommendation_status(False,False))
+        """Click-only monitoring control; no game keyboard or pointer events."""
+        self.monitoring=not self.monitoring
+        if not self.monitoring:
+            self.freshness.update(None)
+            self.hint_gate.clear()
+            self.scene_tracker.reset()
+            self.button_tracker.reset()
+            self.reading=False
+            self._clear_live_evidence()
+            view=paused_view()
+            self.action.set(view.title)
+            self.reason.set(view.explanation)
+            self.status.set('헬퍼 일시 정지')
+            self.helper_switch.configure(text='화면 분석 다시 시작')
+        else:
+            self.action.set('게임 화면 자동 확인 중')
+            self.reason.set('게임 창이 활성화되면 화면을 자동으로 분석합니다.')
+            self.status.set('게임 창 연결 대기')
+            self.helper_switch.configure(text='화면 분석 일시 정지')
 
     def _schedule_capture(self):
         """Button is clicked on the companion; user has 4 seconds to refocus game."""
@@ -352,12 +415,17 @@ class Companion(tk.Tk):
         self.energy.set('—');self.skill.set('—')
         self.scene_info.set('화면 유형: 미확인 · 검수 대기')
         self.hint_overlay.hide()
+        self.low_energy.reset()
         self.r28_info.set('R28: 현재 화면 추천 보류')
         self.button_info.set('훈련 버튼: 현재 화면 미확인')
         self.action.set('추천 보류')
         self.reason.set('이전 화면의 추천과 OCR 수치를 무효화했습니다.')
 
     def _scan(self):
+        if not self.monitoring:
+            self.status.set('헬퍼 일시 정지')
+            self.after(2500,self._scan)
+            return
         try:
             game, message=choose_window(discover_windows())
             if self.freshness.update(game.hwnd if game else None,game.rect if game else None):
@@ -393,7 +461,7 @@ class Companion(tk.Tk):
             self._clear_live_evidence()
             self.status.set('게임 연결 감지 오류')
             self.detail.set(type(exc).__name__)
-        self.after(3500,self._scan)
+        self.after(2500,self._scan)
 
     def _read_game(self,game):
         from screen_r4 import profile_path
@@ -461,9 +529,8 @@ class Companion(tk.Tk):
                     var.set(f'{safe[k]:,} *' if k in safe else '—')
                 self.energy.set(f'{safe["체력"]} *' if '체력' in safe else '—')
                 self.skill.set(f'{safe["스킬 Pt"]:,} *' if '스킬 Pt' in safe else '—')
-                self.action.set('추천 보류')
-                self.reason.set('현재 화면 OCR 후보 (*) · 검수 전 · 실제 훈련 추천 미검증'
-                                if safe else '훈련 화면/유효 OCR 미확인 · 추천 보류')
+                self.action.set('화면 분석 중')
+                self.reason.set('화면에서 읽은 수치와 선택지를 확인하는 중입니다.')
                 try:
                     obj=load_handoff()
                 except (HandoffError,OSError) as exc:
@@ -477,20 +544,26 @@ class Companion(tk.Tk):
                 hint=self.hint_gate.observe(obj,hwnd=hwnd,
                         size=((rect[2]-rect[0],rect[3]-rect[1]) if rect else None),
                         scene=scene,hits=hits,active=active)
-                if hint and rect:
-                    self.action.set(hint.label+' · 사용자 검수 추천')
-                    self.reason.set('훈련만 비교한 임시 점수 · 스스로 클릭 · 턴 변경 시 다시 검수')
-                    self.r28_info.set('R28: 검수된 추천 후보 표시 · '+hint.label)
+                view=view_from_frame(
+                    scene=scene,active=active,value_count=len(safe),
+                    detected_buttons=tuple(h.label for h in hits),
+                    reviewed_hint=hint.label if hint is not None else None,
+                    low_energy_candidate=self.low_energy.observe(
+                        energy=safe.get('체력'),epoch=epoch,scene=scene,active=active))
+                self.action.set(view.title)
+                self.reason.set(view.explanation)
+                if view.verified_training and hint and rect:
+                    self.r28_info.set('확인된 훈련 후보: '+hint.label)
                     if not self.hint_overlay.show(rect,hint):
-                        self.r28_info.set('R28: 버튼 후보 확인 · 게임 위 표시 실패 (옆 창 참고)')
+                        self.r28_info.set('훈련 후보 확인 · 게임 위 표시 실패 (옆 창에서 확인)')
                 else:
                     self.hint_overlay.hide()
                     if obj is None:
-                        self.r28_info.set('R28: 검수된 추천 전달 없음 · 보류')
+                        self.r28_info.set('자동 판단 준비 중 · 현재 훈련 추천 없음')
                     elif obj['id'] in self.hint_gate.revoked:
-                        self.r28_info.set('R28: 이전 화면 추천 무효화 · 다시 검수 필요')
+                        self.r28_info.set('이전 추천 폐기 · 화면 재확인 중')
                     else:
-                        self.r28_info.set('R28: 실제 훈련 화면과 버튼 재확인 중')
+                        self.r28_info.set('화면의 훈련 후보 검수 중')
         except queue.Empty:pass
         self.after(250,self._poll)
 
@@ -502,6 +575,8 @@ if __name__=='__main__':
     maybe_run_startup_cli("UmaTrainerKR_Companion")
     from runtime_probe_r26 import maybe_run_cli as r26_first_run
     r26_first_run()
+    from helper_smoke_r37 import maybe_run_cli as r37_helper_smoke
+    r37_helper_smoke(lambda: Companion(demo=True))
     app=Companion('--demo' in sys.argv)
     if '--screenshot' in sys.argv:
         idx=sys.argv.index('--screenshot')
