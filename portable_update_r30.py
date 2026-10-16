@@ -23,7 +23,7 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 import zipfile
 
-CURRENT_VERSION = '0.31.1'
+CURRENT_VERSION = '0.31.2'
 REPOSITORY = 'dfdfewqk/uma'
 RELEASES_API = f'https://api.github.com/repos/{REPOSITORY}/releases/latest'
 VERSION_PATTERN = re.compile(r'^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$')

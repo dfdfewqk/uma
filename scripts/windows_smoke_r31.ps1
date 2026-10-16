@@ -107,6 +107,28 @@ foreach ($name in @('UmaTrainerKR', 'UmaTrainerKR_Companion', 'UmaTrainerKR_Game
     }
 }
 
+# R36: execute real Tk GUI and synthetic R6->R34->R35 interaction once per mode.
+# Main program starts without the game; bounded timeout prevents CI hangs.
+$gui = Join-Path $base 'UmaTrainerKR.exe'
+$guiReport = Join-Path $reports "${prefix}UmaTrainerKR_gui.json"
+if (Test-Path -LiteralPath $guiReport) { throw "Refusing stale GUI smoke report $guiReport" }
+Invoke-BoundedExe -Path $gui -Label "${Mode} R36 real Tk GUI review" -Timeout $TimeoutSeconds `
+    -Arguments @('--gui-smoke-report', $guiReport)
+if (-not (Test-Path -LiteralPath $guiReport)) { throw 'Missing R36 GUI smoke report' }
+$ui = Get-Content -LiteralPath $guiReport -Raw -Encoding utf8 | ConvertFrom-Json
+if ($ui.schema -ne 'uma_r36_windows_gui_synthetic_smoke_v1' -or
+    $ui.result -ne 'PASS' -or
+    $ui.r6_reviewed_actions -ne 2 -or
+    $ui.r34_panel_created -ne $true -or
+    $ui.r35_actions_rendered -ne 2 -or
+    $ui.r35_stale_invalidation_checked -ne $true -or
+    $ui.r35_conflict_detected -ne $true -or
+    $ui.game_client_tested -ne $false -or
+    $ui.automatic_click_enabled -ne $false -or
+    $ui.synthetic_only -ne $true) {
+    throw 'Invalid or unsuccessful R36 real GUI smoke report'
+}
+
 $companion = Join-Path $base 'UmaTrainerKR_Companion.exe'
 $diagnostic = Join-Path $reports "${prefix}first_run_no_game.json"
 if (Test-Path -LiteralPath $diagnostic) { throw "Refusing stale first-run report $diagnostic" }

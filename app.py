@@ -78,7 +78,7 @@ def float_safe(v, label, lo=0, hi=100):
 class UmaApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('Uma Trainer KR V0.21 R21 — 훈련 버튼 위치 자동 인식')
+        self.title('Uma Trainer KR 0.31.2 — R35 조건부 행동 비교')
         self.geometry('1280x830')
         self.minsize(1040, 720)
         self.configure(bg=DARK)
@@ -148,7 +148,7 @@ class UmaApp(tk.Tk):
         top = ttk.Frame(self)
         top.pack(fill='x', padx=20, pady=(16, 5))
         ttk.Label(top, text='Uma Trainer KR', style='Title.TLabel').pack(side='left')
-        ttk.Label(top, text=' V0.21 R21  |  훈련 버튼 자동 위치 탐지',
+        ttk.Label(top, text=' v0.31.2 R36  |  무인도 조건별 검토',
                   style='Muted.TLabel').pack(side='left', padx=20, pady=10)
         self.show_details=tk.BooleanVar(value=False)
         ttk.Button(top,text='연구·상세 설정 보기 / 숨기기',command=self._toggle_details).pack(side='right',padx=(16,0))
@@ -1143,6 +1143,8 @@ if __name__ == '__main__':
     maybe_run_cli("UmaTrainerKR")
     from package_selftest_r25 import maybe_run_startup_cli
     maybe_run_startup_cli("UmaTrainerKR")
+    from gui_smoke_r36 import maybe_run_cli as r36_gui_smoke
+    r36_gui_smoke(UmaApp)
     try:
         main()
     except Exception:

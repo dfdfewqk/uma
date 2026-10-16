@@ -29,6 +29,8 @@ class WindowsSmokeTests(unittest.TestCase):
         self.assertIn('--first-run-report',self.helper)
         self.assertIn('--self-check-report',self.helper)
         self.assertIn('--startup-check-report',self.helper)
+        self.assertIn('--gui-smoke-report',self.helper)
+        self.assertIn('uma_r36_windows_gui_synthetic_smoke_v1',self.helper)
         self.assertIn('Missing startup report after',self.helper)
 
     def test_reports_cannot_be_faked_or_reused(self):

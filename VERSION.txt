@@ -1,2 +1,2 @@
-Uma Trainer KR R31
-Version: 0.31.1
+Uma Trainer KR R36
+Version: 0.31.2

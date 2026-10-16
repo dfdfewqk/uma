@@ -103,6 +103,7 @@ class TestR25SelfCheck(unittest.TestCase):
                 report=inspect(name,root=ROOT,frozen=True)
                 (root/'smoke-reports'/f'{name}.json').write_text(json.dumps(report),encoding='utf8')
                 (root/'smoke-reports'/f'{name}_startup.json').write_text(json.dumps(report),encoding='utf8')
+            (root/'smoke-reports'/'UmaTrainerKR_gui.json').write_text(json.dumps({"schema":"uma_r36_windows_gui_synthetic_smoke_v1","result":"PASS","r6_reviewed_actions":2,"r34_panel_created":True,"r35_actions_rendered":2,"r35_stale_invalidation_checked":True,"r35_conflict_detected":True,"game_client_tested":False,"automatic_click_enabled":False,"synthetic_only":True}),encoding='utf8')
             (root/'installer'/'UmaTrainerKR_Setup_0.25.0.exe').write_bytes(b'B'*10001)
             data=verify(root,'0.25.0')
             self.assertEqual(len(data['files']),5)
@@ -117,6 +118,7 @@ class TestR25SelfCheck(unittest.TestCase):
                 if name=='UmaTrainerKR_Companion':report['automatic_click_enabled']=True
                 (root/'smoke-reports'/f'{name}.json').write_text(json.dumps(report),encoding='utf8')
                 (root/'smoke-reports'/f'{name}_startup.json').write_text(json.dumps(report),encoding='utf8')
+            (root/'smoke-reports'/'UmaTrainerKR_gui.json').write_text(json.dumps({"schema":"uma_r36_windows_gui_synthetic_smoke_v1","result":"PASS","r6_reviewed_actions":2,"r34_panel_created":True,"r35_actions_rendered":2,"r35_stale_invalidation_checked":True,"r35_conflict_detected":True,"game_client_tested":False,"automatic_click_enabled":False,"synthetic_only":True}),encoding='utf8')
             (root/'installer'/'UmaTrainerKR_Setup_0.25.0.exe').write_bytes(b'B'*10001)
             with self.assertRaises(ValueError):verify(root,'0.25.0')
 

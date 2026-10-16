@@ -1,7 +1,7 @@
 ; Windows installer for the manually built UmaTrainerKR.exe.
 ; Run ISCC from the repository root after PyInstaller has created dist\UmaTrainerKR.exe.
 #ifndef AppVersion
-  #define AppVersion "0.31.1"
+  #define AppVersion "0.31.2"
 #endif
 
 [Setup]
