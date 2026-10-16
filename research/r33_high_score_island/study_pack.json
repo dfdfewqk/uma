@@ -1,0 +1,353 @@
+{
+  "schema": "uma_r33_island_high_score_study_v1",
+  "researched_on": "2026-10-16",
+  "scenario": "island_post_patch_v1",
+  "server": "JP",
+  "reference_patch": "2025-06-30",
+  "caveat": "Secondary video summaries and player reports are research claims, NOT frame-verified complete runs or ML supervision.",
+  "source_records": [
+    {
+      "id": "R33_V01",
+      "label": "US1 마야노 탑건 고점 육성 전 과정 해설",
+      "url": "https://www.youtube.com/watch?v=fPFkjDu5CL4",
+      "published": "2025-07-04",
+      "kind": "video_description",
+      "review_depth": "creator_description_and_28m_chapters_only",
+      "verified_frames": 0,
+      "scope": "score"
+    },
+    {
+      "id": "R33_V02",
+      "label": "NottinTV 수정 후 US/UA 육성 설명",
+      "url": "https://glasp.co/youtube/SrqljDUuFc4",
+      "published": "2025-07-03",
+      "kind": "third_party_video_transcription",
+      "review_depth": "third_party_transcription_excerpt_and_summary",
+      "verified_frames": 0,
+      "scope": "score"
+    },
+    {
+      "id": "R33_V03",
+      "label": "ぺが 수정 후 고점 육성·저자원 편성 설명",
+      "url": "https://glasp.co/youtube/R4xeV1SH_1s",
+      "published": "2025-07-05",
+      "kind": "third_party_video_transcription",
+      "review_depth": "third_party_transcription_excerpt_and_summary",
+      "verified_frames": 0,
+      "scope": "score"
+    },
+    {
+      "id": "R33_V04",
+      "label": "セリル 무인도 강화순서 정정 포함",
+      "url": "https://www.youtube.com/watch?v=U4bo3wrcF6c",
+      "published": "2025-07-04",
+      "kind": "creator_description",
+      "review_depth": "description_and_correction_only",
+      "verified_frames": 0,
+      "scope": "score"
+    },
+    {
+      "id": "R33_A01",
+      "label": "バーベ US 달성 육성 상세 수기",
+      "url": "https://note.com/unique_pipit3495/n/nfa47b10301a9",
+      "published": "2025-07-13",
+      "kind": "player_report",
+      "review_depth": "article_text_reviewed",
+      "verified_frames": 0,
+      "scope": "score"
+    },
+    {
+      "id": "R33_A02",
+      "label": "Merci 7월 챔미 실제 무인도 육성 후기",
+      "url": "https://merci-splatoon.com/mujinto2/",
+      "published": "2025-07-02",
+      "kind": "player_report",
+      "review_depth": "article_text_reviewed",
+      "verified_frames": 0,
+      "scope": "competition"
+    },
+    {
+      "id": "R33_A03",
+      "label": "ウマ娘ラボ 챔미 육성 스텝업 가이드",
+      "url": "https://umamusumelabo.com/ikusei/mujintou-stepupguide",
+      "published": "2025-07-14",
+      "kind": "strategy_guide",
+      "review_depth": "article_text_reviewed",
+      "verified_frames": 0,
+      "scope": "competition"
+    },
+    {
+      "id": "R33_V05",
+      "label": "NottinTV 2025-06-30 생방송",
+      "url": "https://www.youtube.com/watch?v=ht6zkFCe73w",
+      "published": "2025-06-30",
+      "kind": "livestream_metadata",
+      "review_depth": "description_only_broadcast_time_and_patch_eligibility_unknown",
+      "verified_frames": 0,
+      "scope": "pending_patch_verification"
+    },
+    {
+      "id": "R33_U01",
+      "label": "사용자 제공 육성영상 — 검수 대기",
+      "url": "https://youtu.be/E19uBCIOjic",
+      "published": null,
+      "kind": "user_submitted_video",
+      "review_depth": "no_accessible_transcript_or_frames",
+      "verified_frames": 0,
+      "scope": "pending_verification"
+    },
+    {
+      "id": "R33_A04",
+      "label": "みつるん 2025-07-20 US~UA 육성 흐름 상세 사례",
+      "url": "https://miturunn-pocketbook.com/%E3%80%90%E3%82%A6%E3%83%9E%E5%A8%98%E3%80%91%E7%84%A1%E4%BA%BA%E5%B3%B6%E3%82%B7%E3%83%8A%E3%83%AA%E3%82%AA%E3%81%A7us%EF%BD%9Eua%E3%83%A9%E3%83%B3%E3%82%AF%E8%82%B2%E6%88%90%E3%81%99%E3%82%8B/",
+      "published": "2025-07-20",
+      "kind": "player_guide",
+      "review_depth": "article_text_reviewed_video_not_watched",
+      "verified_frames": 0,
+      "scope": "score"
+    }
+  ],
+  "conditional_hypotheses": [
+    {
+      "id": "R33_H01",
+      "phase": "junior",
+      "target": "score",
+      "topic": "초반 인연 확보",
+      "claim": "첫 1~2장의 섬 티켓은 인연 부족 상황에서 일찍 활용할 수 있다. 일반 훈련에서 다수 인연을 효율적으로 올릴 수 있다면 비교해야 한다.",
+      "source_ids": [
+        "R33_V02",
+        "R33_V03",
+        "R33_A03"
+      ],
+      "classification": "multiple_guide_claims",
+      "needs": [
+        "ticket_ordinal",
+        "bonds_before_after",
+        "alternative_training_people",
+        "next_ticket_timing"
+      ],
+      "engine_action": "none"
+    },
+    {
+      "id": "R33_H02",
+      "phase": "classic_to_senior",
+      "target": "score",
+      "topic": "3곳 이상 우정 섬 훈련",
+      "claim": "인연을 확보한 뒤에는 서로 다른 시설 3곳 이상 우정 발생을 섬 티켓 사용 기준 후보로 본다. 티켓 중복 소멸 위험과 목표 레이스는 예외이다.",
+      "source_ids": [
+        "R33_V02",
+        "R33_V03",
+        "R33_A03",
+        "R33_A01"
+      ],
+      "classification": "multiple_guide_claims",
+      "needs": [
+        "friendship_facility_count",
+        "ticket_expiration",
+        "development_points",
+        "next_mandatory_race",
+        "observed_gain_by_action"
+      ],
+      "engine_action": "none"
+    },
+    {
+      "id": "R33_H03",
+      "phase": "all",
+      "target": "score",
+      "topic": "스탯 부족/상한으로 건설계획 동적 수정",
+      "claim": "성장률과 부족한 파워·근성·스태미나 및 스피드 상한 낭비를 확인하여 시설 레벨 5 목표를 고정하지 않고 건설 후보를 비교한다.",
+      "source_ids": [
+        "R33_V02",
+        "R33_V03",
+        "R33_A01",
+        "R33_A02"
+      ],
+      "classification": "author_cases_with_guide_support",
+      "needs": [
+        "character_growth_rates",
+        "current_stats",
+        "stat_caps",
+        "facility_levels",
+        "remaining_turns",
+        "construction_cost"
+      ],
+      "engine_action": "none"
+    },
+    {
+      "id": "R33_H04",
+      "phase": "early_to_mid",
+      "target": "score",
+      "topic": "해변의 집 건설 시점",
+      "claim": "스킬 Pt 목적의 첫 건설과 다수 우정 훈련 가능한 시설을 먼저 여는 선택에는 트레이드오프가 있으며, 대략 1~2차 건설의 조건을 비교할 필요가 있다.",
+      "source_ids": [
+        "R33_V02",
+        "R33_V04",
+        "R33_A01",
+        "R33_A03"
+      ],
+      "classification": "source_disagreement_requires_conditioning",
+      "needs": [
+        "facility_unlocked_before_ticket",
+        "skill_point_gain",
+        "bonds",
+        "friendship_ready",
+        "construction_stage"
+      ],
+      "engine_action": "none"
+    },
+    {
+      "id": "R33_H05",
+      "phase": "classic_to_senior",
+      "target": "competition",
+      "topic": "레이스/힌트와 발전 Pt 기회비용",
+      "claim": "챔미·리오히 실전에서는 약한 훈련 대신 레이스·힌트·외출을 검토하지만 발전 Pt를 모으지 못하면 후반 시설 비용 문제가 생길 수 있다.",
+      "source_ids": [
+        "R33_A03",
+        "R33_A02"
+      ],
+      "classification": "strategy_with_example",
+      "needs": [
+        "available_actions",
+        "hint_value",
+        "skill_points",
+        "development_points",
+        "future_construction_requirements"
+      ],
+      "engine_action": "none"
+    },
+    {
+      "id": "R33_H06",
+      "phase": "late",
+      "target": "score",
+      "topic": "후반 연속 섬 훈련과 목표 레이스 충돌",
+      "claim": "후반 섬 티켓 연속 사용은 유용할 수 있으나 목표 레이스 때문에 다음 턴 보너스가 낭비되면 성립하지 않는다. 레이스 달력과 남은 자유 턴을 함께 확인한다.",
+      "source_ids": [
+        "R33_A01"
+      ],
+      "classification": "single_player_report",
+      "needs": [
+        "remaining_discretionary_turns",
+        "mandatory_race_schedule",
+        "ticket_count",
+        "next_turn_bonus_observed"
+      ],
+      "engine_action": "none"
+    },
+    {
+      "id": "R33_H07",
+      "phase": "late",
+      "target": "competition",
+      "topic": "높은 평가점과 대회 경쟁력 분리",
+      "claim": "스탯 상한/스킬 Pt 총량이 높아도 실제로 구매할 적합 스킬과 핵심 이벤트 미완주를 확인하지 않으면 챔미·리오히 성능을 추정할 수 없다.",
+      "source_ids": [
+        "R33_A02",
+        "R33_A03",
+        "R33_A01"
+      ],
+      "classification": "observed_case_and_distinct_objectives",
+      "needs": [
+        "target_race",
+        "skills_owned_or_available",
+        "hint_discount",
+        "skill_effective_condition",
+        "event_completion"
+      ],
+      "engine_action": "none"
+    },
+    {
+      "id": "R33_H08",
+      "phase": "all",
+      "target": "score",
+      "topic": "낮은 보유카드 자원에서 속도 2장 대안",
+      "claim": "고자원 하이랜더가 원칙이라는 주장과 달리 낮은 자원·성장률 조건에서는 스피드2 편성이 안정성 대안이라는 설명도 존재한다.",
+      "source_ids": [
+        "R33_V03"
+      ],
+      "classification": "one_video_secondary_summary",
+      "needs": [
+        "owned_support_ids",
+        "friend_card_limit_break",
+        "growth_rate",
+        "actual_training_variance"
+      ],
+      "engine_action": "none"
+    },
+    {
+      "id": "R33_H09",
+      "phase": "senior_late",
+      "target": "score",
+      "topic": "남은 자유 턴에서 티켓·외출·목표 레이스 예산 관리",
+      "claim": "시니어 후반에는 목표 레이스가 고정 소비하는 턴을 제외하고 남은 섬 티켓·외출을 모두 소화할 여유 턴이 있는지 확인해야 한다. 부족하면 추가 일반 훈련이 오히려 사용 기회를 잃게 할 수 있다는 작성자 가설이다.",
+      "source_ids": [
+        "R33_A01",
+        "R33_A04"
+      ],
+      "classification": "two_player_explanations_no_verified_turn_pairs",
+      "needs": [
+        "calendar_turns_remaining",
+        "required_race_turns",
+        "tickets_remaining",
+        "outings_remaining",
+        "normal_action_slots"
+      ],
+      "engine_action": "none"
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "R33_C01",
+      "topic": "스피드 시설을 레벨5로 고정할 것인가",
+      "left_sources": [
+        "R33_V04",
+        "R33_V03"
+      ],
+      "right_sources": [
+        "R33_A01"
+      ],
+      "analysis": "세리루·ぺが의 예시 차트와 バーベ의 실제 마야노 US 사례는 목표 Lv5 시설이 다르다. 캐릭터·스피드 상한 낭비·성장률·평가점 목적별 조건화가 필요하다.",
+      "resolution": "not_resolved"
+    },
+    {
+      "id": "R33_C02",
+      "topic": "첫 섬 티켓에서 우정 3곳을 기다릴 것인가",
+      "left_sources": [
+        "R33_V02",
+        "R33_V03",
+        "R33_A03"
+      ],
+      "right_sources": [
+        "R33_H02"
+      ],
+      "analysis": "초기 인연 확보용 사용과 중후반 복수 우정용 사용은 다른 상태를 조건으로 하는 설명이므로 전 구간 고정 임계값을 금지한다.",
+      "resolution": "conditional_by_ticket_ordinal_and_bond"
+    },
+    {
+      "id": "R33_C03",
+      "topic": "고점과 챔미/리오히 승률의 관계",
+      "left_sources": [
+        "R33_A01",
+        "R33_V03"
+      ],
+      "right_sources": [
+        "R33_A02",
+        "R33_A03"
+      ],
+      "analysis": "US 달성용 평가점 최적화는 실전 경기 조건·스킬 가치 최적화와 다른 목적 함수이다. 서로의 성과 라벨로 이용할 수 없다.",
+      "resolution": "separate_cohorts"
+    }
+  ],
+  "quality": {
+    "verified_full_video_viewings": 0,
+    "verified_gameplay_frames": 0,
+    "verified_turn_action_pairs": 0,
+    "ml_trainable_labels": 0,
+    "auto_applied_model_weights": false,
+    "training_model_fitted": false
+  },
+  "policy": "research_only_no_engine_score_mutation",
+  "counts": {
+    "source_records": 10,
+    "conditional_hypotheses": 9,
+    "conflicts": 3
+  }
+}
