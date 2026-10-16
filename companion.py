@@ -265,6 +265,8 @@ class Companion(tk.Tk):
         if persist:
             try:
                 save_target(user_dir()/'helper_target_r39.json',target)
+                if self.target_error.startswith('목표 설정 파일 확인 필요:'):
+                    self.target_error=''
             except (OSError,ValueError) as exc:
                 self.target_error='설정 저장 실패: '+str(exc)[:55]
         course=course_for(target,self.known_courses)

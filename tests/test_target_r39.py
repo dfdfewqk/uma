@@ -8,18 +8,19 @@ from decision_contract_r39 import SkillCondition, skill_fit, RepeatPlan, next_tu
 
 class R39Tests(unittest.TestCase):
     def test_selectors(self):
-        for kind in KINDS:
-            for round in range(1,5):
-                for style in STYLES:
-                    target=Target(kind,round,style).validate()
-                    self.assertIn(f'{round}회차',target.label)
+        expected=('챔피언스 미팅','리그 오브 히어로즈','챔피언스 미팅','챔피언스 미팅')
+        for round,kind in enumerate(expected,1):
+            for style in STYLES:
+                target=Target(kind,round,style).validate()
+                self.assertIn(f'{round}회차',target.label)
+        with self.assertRaises(ValueError):Target(KINDS[0],2,'선입').validate()
         for bad in (0,5,True):
             with self.assertRaises(ValueError):Target(KINDS[0],bad,'선입').validate()
 
     def test_target_persistence(self):
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp)/'target.json'
-            target=Target(KINDS[1],4,'추입')
+            target=Target(KINDS[0],4,'추입')
             save_target(path,target)
             self.assertEqual(target,read_target(path))
             self.assertEqual(list(Path(tmp).iterdir()),[path])
@@ -31,7 +32,7 @@ class R39Tests(unittest.TestCase):
             self.assertIsNone(course_for(Target(KINDS[0],1,'선입'),{}))
             good={'schema':COURSE_SCHEMA,'server':'KR','scenario':SCENARIO,'courses':[
                 {'key':'cm-1','distance':'마일','meters':1600,'surface':'잔디','venue':'가상',
-                 'source':'synthetic-only','verified_for_kr':True},
+                 'source':'synthetic-only','evidence_level':'secondary_two_sources','verified_for_kr':True},
                 {'key':'loh-1','distance':'중거리','meters':2000,'surface':'잔디',
                  'venue':'가상','source':'synthetic-only','verified_for_kr':False}]}
             path.write_text(json.dumps(good,ensure_ascii=False),encoding='utf-8')

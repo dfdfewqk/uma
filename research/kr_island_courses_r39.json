@@ -2,5 +2,50 @@
   "schema": "uma_r39_kr_course_v1",
   "server": "KR",
   "scenario": "island_post_patch_v1",
-  "courses": []
+  "courses": [
+    {
+      "key": "cm-1",
+      "distance": "중거리",
+      "meters": 2200,
+      "surface": "잔디",
+      "venue": "한신",
+      "source": "GameTora KR 39th Champions Meeting (2026-11-13), independent KR guide (2026-10-11)",
+      "sources": [
+        "https://gametora.com/ko/umamusume/events/champions-meeting?cm=39",
+        "https://swallow91.tistory.com/594"
+      ],
+      "evidence_level": "secondary_two_sources",
+      "official_confirmed": false,
+      "start_date": "2026-11-13",
+      "end_date": "2026-11-19",
+      "direction": "우회전",
+      "season": "여름",
+      "weather": "흐림",
+      "ground": "다습",
+      "verified_for_kr": true
+    }
+  ],
+  "unverified_future": [
+    {
+      "round": 2,
+      "kind": "리그 오브 히어로즈",
+      "jp_reference": "jp-2025-08-loh",
+      "kr_estimate_month": "2026-12",
+      "status": "한국 개최 코스/일정 미확정"
+    },
+    {
+      "round": 3,
+      "kind": "챔피언스 미팅",
+      "jp_reference": "jp-2025-09-cm",
+      "kr_estimate_month": "2027-01",
+      "status": "한국 개최 코스/일정 미확정"
+    },
+    {
+      "round": 4,
+      "kind": "챔피언스 미팅",
+      "jp_reference": "jp-2025-10-cm",
+      "kr_estimate_month": "2027-02",
+      "status": "한국 개최 코스/일정 미확정"
+    }
+  ]
 }
