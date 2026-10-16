@@ -41,6 +41,16 @@ def inspect_helper(factory):
             stack.extend(node.winfo_children())
         if editable:
             raise RuntimeError('typing required by primary helper interface')
+        if not hasattr(app,'target_round') or not hasattr(app,'target_style'):
+            raise RuntimeError('R39 target selectors are missing')
+        app.event_var.set('챔피언스 미팅')
+        app.target_round.set('2회차')
+        app.target_style.set('추입')
+        app._target_changed()
+        if app.current_target is None or app.current_target.key!='cm-2':
+            raise RuntimeError('R39 target settings not applied')
+        if '코스 정보 미검증' not in app.target_status.get():
+            raise RuntimeError('Unverified KR course must not be presented as verified')
         app._helper()
         if app.monitoring or app.action.get() != '헬퍼 일시 정지':
             raise RuntimeError('pause button did not clear active helper state')

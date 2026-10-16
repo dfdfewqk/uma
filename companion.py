@@ -22,6 +22,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from companion_core import choose_window, overlay_position, usable_ocr_values
 from helper_view_r37 import view_from_frame, paused_view, StableLowEnergy
+from target_selector_r39 import Target, KINDS, STYLES, ROUNDS, read_target, save_target, load_courses, course_for
 from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
                               store_capture, export_pack)
 from screen_r4 import user_dir
@@ -61,8 +62,26 @@ class Companion(tk.Tk):
         self.update_queue=queue.Queue()
         self.update_release=None
         self.update_busy=False
-        self.update_status=tk.StringVar(value=f'현재 R37 · v{CURRENT_VERSION} · 업데이트 확인 대기')
-        self.event_var=tk.StringVar(value='미확인')
+        self.update_status=tk.StringVar(value=f'현재 R39 · v{CURRENT_VERSION} · 업데이트 확인 대기')
+        self.event_var=tk.StringVar(value='')
+        self.target_round=tk.StringVar(value='')
+        self.target_style=tk.StringVar(value='')
+        self.target_status=tk.StringVar(value='대회·회차·각질을 선택하세요. 입력은 필요 없습니다.')
+        self.target_error=''
+        self.current_target=None
+        try:
+            self.known_courses=load_courses()
+        except (OSError,ValueError,KeyError,TypeError) as exc:
+            self.known_courses={}
+            self.target_error='코스 데이터 오류: '+str(exc)[:60]
+        try:
+            self.current_target=read_target(user_dir()/'helper_target_r39.json')
+        except (OSError,ValueError,KeyError,TypeError) as exc:
+            self.target_error='목표 설정 파일 확인 필요: '+str(exc)[:60]
+        if self.current_target is not None:
+            self.event_var.set(self.current_target.kind)
+            self.target_round.set(str(self.current_target.round)+'회차')
+            self.target_style.set(self.current_target.style)
         self.monitoring=True
         self.helper_switch=None
         self.dev_visible=False
@@ -90,6 +109,7 @@ class Companion(tk.Tk):
         self.energy=tk.StringVar(value='—')
         self.skill=tk.StringVar(value='—')
         self._draw()
+        self._target_changed(persist=False)
         self.after(300,self._update_poll)
         if getattr(sys, 'frozen', False) and os.name == 'nt':
             self.after(2600,self._check_updates)
@@ -122,6 +142,22 @@ class Companion(tk.Tk):
         top=tk.Frame(self.body,bg=BG,padx=14,pady=13);top.pack(fill='x')
         self._label(top,'Uma Trainer KR',TEXT,17,'bold').pack(anchor='w')
         self._label(top,'화면은 자동으로 확인 · 선택과 클릭은 게임에서 직접',MUTED,9).pack(anchor='w',pady=(2,0))
+        c=self._card()
+        self._label(c,'육성 목표 · 처음에 클릭으로 선택',AQUA,10,'bold').pack(anchor='w')
+        self._label(c,'시나리오: 무인도 (6/30 조정 이후)',MUTED,9).pack(anchor='w',pady=(4,4))
+        for caption,variable,values in (
+            ('대회',self.event_var,KINDS),
+            ('회차',self.target_round,ROUNDS),
+            ('각질',self.target_style,STYLES)):
+            self._label(c,caption,MUTED,8).pack(anchor='w',pady=(2,1))
+            selector=ttk.Combobox(c,values=values,textvariable=variable,state='readonly',takefocus=True)
+            selector.pack(fill='x',pady=(0,2))
+            selector.bind('<<ComboboxSelected>>',self._target_changed)
+        tk.Label(c,textvariable=self.target_status,bg=CARD,fg=TEXT,
+                 wraplength=290,justify='left',anchor='w').pack(anchor='w',pady=(6,2))
+        self._label(c,'설정은 로컬에 저장합니다. 코스 미검증 시 스킬 추천은 보류합니다.',
+                    MUTED,8).pack(anchor='w')
+
         c=self._card()
         self._label(c,'게임 연결',AQUA,10,'bold').pack(anchor='w')
         tk.Label(c,textvariable=self.status,fg=TEXT,bg=CARD,anchor='w',font=('Malgun Gothic',10,'bold'),wraplength=290,justify='left').pack(anchor='w',pady=(5,1))
@@ -175,10 +211,8 @@ class Companion(tk.Tk):
         advanced=self.dev_panel
         settings=tk.Frame(advanced,bg=CARD,padx=12,pady=9)
         settings.pack(fill='x',padx=12,pady=(0,9))
-        self._label(settings,'대회 구분 (선택 사항 · 추천 엔진 자동 연계 전)',
-                    AQUA,9,'bold').pack(anchor='w')
-        ttk.Combobox(settings,values=['미확인','챔피언스 미팅','리그 오브 히어로즈'],
-                     textvariable=self.event_var,state='readonly').pack(fill='x',pady=(6,0))
+        self._label(settings,'육성 목표는 상단의 클릭형 대회·회차·각질 메뉴에서 변경합니다.',
+                    MUTED,9).pack(anchor='w')
 
         row=tk.Frame(advanced,bg=BG)
         row.pack(fill='x',padx=12,pady=(0,5))
@@ -214,6 +248,33 @@ class Companion(tk.Tk):
         self._label(u,'기존 버전·기록 보존',MUTED,8).pack(anchor='w',pady=(5,0))
         self._label(advanced,'고급 점검은 실게임 인식 검증을 위한 개발 도구이며 육성 중 필요하지 않습니다.',
                     MUTED,8).pack(anchor='w',padx=14,pady=(0,8))
+
+    def _target_changed(self,event=None,persist=True):
+        """Save only a complete selected target, without inferring JP course details."""
+        if (self.event_var.get() not in KINDS
+                or self.target_round.get() not in ROUNDS
+                or self.target_style.get() not in STYLES):
+            self.target_status.set('대회·회차·각질을 선택하세요. 추천은 검증 후 표시합니다.')
+            return
+        target=Target(self.event_var.get(),int(self.target_round.get()[0]),
+                      self.target_style.get()).validate()
+        if target!=self.current_target:
+            self.hint_gate.clear()
+            self._clear_live_evidence()
+        self.current_target=target
+        if persist:
+            try:
+                save_target(user_dir()/'helper_target_r39.json',target)
+            except (OSError,ValueError) as exc:
+                self.target_error='설정 저장 실패: '+str(exc)[:55]
+        course=course_for(target,self.known_courses)
+        if self.target_error:
+            self.target_status.set(target.label+' · '+self.target_error)
+        elif course is None:
+            self.target_status.set(target.label+' · 한국 서버 코스 정보 미검증 · 스킬 추천 보류')
+        else:
+            self.target_status.set(target.label+' · '+course['venue']+' '+str(course['meters'])+'m'
+                +' ('+course['distance']+') · 코스 등록됨 · 스킬별 효과는 별도 검증')
 
     def _toggle_dev_tools(self):
         self.dev_visible=not self.dev_visible
@@ -536,6 +597,10 @@ class Companion(tk.Tk):
                 except (HandoffError,OSError) as exc:
                     obj=None
                     self.r28_info.set('R28 전달 오류: '+str(exc)[:75])
+                if (obj is not None and self.current_target is not None
+                        and obj.get('style')!=self.current_target.style):
+                    obj=None  # Prevent reviewed hints for another running style.
+                    self.r28_info.set('각질 불일치 · 이전 훈련 추천 차단')
                 rect=self.game.rect if self.game and self.game.hwnd==hwnd else None
                 active=False
                 if rect and os.name=='nt':
@@ -551,7 +616,11 @@ class Companion(tk.Tk):
                     low_energy_candidate=self.low_energy.observe(
                         energy=safe.get('체력'),epoch=epoch,scene=scene,active=active))
                 self.action.set(view.title)
-                self.reason.set(view.explanation)
+                detail=view.explanation
+                if scene=='스킬' and (self.current_target is None
+                                     or course_for(self.current_target,self.known_courses) is None):
+                    detail+=' 목표 코스 미검증 · 스킬 구매 추천은 보류합니다.'
+                self.reason.set(detail)
                 if view.verified_training and hint and rect:
                     self.r28_info.set('확인된 훈련 후보: '+hint.label)
                     if not self.hint_overlay.show(rect,hint):

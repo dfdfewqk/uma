@@ -124,7 +124,8 @@ jobs:
         shell: pwsh
         run: |
           python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_Companion --hidden-import=screen_r4 --hidden-import=cv2 --hidden-import=numpy `
-            --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' companion.py
+            --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' `
+            --add-data 'research\kr_island_courses_r39.json;research' companion.py
           if ($LASTEXITCODE -ne 0) { throw 'Companion build failed' }
           python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_GameTest `
             --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' live_test_ui_r22.py
@@ -212,7 +213,7 @@ jobs:
       - name: Upload verified Windows builds (no automatic release publication)
         uses: actions/upload-artifact@v4
         with:
-          name: UmaTrainerKR-R37-Windows-Verified
+          name: UmaTrainerKR-R39-Windows-Verified
           path: |
             dist/UmaTrainerKR.exe
             dist/UmaTrainerKR_Companion.exe
@@ -231,7 +232,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: UmaTrainerKR-R37-Windows-Diagnostics
+          name: UmaTrainerKR-R39-Windows-Diagnostics
           path: |
             dist/smoke-reports/*.json
             build/**/warn-*.txt
@@ -239,7 +240,7 @@ jobs:
           retention-days: 7
 
   publish-portable:
-    name: Publish reviewed R37 portable archive (opt-in only)
+    name: Publish reviewed R39 portable archive (opt-in only)
     needs: windows-package
     if: ${{ inputs.publish_release == true }}
     runs-on: ubuntu-latest
@@ -249,7 +250,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: UmaTrainerKR-R37-Windows-Verified
+          name: UmaTrainerKR-R39-Windows-Verified
           path: dist
       - name: Publish tested portable release (only when explicitly requested)
         shell: pwsh
