@@ -7,6 +7,11 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import sys
+
+# This script is invoked as `python scripts/verify_windows_package_r25.py` in CI.
+# Add the repository root so shared inspection contracts are importable.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from package_selftest_r25 import ASSETS, ESSENTIAL_DEPS
 
 PROGRAMS = ('UmaTrainerKR', 'UmaTrainerKR_Companion',
