@@ -134,3 +134,11 @@ R39~R43 소스 전반을 정적으로 확인하면서 Companion에 남아 있던
 시설/섬 강화는 발전 Pt·티켓 사용 비용이 기존 R40 점수 구조에서 누락되어 있어 **그 후보가 있으면 순위 확정을 보류**합니다. 이벤트는 한국 서버·카드 버전·패치·전체 선택지/실제 효과가 검수된 유일한 금색 스킬 경로에서만 후보를 내고, 재도전 스킬은 동일 레이스 2연패·거리·각질·스킬 Pt 예산을 확인해야 합니다. 기존 R28 기능은 유지합니다.
 
 Companion에 R46 검수 준비 상태를 추가했지만, 현재 OCR 수치/버튼 후보를 실게임 검증 완료 보상으로 자동 승격시키지 않습니다. **검수한 턴 보상 데이터가 아직 없으므로 실제 매 턴 최적 행동을 확정하는 실시간 연동은 미완성입니다.** R46은 제안만 반환하며 자동 게임 클릭/EXE 배포/AI 실데이터 학습을 하지 않습니다. [R46 설계·검증 범위](docs/R46_통합턴추천_검수기준.md). 테스트 코드 16개를 작성했으나 이번에는 실행하지 않았습니다.
+
+### R47 Windows 게임 테스트용 포터블 실행파일 (2026-10-16)
+
+- 기준 소스: R46 통합 추천 엔진. 포터블 버전 `0.31.5`; 사용자 기록은 기존 `%LOCALAPPDATA%\\UmaTrainerKR` 경로에 유지합니다.
+- GitHub Actions에서 **Build Windows portable (manual and one-time R47 game-test request)** 워크플로의 성공 실행을 열고 **Artifacts → UmaTrainerKR-R47-Windows-Verified**를 내려받습니다. 이 아티팩트 ZIP 안에 다시 `portable/UmaTrainerKR-Portable-v0.31.5.zip`이 들어 있습니다. 안쪽 ZIP을 별도 폴더에 압축 해제한 후 `UmaTrainerKR_Companion.exe`를 실행합니다. 설치나 Python은 필요하지 않으며 OCR용 Tesseract 설치가 별도로 필요할 수 있습니다.
+- 함께 포함되는 `UmaTrainerKR_GameTest.exe`는 게임 창 인식 진단용, `UmaTrainerKR_Preflight.exe`는 오프라인 점검용입니다. 게임 실행 및 자동 육성은 **현재 자동 클릭이 구현되지 않았습니다.** 스탯·버튼·추천 위치를 게임에서 직접 확인하고 인식 문제를 기록해 주세요.
+- 소스 테스트, Xvfb UI 검사, Windows EXE 자체 검사, SHA256 ZIP 검사 중 하나라도 실패하면 검증되지 않은 EXE를 다운로드용 아티팩트로 공개하지 않습니다. 결과는 GitHub Actions 실행 로그에서 확인합니다.
+- 이번 빌드 요청은 `.github/build-requests/r47-game-test.txt` 변경 때만 한 번 자동으로 실행하도록 제한합니다. 일반 소스 변경에서는 자동 Windows 빌드/Release 게시가 일어나지 않습니다. `workflow_dispatch` 수동 실행도 계속 지원합니다. 자동 Release 게시 기능은 수동 명시적 선택에만 열립니다.

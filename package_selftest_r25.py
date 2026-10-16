@@ -33,7 +33,11 @@ ASSETS = {
         'research/jp_post_patch_2025/sources.csv',
         'research/jp_post_patch_2025/video_chapters.csv',
     ),
-    'UmaTrainerKR_Companion': ('scenario_policies/island_post_patch_v1.json',),
+    'UmaTrainerKR_Companion': (
+        'scenario_policies/island_post_patch_v1.json',
+        'research/kr_island_courses_r39.json',
+        'research/r38_tucker_outings_jp.json',
+    ),
     'UmaTrainerKR_GameTest': ('scenario_policies/island_post_patch_v1.json',),
     'UmaTrainerKR_Preflight': (
         'scenario_policies/island_post_patch_v1.json',

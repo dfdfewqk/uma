@@ -1,0 +1,3 @@
+R47 one-time Windows portable build request
+Approved by user on 2026-10-16: prepare downloadable Windows EXE for testing with the running Korean game.
+R46 source snapshot and 0.31.5 version. Preserve old records, no automatic release, no input automation.
