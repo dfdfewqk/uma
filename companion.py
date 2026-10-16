@@ -26,6 +26,7 @@ from target_selector_r39 import (Target, STYLES, round_label, kind_for_round,
                                  read_target, save_target, load_courses, course_for)
 from planning_prefs_r44 import (Preferences, REPEAT_CHOICES,
                                 load_preferences, save_preferences, describe_plan)
+from session_dashboard_r45 import read_dashboard
 from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
                               store_capture, export_pack)
 from screen_r4 import user_dir
@@ -65,12 +66,18 @@ class Companion(tk.Tk):
         self.update_queue=queue.Queue()
         self.update_release=None
         self.update_busy=False
-        self.update_status=tk.StringVar(value=f'R44 소스 준비 · 패키지 기준 v{CURRENT_VERSION} · 자동 조작 미연결')
+        self.update_status=tk.StringVar(value=f'R45 소스 단계 · 패키지 기준 v{CURRENT_VERSION} · 자동 조작 미연결')
         self.event_var=tk.StringVar(value='')
         self.target_round=tk.StringVar(value='')
         self.target_style=tk.StringVar(value='')
         self.target_status=tk.StringVar(value='통합 대회 1~4회차와 각질을 선택하세요.')
         self.repeat_var=tk.StringVar(value='20회')
+        self.session_status=tk.StringVar(value='저장된 육성 기록 확인 전')
+        self.session_counts=tk.StringVar(value='진행 횟수 미확인')
+        self.session_breakdown=tk.StringVar(value='고점 — · 평범 — · 도축 — · 실패 —')
+        self.session_note=tk.StringVar(value='기존 기록을 읽은 뒤 표시합니다.')
+        self.session_progress=tk.DoubleVar(value=0)
+        self.session_progressbar=None
         self.repeat_preferences=Preferences()
         self.repeat_error=''
         try:
@@ -172,6 +179,30 @@ class Companion(tk.Tk):
                  wraplength=290,justify='left',anchor='w').pack(anchor='w',pady=(6,2))
         self._label(c,'회차가 챔미·리오히를 자동 결정합니다. 반복 횟수는 계획만 저장합니다.',
                     MUTED,8).pack(anchor='w')
+
+        c=self._card()
+        self._label(c,'자동 육성 현황 · 저장된 기록만',AQUA,10,'bold').pack(anchor='w')
+        tk.Label(c,textvariable=self.session_status,bg=CARD,fg=YELLOW,
+                 font=('Malgun Gothic',10,'bold'),anchor='w',wraplength=290,
+                 justify='left').pack(anchor='w',pady=(5,3))
+        tk.Label(c,textvariable=self.session_counts,bg=CARD,fg=TEXT,
+                 font=('Malgun Gothic',10,'bold'),anchor='w',wraplength=290,
+                 justify='left').pack(anchor='w',pady=(0,3))
+        self.session_progressbar=ttk.Progressbar(c,orient='horizontal',mode='determinate',
+                                      maximum=100,variable=self.session_progress)
+        self.session_progressbar.pack(fill='x',pady=(1,6))
+        self.session_breakdown_label=tk.Label(c,textvariable=self.session_breakdown,
+                 bg=CARD,fg=MUTED,font=('Malgun Gothic',8),anchor='w',
+                 wraplength=290,justify='left')
+        self.session_breakdown_label.pack(anchor='w',pady=(0,3))
+        tk.Label(c,textvariable=self.session_note,bg=CARD,fg=MUTED,
+                 font=('Malgun Gothic',8),anchor='w',wraplength=290,
+                 justify='left').pack(anchor='w',pady=(0,6))
+        tk.Button(c,text='저장된 진행 기록 다시 확인',
+                  command=self._refresh_session_dashboard,bg='#263754',
+                  fg=TEXT,relief='flat').pack(fill='x',pady=(2,2))
+        self._label(c,'게임 조작·자동 재개는 아직 미연결이며, 이 화면은 조회 전용입니다.',
+                    MUTED,8).pack(anchor='w',pady=(4,0))
 
         c=self._card()
         self._label(c,'게임 연결',AQUA,10,'bold').pack(anchor='w')
@@ -287,6 +318,7 @@ class Companion(tk.Tk):
             self.target_status.set('대회 1~4회차와 각질을 선택하세요. 추천은 보류합니다.')
             self.hint_gate.clear()
             self._clear_live_evidence()
+            self._refresh_session_dashboard()
             return
         n=choices.index(self.target_round.get())+1
         target=Target(kind_for_round(n),n,self.target_style.get()).validate()
@@ -316,6 +348,36 @@ class Companion(tk.Tk):
         if issues:
             msg+=' · '+' · '.join(issues)
         self.target_status.set(msg+' · 자동 조작 미연결')
+        self._refresh_session_dashboard()
+
+    def _refresh_session_dashboard(self):
+        """Inspect a saved R44 session without creating, resuming or changing it."""
+        try:
+            snapshot=read_dashboard(
+                self.current_target,self.repeat_preferences,
+                user_dir()/'cultivation_session_r44.json')
+        except (OSError,ValueError,TypeError,KeyError) as exc:
+            self.session_status.set('진행 기록 확인 보류')
+            self.session_counts.set('현재 육성 횟수 미확인')
+            self.session_breakdown.set('고점 — · 평범 — · 도축 — · 실패 —')
+            self.session_note.set('진행 현황 읽기 오류: '+str(exc)[:95])
+            self.session_progress.set(0)
+            if self.session_progressbar is not None:
+                self.session_progressbar.pack_forget()
+            return
+        self.session_status.set(snapshot.status)
+        self.session_counts.set(snapshot.progress)
+        self.session_breakdown.set(snapshot.breakdown)
+        self.session_note.set(snapshot.detail)
+        if self.session_progressbar is not None:
+            if snapshot.recorded and snapshot.fraction is not None:
+                self.session_progress.set(max(0,min(100,100*snapshot.fraction)))
+                if not self.session_progressbar.winfo_manager():
+                    self.session_progressbar.pack(fill='x',pady=(1,6),
+                                                  before=self.session_breakdown_label)
+            else:
+                self.session_progress.set(0)
+                self.session_progressbar.pack_forget()
 
     def _toggle_dev_tools(self):
         self.dev_visible=not self.dev_visible
