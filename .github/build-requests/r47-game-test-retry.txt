@@ -1,3 +1,3 @@
-R48 first working passive 5-preview training gain estimate + bundled local OCR build (0.31.8).
+R48 retry after fixing PowerShell line continuation for bundled OCR portable build (0.31.8).
 Trigger exactly one dispatch of the pre-existing manual Windows package workflow.
 User explicitly requested a Windows game-test download. No auto-release or auto-click.

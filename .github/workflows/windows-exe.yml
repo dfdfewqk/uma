@@ -139,7 +139,7 @@ jobs:
         shell: pwsh
         run: |
           $ocrDir = Join-Path $env:ProgramFiles 'Tesseract-OCR'
-          python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_Companion --hidden-import=screen_r4 --hidden-import=cv2 --hidden-import=numpy ` 
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_Companion --hidden-import=screen_r4 --hidden-import=cv2 --hidden-import=numpy `
             --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' `
             --add-data 'research\kr_island_courses_r39.json;research' `
             --add-data 'research\r38_tucker_outings_jp.json;research' `
