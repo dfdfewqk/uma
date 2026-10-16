@@ -25,5 +25,9 @@ jobs:
         run: |
           python offline_replay_r41.py research/r41_synthetic_replay.json > /tmp/uma-r41-synthetic.json
           python -c "import json; x=json.load(open('/tmp/uma-r41-synthetic.json', encoding='utf-8')); assert x['synthetic_only'] and not x['game_clicked'] and not x['trained_model'] and x['remaining']==0; print('R41 synthetic replay PASS (not live game)')"
+      - name: R43 guarded synthetic turn journal (no game)
+        run: |
+          python replay_pipeline_r43.py research/r41_synthetic_replay.json > /tmp/uma-r43.json
+          python -c "import json; r=json.load(open('/tmp/uma-r43.json', encoding='utf-8')); assert r['synthetic_only'] and r['real_game_actions']==0 and r['ml_training_samples']==0 and r['appended_records']==3 and r['pending_final_turn']==4; print('R43 guarded synthetic turn journal PASS')"
       - name: Confirm no Windows packaging or deployment
         run: echo "Source-only verification completed; no EXE built or published."
