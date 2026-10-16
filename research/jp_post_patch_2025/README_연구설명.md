@@ -4,8 +4,8 @@
 
 ## 자료 규모와 현재 한계
 
-- 검증한 공개 출처 25개 (영상 6개 포함)
-- 출처가 연결된 관찰/전략 주장 28개
+- 원문·소개 등 검토 범위가 기록된 공개 출처 26개 (영상 6개 포함)
+- 출처가 연결된 관찰/전략 주장 29개
 - 실전 기록·후기·영상 소개에서 식별한 사례 9개
 - 영상 설명란에 공개된 챕터 지점 12개
 - **실제 게임 화면에서 직접 판독한 개별 턴: 0개**
@@ -18,7 +18,7 @@
 - `player_cases.csv`: 문서/영상 메타에서 확인되는 육성 및 경기 사례 (도축, 완주 후 폐기, 실전 패배 구별)
 - `hypotheses.csv`: 실제 추천·도축 알고리즘에 넣기 전 검증할 가설
 - `video_chapters.csv`: 영상 설명에 나온 검수 위치 (실제 그 장면을 본 건 아님)
-- `turn_annotations.csv`: **아직 비어 있음**. 원본 화면을 직접 검증한 뒤 기록할 실제 턴 데이터 표준 형식
+- `turn_annotations.csv`: **아직 비어 있음**. 원본 화면을 직접 검증한 뒤 기록할 실제 턴 데이터 표준 형식. JP 서버·패치·출처 그룹·전후 이미지 SHA-256·검수 상태 필수.
 - `manifest.json`: 연구자료 범위와 검증 상태
 - `validate_research.py`: 외부 패키지 없이 CSV 교차 검증하는 스크립트
 
@@ -41,3 +41,12 @@
 ## 검증
 
 Windows/기타 Python 3에서 `python research/jp_post_patch_2025/validate_research.py` 실행.
+
+## R32 오프라인 연구팩 감사 보강
+
+- 기존 검증기는 검수된 턴을 1건 추가하더라도 무조건 실패하는 구조였다. 이제 빈 CSV 헤더를 유지하면서 **실제 검수된 JP 턴을 추후 추가할 수 있게** 구조 검증기를 확장했다.
+- 검수된 턴을 입력하면 `turn_id` 유일성, `case_id`·`source_id` 연결, `server=JP`, `patch_version=JP-2025-06-30-post`, 출처 그룹, 전후 프레임 SHA-256, 선택지/선택 행동, 숫자 범위·JSON 타입을 검사한다. `review_status=human_verified`, `observation_method=human_video_frame`, `confidence=human_confirmed` 필수다.
+- `manifest.json`의 `counts.verified_frame_or_turn_annotations`는 실제 CSV 행 개수와 일치해야 한다. 지금은 **0개**다. 테스트용 합성 행은 실제 연구팩에 저장하지 않는다.
+- 위 조건은 **구조적 검사**이며 사람이 정말 원본 프레임을 검수했는지, 선택한 행동이 최적이었는지, 이미지의 출처가 신뢰할 수 있는지는 자동으로 증명하지 못한다. 학습은 R15의 원본 이미지 검수와 별도 홀드아웃 게이트를 통과한 뒤에만 가능하다.
+- `S026/E029/H014`는 조정 후 초기 섬훈련 활용 가설을 추가한 것이며 공식 수치가 아니다. 기존 점수 가중치와 실게임 추천 로직은 건드리지 않았다.
+- 오프라인 회귀 검사: `python -m unittest discover -s tests -p test_research_r32.py -v`와 `python research/jp_post_patch_2025/validate_research.py`. 실게임 테스트를 대체하지 않는다.

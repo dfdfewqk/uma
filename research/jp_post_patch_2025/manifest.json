@@ -8,14 +8,14 @@
     "korean_server_patch_verified": false
   },
   "counts": {
-    "sources": 25,
-    "evidence_items": 28,
+    "sources": 26,
+    "evidence_items": 29,
     "player_cases": 9,
     "video_chapters": 12,
     "verified_frame_or_turn_annotations": 0,
-    "hypotheses": 13
+    "hypotheses": 14
   },
-  "provenance_notice": "제목/소개/본문에서 확인한 사실만 수록. 미확인 영상 프레임·턴별 상태·최종 스탯은 생성하거나 추정하지 않음.",
+  "provenance_notice": "출처 설명·작성자 경험과 실제 화면 검수는 별개. 구조 검증을 통과해도 최적 행동 정답이나 자동 ML 학습 허가는 아님.",
   "training_readiness": "NOT_TRAINABLE_TURN_LEVEL; do not treat claims, guides, heuristics or simulation as supervised labels",
   "known_conflicts": [
     {
