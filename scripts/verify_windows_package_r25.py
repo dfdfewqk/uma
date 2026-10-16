@@ -13,6 +13,7 @@ import sys
 # Add the repository root so shared inspection contracts are importable.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from package_selftest_r25 import ASSETS, ESSENTIAL_DEPS
+from scripts.validate_gui_r36 import validate as validate_source_gui
 
 PROGRAMS = ('UmaTrainerKR', 'UmaTrainerKR_Companion',
             'UmaTrainerKR_GameTest', 'UmaTrainerKR_Preflight')
@@ -76,26 +77,12 @@ def verify(directory: Path, version: str, *, require_installer: bool = True) -> 
                 startup.get('missing_dependencies')!=[]):
             raise ValueError(f'{name} startup import verification failed')
         results[f'{name}.exe']={'size':exe.stat().st_size,'sha256':sha256(exe)}
-    # R36 Windows packaging is blocked unless Tk UI actually constructs and
-    # both R34/R35 button paths run with isolated synthetic data.
-    gui_file = directory / 'smoke-reports' / 'UmaTrainerKR_gui.json'
-    if not gui_file.is_file():
-        raise ValueError('R36 real Tk GUI smoke report missing')
-    gui = json.loads(gui_file.read_text(encoding='utf-8'))
-    required = {
-        'schema': 'uma_r36_windows_gui_synthetic_smoke_v1',
-        'result': 'PASS',
-        'r6_reviewed_actions': 2,
-        'r34_panel_created': True,
-        'r35_actions_rendered': 2,
-        'r35_stale_invalidation_checked': True,
-        'r35_conflict_detected': True,
-        'game_client_tested': False,
-        'automatic_click_enabled': False,
-        'synthetic_only': True,
-    }
-    if not isinstance(gui, dict) or any(type(gui.get(k)) is not type(v) or gui[k] != v for k, v in required.items()):
-        raise ValueError('R36 real Tk GUI smoke report invalid or incomplete')
+    # Source Tk GUI has been verified by a *separate Linux/Xvfb CI job*.
+    # Windowless Windows runner does not prove graphical interaction.
+    source_report = directory / 'smoke-reports' / 'UmaTrainerKR_gui.json'
+    if not source_report.is_file():
+        raise ValueError('R36 source Tk GUI smoke report missing')
+    validate_source_gui(json.loads(source_report.read_text(encoding='utf-8')))
     if require_installer:
         installer=directory/'installer'/f'UmaTrainerKR_Setup_{version}.exe'
         if not installer.is_file() or installer.stat().st_size<10_000:

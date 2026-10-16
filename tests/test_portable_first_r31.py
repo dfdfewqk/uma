@@ -19,7 +19,7 @@ class PortableFirstTests(unittest.TestCase):
                 report['result']='FAIL'
             (root/'smoke-reports'/f'{name}.json').write_text(json.dumps(report),encoding='utf-8')
             (root/'smoke-reports'/f'{name}_startup.json').write_text(json.dumps(report),encoding='utf-8')
-        (root/'smoke-reports'/'UmaTrainerKR_gui.json').write_text(json.dumps({"schema":"uma_r36_windows_gui_synthetic_smoke_v1","result":"PASS","r6_reviewed_actions":2,"r34_panel_created":True,"r35_actions_rendered":2,"r35_stale_invalidation_checked":True,"r35_conflict_detected":True,"game_client_tested":False,"automatic_click_enabled":False,"synthetic_only":True}),encoding='utf-8')
+        (root/'smoke-reports'/'UmaTrainerKR_gui.json').write_text(json.dumps({"schema":"uma_r36_windows_gui_synthetic_smoke_v1","result":"PASS","r6_reviewed_actions":2,"r34_panel_created":True,"r35_actions_rendered":2,"r35_stale_invalidation_checked":True,"r35_conflict_detected":True,"game_client_tested":False,"automatic_click_enabled":False,"synthetic_only":True,"gui_platform":"linux","frozen_binary":False}),encoding='utf-8')
 
     def test_portable_only_works_without_installer(self):
         with tempfile.TemporaryDirectory() as td:
@@ -99,7 +99,7 @@ class PortableFirstTests(unittest.TestCase):
             root=Path(td)
             self.build_mock_binary_reports(root)
             (root/'smoke-reports'/'UmaTrainerKR_gui.json').unlink()
-            with self.assertRaisesRegex(ValueError,'real Tk GUI smoke report missing'):
+            with self.assertRaisesRegex(ValueError,'source Tk GUI smoke report missing'):
                 verify(root,CURRENT_VERSION,require_installer=False)
 
     def test_fake_gui_report_blocks_release(self):
@@ -110,7 +110,7 @@ class PortableFirstTests(unittest.TestCase):
             data=json.loads(p.read_text(encoding='utf-8'))
             data['r35_conflict_detected']=False
             p.write_text(json.dumps(data),encoding='utf-8')
-            with self.assertRaisesRegex(ValueError,'real Tk GUI smoke report invalid'):
+            with self.assertRaisesRegex(ValueError,'source Tk GUI smoke report invalid'):
                 verify(root,CURRENT_VERSION,require_installer=False)
 
     def test_version_consistency(self):

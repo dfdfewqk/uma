@@ -52,14 +52,39 @@ class R36GuiSmokeTests(unittest.TestCase):
             self.assertTrue(data['synthetic_only'])
             self.assertFalse(data['game_client_tested'])
 
+    def test_gui_exception_generates_failure_diagnostic(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target=Path(directory)/'failed.json'
+            with patch('gui_smoke_r36.run_gui_smoke',
+                       side_effect=RuntimeError('private-user-path')):
+                with self.assertRaises(SystemExit) as stopped:
+                    maybe_run_cli(lambda: None,['--gui-smoke-report',str(target)])
+            self.assertEqual(stopped.exception.code,1)
+            data=json.loads(target.read_text(encoding='utf-8'))
+            self.assertEqual(data['result'],'FAIL')
+            self.assertEqual(data['failure_type'],'RuntimeError')
+            self.assertNotIn('private-user-path',json.dumps(data))
+            self.assertFalse(data['game_client_tested'])
+
+    def test_gui_proof_requires_source_linux_platform(self):
+        from scripts.validate_gui_r36 import REQUIRED,validate
+        validate(dict(REQUIRED))
+        for bad_value in ({'gui_platform':'win32'},{'frozen_binary':True},
+                          {'r35_conflict_detected':False},{'synthetic_only':False}):
+            with self.subTest(bad_value=bad_value), self.assertRaisesRegex(ValueError,'source Tk GUI'):
+                validate(dict(REQUIRED,**bad_value))
+
     def test_gui_main_and_powershell_are_wired(self):
         app=(ROOT/'app.py').read_text(encoding='utf8')
         script=(ROOT/'scripts/windows_smoke_r31.ps1').read_text(encoding='utf8')
         verifier=(ROOT/'scripts/verify_windows_package_r25.py').read_text(encoding='utf8')
         self.assertIn('r36_gui_smoke(UmaApp)',app)
-        self.assertIn('--gui-smoke-report',script)
-        self.assertIn('R36 real Tk GUI smoke report missing',verifier)
-        self.assertIn('r35_conflict_detected',verifier)
+        self.assertNotIn('--gui-smoke-report',script)
+        workflow=(ROOT/'.github/workflows/windows-exe.yml').read_text(encoding='utf8')
+        self.assertIn('xvfb-run -a python app.py --gui-smoke-report',workflow)
+        self.assertIn('R36 source Tk GUI smoke report missing',verifier)
+        checker=(ROOT/'scripts/validate_gui_r36.py').read_text(encoding='utf8')
+        self.assertIn('r35_conflict_detected',checker)
 
     def test_workflow_requires_manual_dispatch_only(self):
         workflow=(ROOT/'.github/workflows/windows-exe.yml').read_text(encoding='utf8')

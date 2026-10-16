@@ -29,8 +29,10 @@ class WindowsSmokeTests(unittest.TestCase):
         self.assertIn('--first-run-report',self.helper)
         self.assertIn('--self-check-report',self.helper)
         self.assertIn('--startup-check-report',self.helper)
-        self.assertIn('--gui-smoke-report',self.helper)
-        self.assertIn('uma_r36_windows_gui_synthetic_smoke_v1',self.helper)
+        self.assertNotIn('--gui-smoke-report', self.helper)
+        self.assertIn('xvfb-run -a python app.py --gui-smoke-report', self.workflow)
+        self.assertIn('needs: linux-gui-preflight', self.workflow)
+        self.assertIn('validate_gui_r36.py',self.workflow)
         self.assertIn('Missing startup report after',self.helper)
 
     def test_reports_cannot_be_faked_or_reused(self):
