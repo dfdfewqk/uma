@@ -1,0 +1,127 @@
+{
+  "schema": "uma_r38_jp_tucker_outing_reference_v1",
+  "scenario": "island_post_patch_v1",
+  "server": "JP",
+  "patch_after": "2025-06-30",
+  "kr_verified": false,
+  "support": {
+    "id": "tucker_bryne_ssr_30257",
+    "name_jp": "タッカーブライン",
+    "name_ko_candidate": "터커 브라인",
+    "type": "friend",
+    "full_limit_break_assumed": true
+  },
+  "effects": {
+    "1": [
+      {
+        "choice": "forced",
+        "energy_max_bonus": 4,
+        "energy_recovery": 32,
+        "mood_delta": 1,
+        "stat_gains": {
+          "스태미나": 45
+        },
+        "next_turn_specialty_bonus": 20
+      }
+    ],
+    "2": [
+      {
+        "choice": "forced",
+        "energy_recovery": 32,
+        "mood_delta": 1,
+        "stat_gains": {
+          "스피드": 39
+        },
+        "next_turn_specialty_bonus": 20
+      }
+    ],
+    "3": [
+      {
+        "choice": "recover",
+        "energy_recovery": 80,
+        "mood_delta": 1,
+        "next_turn_specialty_bonus": 30
+      },
+      {
+        "choice": "stats",
+        "energy_recovery": 0,
+        "mood_delta": 1,
+        "stat_gains": {
+          "스피드": 10,
+          "스태미나": 10,
+          "파워": 10,
+          "근성": 10,
+          "지능": 10
+        },
+        "skill_points": 13,
+        "next_turn_specialty_bonus": 30
+      }
+    ],
+    "4": [
+      {
+        "choice": "forced",
+        "energy_recovery": 40,
+        "mood_delta": 1,
+        "stat_gains": {
+          "스태미나": 19,
+          "근성": 19
+        },
+        "next_turn_specialty_bonus": 20
+      }
+    ],
+    "5": [
+      {
+        "choice": "forced",
+        "energy_recovery": 48,
+        "mood_delta": 1,
+        "stat_gains": {
+          "파워": 39
+        },
+        "skill_hint": "パスファインダー",
+        "skill_hint_level": 3,
+        "next_turn_specialty_bonus": 120
+      }
+    ]
+  },
+  "after_outing_choice": [
+    {
+      "choice": "development",
+      "development_points": 80,
+      "skill_points": 3
+    },
+    {
+      "choice": "no_development",
+      "development_points": 0,
+      "skill_points": 3
+    }
+  ],
+  "source_references": [
+    {
+      "id": "umamusumelabo_jp_20250628",
+      "url": "https://umamusumelabo.com/chara_support/ssr-tuckerbryne",
+      "review": "author guide stage breakdown; 4LB numbers assumed"
+    },
+    {
+      "id": "gamewith_jp",
+      "url": "https://gamewith.jp/uma-musume/article/show/504764",
+      "review": "outings show recovery ranges by limit break; corroborates stage 1 stamina and stage 2 speed"
+    },
+    {
+      "id": "game8_jp",
+      "url": "https://game8.jp/umamusume/700422",
+      "review": "full limit break figures; stage 1/2 secondary stats transposed vs two other references; do not silently treat those as agreement"
+    }
+  ],
+  "caveats": [
+    "All numerical recovery amounts assume SSR full limit break (Lv50) plus island scenario link; other limit breaks and event modifiers can differ.",
+    "JP strategy reference, not a verified KR client screen or predicted recovery.",
+    "Source conflict: Game8 lists stage 1 speed and stage 2 stamina; GameWith and UmaMusumeLab list stage 1 stamina and stage 2 speed.",
+    "Next-turn specialty bonus is not an unconditional next-turn payoff; race, rest and outing may waste the timing.",
+    "Outing must actually be unlocked and the stage recognized from UI before a stage-specific recommendation.",
+    "Separate post-outing development point choices affect ticket/building timing; do not assume one choice is always best."
+  ],
+  "characters_with_verified_goal_calendars": 0,
+  "character_goal_calendar_source": "none_yet",
+  "usable_as_ml_ground_truth": false,
+  "auto_applied_score_weights": false
+}
