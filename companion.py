@@ -20,7 +20,7 @@ from pathlib import Path
 import subprocess
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from companion_core import choose_window, overlay_position, usable_ocr_values
+from companion_core import choose_window, usable_ocr_values
 from helper_view_r37 import view_from_frame, paused_view, StableLowEnergy
 from target_selector_r39 import (Target, STYLES, round_label, kind_for_round,
                                  read_target, save_target, load_courses, course_for)
@@ -59,7 +59,7 @@ class Companion(tk.Tk):
         body_id=self.scroll_canvas.create_window((0,0),window=self.body,anchor='nw')
         self.body.bind('<Configure>',lambda event:self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox('all')))
         self.scroll_canvas.bind('<Configure>',lambda event:self.scroll_canvas.itemconfigure(body_id,width=event.width))
-        self.attributes('-topmost', True)
+        self.attributes('-topmost', False)  # User can move the panel, game stays visible.
         self.game=None
         self.reading=False
         self.last_capture=0
@@ -101,6 +101,7 @@ class Companion(tk.Tk):
             self.event_var.set(self.current_target.kind)
             self.target_round.set(round_label(self.current_target.round))
             self.target_style.set(self.current_target.style)
+        self.topmost_var=tk.BooleanVar(value=False)
         self.monitoring=True
         self.helper_switch=None
         self.dev_visible=False
@@ -162,7 +163,29 @@ class Companion(tk.Tk):
     def _draw(self):
         top=tk.Frame(self.body,bg=BG,padx=14,pady=13);top.pack(fill='x')
         self._label(top,'Uma Trainer KR',TEXT,17,'bold').pack(anchor='w')
-        self._label(top,'화면은 자동으로 확인 · 선택과 클릭은 게임에서 직접',MUTED,9).pack(anchor='w',pady=(2,0))
+        self._label(top,'창 제목 표시줄로 이동 가능 · 게임 화면을 가리지 않게 배치',MUTED,9).pack(anchor='w',pady=(2,2))
+        tk.Checkbutton(top,text='항상 위에 표시 (선택)',variable=self.topmost_var,
+                 command=self._toggle_topmost,selectcolor=CARD,bg=BG,fg=TEXT,
+                 activebackground=BG,activeforeground=TEXT,
+                 font=('Malgun Gothic',9)).pack(anchor='w')
+        c=self._card()
+        self._label(c,'게임 연결',AQUA,10,'bold').pack(anchor='w')
+        tk.Label(c,textvariable=self.status,fg=TEXT,bg=CARD,anchor='w',font=('Malgun Gothic',10,'bold'),wraplength=290,justify='left').pack(anchor='w',pady=(5,1))
+        tk.Label(c,textvariable=self.detail,fg=MUTED,bg=CARD,anchor='w',font=('Malgun Gothic',8),wraplength=290,justify='left').pack(anchor='w')
+        c=self._card()
+        self._label(c,'지금 할 일 · 게임에서 직접 누르세요',AQUA,11,'bold').pack(anchor='w')
+        tk.Label(c,textvariable=self.action,bg=CARD,fg=YELLOW,
+                 font=('Malgun Gothic',14,'bold'),anchor='w',
+                 wraplength=290,justify='left').pack(anchor='w',pady=(7,4))
+        tk.Label(c,textvariable=self.reason,bg=CARD,fg=TEXT,
+                 font=('Malgun Gothic',9),wraplength=290,
+                 justify='left',anchor='w').pack(anchor='w',pady=(0,4))
+        self.helper_switch=tk.Button(c,text='화면 분석 일시 정지',command=self._helper,
+                 bg='#226F83',fg='white',relief='flat')
+        self.helper_switch.pack(fill='x',pady=(8,1))
+        self._label(c,'훈련·휴식·이벤트 선택은 게임에서만 클릭합니다. 프로그램은 입력하지 않습니다.',
+                    MUTED,8).pack(anchor='w',pady=(5,0))
+
         c=self._card()
         self._label(c,'육성 목표 · 처음에 클릭으로 선택',AQUA,10,'bold').pack(anchor='w')
         self._label(c,'시나리오: 무인도 (6/30 조정 이후)',MUTED,9).pack(anchor='w',pady=(4,4))
@@ -206,24 +229,6 @@ class Companion(tk.Tk):
                   fg=TEXT,relief='flat').pack(fill='x',pady=(2,2))
         self._label(c,'게임 조작·자동 재개는 아직 미연결이며, 이 화면은 조회 전용입니다.',
                     MUTED,8).pack(anchor='w',pady=(4,0))
-
-        c=self._card()
-        self._label(c,'게임 연결',AQUA,10,'bold').pack(anchor='w')
-        tk.Label(c,textvariable=self.status,fg=TEXT,bg=CARD,anchor='w',font=('Malgun Gothic',10,'bold'),wraplength=290,justify='left').pack(anchor='w',pady=(5,1))
-        tk.Label(c,textvariable=self.detail,fg=MUTED,bg=CARD,anchor='w',font=('Malgun Gothic',8),wraplength=290,justify='left').pack(anchor='w')
-        c=self._card()
-        self._label(c,'지금 할 일 · 게임에서 직접 누르세요',AQUA,11,'bold').pack(anchor='w')
-        tk.Label(c,textvariable=self.action,bg=CARD,fg=YELLOW,
-                 font=('Malgun Gothic',14,'bold'),anchor='w',
-                 wraplength=290,justify='left').pack(anchor='w',pady=(7,4))
-        tk.Label(c,textvariable=self.reason,bg=CARD,fg=TEXT,
-                 font=('Malgun Gothic',9),wraplength=290,
-                 justify='left',anchor='w').pack(anchor='w',pady=(0,4))
-        self.helper_switch=tk.Button(c,text='화면 분석 일시 정지',command=self._helper,
-                 bg='#226F83',fg='white',relief='flat')
-        self.helper_switch.pack(fill='x',pady=(8,1))
-        self._label(c,'훈련·휴식·이벤트 선택은 게임에서만 클릭합니다. 프로그램은 입력하지 않습니다.',
-                    MUTED,8).pack(anchor='w',pady=(5,0))
 
         c=self._card()
         self._label(c,'게임 화면 자동 확인',AQUA,10,'bold').pack(anchor='w')
@@ -300,6 +305,15 @@ class Companion(tk.Tk):
         self._label(u,'기존 버전·기록 보존',MUTED,8).pack(anchor='w',pady=(5,0))
         self._label(advanced,'고급 점검은 실게임 인식 검증을 위한 개발 도구이며 육성 중 필요하지 않습니다.',
                     MUTED,8).pack(anchor='w',padx=14,pady=(0,8))
+
+    def _toggle_topmost(self):
+        """Optional always-on-top; default is off so the game is unobstructed."""
+        self.attributes('-topmost',bool(self.topmost_var.get()))
+        self.hint_overlay.hide()
+        self.hint_gate.clear()
+        self.freshness.update(None)
+        self._clear_live_evidence()
+        self.reading=False
 
     def _repeat_changed(self,event=None):
         """Repeat count is only a local plan; it does not activate gameplay."""
@@ -616,13 +630,16 @@ class Companion(tk.Tk):
                     if ctypes.windll.user32.GetForegroundWindow()!=game.hwnd:
                         self.hint_overlay.hide()
                         self.hint_gate.clear()
-                width=max(344,self.winfo_width())
-                height=max(790,self.winfo_height())
-                x,y=overlay_position(game.rect,self.winfo_screenwidth(),self.winfo_screenheight(),width,height)
-                self.geometry(f'+{x}+{y}')
-                if rectangles_overlap(game.rect,(x,y,x+width,y+height)):
+                # Respect the user's window position. Never reposition the
+                # Tk root during polling, including when the game is resized.
+                # Non-topmost helper behind the focused game cannot obscure
+                # the game's pixels, even if their rectangles overlap.
+                panel=(self.winfo_rootx(),self.winfo_rooty(),
+                       self.winfo_rootx()+self.winfo_width(),
+                       self.winfo_rooty()+self.winfo_height())
+                if self.topmost_var.get() and rectangles_overlap(game.rect,panel):
                     self._clear_live_evidence()
-                    self.reason.set('도우미가 게임 화면을 가림 · 패널 이동/게임 창 크기 조정 후 재시도')
+                    self.reason.set('항상 위에 표시된 도우미가 게임 화면과 겹칩니다 · 창을 옮기거나 항상 위를 해제하세요.')
                 elif not self.reading:
                     self.hint_overlay.hide()  # prevent our own overlay being captured as game pixels
                     self._read_game(game)
@@ -737,6 +754,11 @@ class Companion(tk.Tk):
                 if scene=='스킬' and (self.current_target is None
                                      or course_for(self.current_target,self.known_courses) is None):
                     detail+=' 목표 코스 미검증 · 스킬 구매 추천은 보류합니다.'
+                if not view.verified_training:
+                    if scene == '훈련':
+                        detail+=' · 실게임 훈련별 보상·인연 데이터 미연결 (R22 점검에서 검수 필요)'
+                    elif scene is None:
+                        detail+=' · 한국 서버 화면 인식 기준 미등록/미확인 · 장면 점검 필요'
                 self.reason.set(detail)
                 if view.verified_training and hint and rect:
                     self.r28_info.set('확인된 훈련 후보: '+hint.label)

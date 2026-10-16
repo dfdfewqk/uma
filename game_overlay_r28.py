@@ -6,6 +6,7 @@ can be verified. If either fails, the hint remains text-only in the companion.
 from __future__ import annotations
 import sys
 import tkinter as tk
+from companion_core import is_game_capture_size_supported
 
 MAGENTA='#ff00ff'
 
@@ -63,7 +64,7 @@ class TrainingOverlay:
             self.hide();return False
         x1,y1,x2,y2=rect
         width=x2-x1;height=y2-y1
-        if width<500 or height<320 or width*height>24_000_000:
+        if not is_game_capture_size_supported(width,height):
             self.hide();return False
         self.win.geometry(f'{width}x{height}+{x1}+{y1}')
         self.paint.delete('all')

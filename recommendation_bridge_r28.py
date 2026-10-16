@@ -14,6 +14,7 @@ import os
 import tempfile
 import uuid
 from screen_r4 import user_dir
+from companion_core import is_game_capture_size_supported
 from training_r5 import TRAINING_CHOICES
 from uma_core import STATS
 
@@ -45,7 +46,7 @@ def create_handoff(session, report, profile, state, *, window_id, window_size, n
         not all(isinstance(n,int) and not isinstance(n,bool) for n in window_size)):
         raise HandoffError('게임 창 해상도 오류')
     w,h=window_size
-    if w<500 or h<320 or w*h>24_000_000 or session.size!=(w,h):
+    if not is_game_capture_size_supported(w,h) or session.size!=(w,h):
         raise HandoffError('캡처한 게임 창 해상도가 바뀌었습니다.')
     if profile.scenario not in ('island_post_patch_v1',):
         raise HandoffError('등록되지 않은 시나리오는 화면 위 추천을 표시하지 않습니다.')
@@ -97,7 +98,7 @@ def validate_handoff(obj,now=None):
             raise HandoffError('검수 추천의 유효 시간이 지났거나 아직 시작되지 않았습니다.')
         if (not isinstance(obj['window_id'],int) or isinstance(obj['window_id'],bool) or obj['window_id']<=0 or
             not isinstance(obj['width'],int) or not isinstance(obj['height'],int) or
-            obj['width']<500 or obj['height']<320 or obj['width']*obj['height']>24_000_000):
+            not is_game_capture_size_supported(obj['width'],obj['height'])):
             raise HandoffError('게임 창 정보 오류')
         if obj['scenario']!='island_post_patch_v1' or obj['source']!='R22_live_capture_user_reviewed':
             raise HandoffError('허용되지 않은 출처 또는 시나리오')

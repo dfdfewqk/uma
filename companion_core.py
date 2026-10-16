@@ -45,6 +45,17 @@ def is_compact_game_window(window: GameWindow) -> bool:
     )
 
 
+def is_game_capture_size_supported(width: int, height: int) -> bool:
+    """Support normal and narrow portrait game capture geometry.
+
+    Window identity and actual live-capture provenance are checked separately.
+    """
+    if (type(width) is not int or type(height) is not int or
+            width*height > 24_000_000 or height < 320):
+        return False
+    return width >= 500 or (300 <= width < 500 and height > width)
+
+
 def is_game_window_size_supported(window: GameWindow) -> bool:
     """Shared automatic/manual game-window size policy."""
     return bool(
