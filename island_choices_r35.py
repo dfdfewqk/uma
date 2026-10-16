@@ -123,7 +123,7 @@ def compare_checked_choices(profile: RunProfile, state: TurnState, ctx: Planning
             else:
                 notes.append('첫 티켓인지 이후 티켓인지 확인 전: 최적 사용 시점 판단 보류.')
             if ctx.friendship_locations is not None and ctx.friendship_locations != action.friend_types:
-                result.missing.append('섬 훈련 우정 시설 수: ⑦ R6 입력과 R34 수동 입력이 다릅니다.')
+                result.missing.append('섬 훈련 우정 시설 수 불일치: ⑦ R6 입력과 R34 수동 입력이 다릅니다.')
                 notes.append('R6·R34 우정 발생 시설 수 불일치. 두 화면을 확인하세요.')
             if state.turns_until_next_ticket in (0, 1):
                 notes.append('다음 티켓 수령 임박: 보유 한도·중복 소멸 규칙을 확인하세요.')
