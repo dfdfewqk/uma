@@ -1,0 +1,41 @@
+{
+  "schema": "uma_video_review_request_v1",
+  "video_id": "E19uBCIOjic",
+  "url": "https://youtu.be/E19uBCIOjic",
+  "provided_as": "user_shared_youtube_link",
+  "intent": "real_gameplay_training_decisions",
+  "status": "awaiting_accessible_video_or_transcript",
+  "access_check": "2026-10-16: YouTube page blocked by retrieval tool; exact video ID not indexed by web search. No footage, transcript, title, or author verified.",
+  "metadata": {
+    "title": null,
+    "creator": null,
+    "description": null,
+    "published_at": null,
+    "duration_seconds": null,
+    "server": null,
+    "scenario_patch": null
+  },
+  "review_targets": [
+    "actual selected actions by turn",
+    "training choices and observed stats",
+    "island ticket use and opportunity cost",
+    "facility construction and development points",
+    "rest/outing/race timing",
+    "end-of-run observed outcome when footage shows it"
+  ],
+  "evidence": {
+    "video_frames_reviewed": 0,
+    "verified_turn_records": 0,
+    "transcript_segments_verified": 0,
+    "claims_verified": 0
+  },
+  "learning_status": "NOT_TRAINABLE; no labels, no weight changes, no game client validation",
+  "ingest_rules": [
+    "Do not treat general strategy guides as claims from this video.",
+    "Distinguish narrator explanation from actual observed screen values.",
+    "Do not infer hidden action alternatives or counterfactual outcomes.",
+    "Separate JP patch from KR server evidence.",
+    "Keep local source material user-controlled; no automatic upload."
+  ],
+  "next_input": "Accessible transcript with timestamps, or an authorized local video/selected screenshots."
+}
