@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
-from evidence_store_r40 import TurnObservation, append_turn, read_turns
+from evidence_store_r40 import TurnObservation, append_turn_batch_atomic, read_turns
 
 
 @dataclass(frozen=True)
@@ -113,9 +113,9 @@ def run_offline_pipeline(fixture: dict, journal: Path, *, run_id: str = 'synthet
             saved[turn_id] = content
         hypotheses.append(hypothetical)
     # Detect conflicts across the whole replay before mutating an existing journal.
-    for record in new_records:
-        append_turn(journal, record)
-        additions += 1
+    if new_records:
+        append_turn_batch_atomic(journal, new_records)
+        additions = len(new_records)
     last = len(turns) if turns else None
     # The final turn has no following frame, so it must not be logged as completed.
     return PipelineReport(

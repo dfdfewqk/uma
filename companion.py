@@ -22,7 +22,10 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from companion_core import choose_window, overlay_position, usable_ocr_values
 from helper_view_r37 import view_from_frame, paused_view, StableLowEnergy
-from target_selector_r39 import Target, KINDS, STYLES, ROUNDS, read_target, save_target, load_courses, course_for
+from target_selector_r39 import (Target, STYLES, round_label, kind_for_round,
+                                 read_target, save_target, load_courses, course_for)
+from planning_prefs_r44 import (Preferences, REPEAT_CHOICES,
+                                load_preferences, save_preferences, describe_plan)
 from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
                               store_capture, export_pack)
 from screen_r4 import user_dir
@@ -62,11 +65,19 @@ class Companion(tk.Tk):
         self.update_queue=queue.Queue()
         self.update_release=None
         self.update_busy=False
-        self.update_status=tk.StringVar(value=f'현재 R39 · v{CURRENT_VERSION} · 업데이트 확인 대기')
+        self.update_status=tk.StringVar(value=f'R44 소스 준비 · 패키지 기준 v{CURRENT_VERSION} · 자동 조작 미연결')
         self.event_var=tk.StringVar(value='')
         self.target_round=tk.StringVar(value='')
         self.target_style=tk.StringVar(value='')
-        self.target_status=tk.StringVar(value='대회·회차·각질을 선택하세요. 입력은 필요 없습니다.')
+        self.target_status=tk.StringVar(value='통합 대회 1~4회차와 각질을 선택하세요.')
+        self.repeat_var=tk.StringVar(value='20회')
+        self.repeat_preferences=Preferences()
+        self.repeat_error=''
+        try:
+            self.repeat_preferences=load_preferences(user_dir()/'planning_preferences_r44.json')
+        except (OSError,ValueError,TypeError,KeyError) as exc:
+            self.repeat_error='반복 설정 확인 필요: '+str(exc)[:50]
+        self.repeat_var.set(str(self.repeat_preferences.repeats)+'회')
         self.target_error=''
         self.current_target=None
         try:
@@ -80,7 +91,7 @@ class Companion(tk.Tk):
             self.target_error='목표 설정 파일 확인 필요: '+str(exc)[:60]
         if self.current_target is not None:
             self.event_var.set(self.current_target.kind)
-            self.target_round.set(str(self.current_target.round)+'회차')
+            self.target_round.set(round_label(self.current_target.round))
             self.target_style.set(self.current_target.style)
         self.monitoring=True
         self.helper_switch=None
@@ -146,16 +157,20 @@ class Companion(tk.Tk):
         self._label(c,'육성 목표 · 처음에 클릭으로 선택',AQUA,10,'bold').pack(anchor='w')
         self._label(c,'시나리오: 무인도 (6/30 조정 이후)',MUTED,9).pack(anchor='w',pady=(4,4))
         for caption,variable,values in (
-            ('대회',self.event_var,KINDS),
-            ('회차',self.target_round,ROUNDS),
-            ('각질',self.target_style,STYLES)):
+            ('통합 대회 회차',self.target_round,tuple(round_label(n) for n in range(1,5))),
+            ('각질',self.target_style,STYLES),
+            ('반복 육성 횟수',self.repeat_var,tuple(str(n)+'회' for n in REPEAT_CHOICES))):
             self._label(c,caption,MUTED,8).pack(anchor='w',pady=(2,1))
-            selector=ttk.Combobox(c,values=values,textvariable=variable,state='readonly',takefocus=True)
+            selector=ttk.Combobox(c,values=values,textvariable=variable,
+                                  state='readonly',takefocus=True)
             selector.pack(fill='x',pady=(0,2))
-            selector.bind('<<ComboboxSelected>>',self._target_changed)
+            selector.bind('<<ComboboxSelected>>',self._repeat_changed if variable is self.repeat_var else self._target_changed)
+            if variable is self.repeat_var:
+                selector.bind('<FocusOut>',self._repeat_changed)
+                selector.bind('<Return>',self._repeat_changed)
         tk.Label(c,textvariable=self.target_status,bg=CARD,fg=TEXT,
                  wraplength=290,justify='left',anchor='w').pack(anchor='w',pady=(6,2))
-        self._label(c,'설정은 로컬에 저장합니다. 코스 미검증 시 스킬 추천은 보류합니다.',
+        self._label(c,'회차가 챔미·리오히를 자동 결정합니다. 반복 횟수는 계획만 저장합니다.',
                     MUTED,8).pack(anchor='w')
 
         c=self._card()
@@ -249,15 +264,33 @@ class Companion(tk.Tk):
         self._label(advanced,'고급 점검은 실게임 인식 검증을 위한 개발 도구이며 육성 중 필요하지 않습니다.',
                     MUTED,8).pack(anchor='w',padx=14,pady=(0,8))
 
+    def _repeat_changed(self,event=None):
+        """Repeat count is only a local plan; it does not activate gameplay."""
+        try:
+            raw=self.repeat_var.get()
+            if not raw.endswith('회'):
+                raise ValueError('반복 횟수 선택 오류')
+            pref=Preferences(int(raw[:-1])).validate()
+            save_preferences(user_dir()/'planning_preferences_r44.json',pref)
+            self.repeat_preferences=pref
+            self.repeat_error=''
+        except (OSError,ValueError,TypeError) as exc:
+            self.repeat_var.set(str(self.repeat_preferences.repeats)+'회')
+            self.repeat_error='반복 설정 저장 오류: '+str(exc)[:55]
+        self._refresh_target_status()
+
     def _target_changed(self,event=None,persist=True):
-        """Save only a complete selected target, without inferring JP course details."""
-        if (self.event_var.get() not in KINDS
-                or self.target_round.get() not in ROUNDS
-                or self.target_style.get() not in STYLES):
-            self.target_status.set('대회·회차·각질을 선택하세요. 추천은 검증 후 표시합니다.')
+        """Only one of the four ordered CM/LOH slots plus a racing style."""
+        choices=tuple(round_label(n) for n in range(1,5))
+        if self.target_round.get() not in choices or self.target_style.get() not in STYLES:
+            self.current_target=None
+            self.target_status.set('대회 1~4회차와 각질을 선택하세요. 추천은 보류합니다.')
+            self.hint_gate.clear()
+            self._clear_live_evidence()
             return
-        target=Target(self.event_var.get(),int(self.target_round.get()[0]),
-                      self.target_style.get()).validate()
+        n=choices.index(self.target_round.get())+1
+        target=Target(kind_for_round(n),n,self.target_style.get()).validate()
+        self.event_var.set(target.kind)
         if target!=self.current_target:
             self.hint_gate.clear()
             self._clear_live_evidence()
@@ -269,14 +302,20 @@ class Companion(tk.Tk):
                     self.target_error=''
             except (OSError,ValueError) as exc:
                 self.target_error='설정 저장 실패: '+str(exc)[:55]
+        self._refresh_target_status()
+
+    def _refresh_target_status(self):
+        target=self.current_target
         course=course_for(target,self.known_courses)
-        if self.target_error:
-            self.target_status.set(target.label+' · '+self.target_error)
-        elif course is None:
-            self.target_status.set(target.label+' · 한국 서버 코스 정보 미검증 · 스킬 추천 보류')
-        else:
-            self.target_status.set(target.label+' · '+course['venue']+' '+str(course['meters'])+'m'
-                +' ('+course['distance']+') · 코스 등록됨 · 스킬별 효과는 별도 검증')
+        msg=describe_plan(target,self.repeat_preferences,course)
+        issues=[x for x in (self.target_error,self.repeat_error) if x]
+        if course is not None:
+            msg+=' · '+course['venue']+' '+str(course['meters'])+'m'
+            if course.get('official_confirmed') is not True:
+                msg+=' (2차 출처, 공식 확인 전)'
+        if issues:
+            msg+=' · '+' · '.join(issues)
+        self.target_status.set(msg+' · 자동 조작 미연결')
 
     def _toggle_dev_tools(self):
         self.dev_visible=not self.dev_visible
@@ -599,10 +638,11 @@ class Companion(tk.Tk):
                 except (HandoffError,OSError) as exc:
                     obj=None
                     self.r28_info.set('R28 전달 오류: '+str(exc)[:75])
-                if (obj is not None and self.current_target is not None
-                        and obj.get('style')!=self.current_target.style):
-                    obj=None  # Prevent reviewed hints for another running style.
-                    self.r28_info.set('각질 불일치 · 이전 훈련 추천 차단')
+                if (obj is not None and (self.current_target is None
+                        or obj.get('style')!=self.current_target.style
+                        or obj.get('event')!=self.current_target.kind)):
+                    obj=None  # Reviewed advice must match the complete selected competition.
+                    self.r28_info.set('대회/각질 불일치 · 이전 훈련 추천 차단')
                 rect=self.game.rect if self.game and self.game.hwnd==hwnd else None
                 active=False
                 if rect and os.name=='nt':
