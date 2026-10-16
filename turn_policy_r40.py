@@ -22,6 +22,8 @@ class TurnOption:
     def validate(self):
         if self.kind not in VALID_KINDS or not isinstance(self.name,str) or not self.name:
             raise ValueError('행동 타입/이름 오류')
+        if not isinstance(self.stat_gains,dict):
+            raise ValueError('스탯 상승량 형식 오류')
         if any(k not in STATS or type(v) is not int or v<0 or v>1000
                for k,v in self.stat_gains.items()):
             raise ValueError('스탯 변화 범위 오류')
@@ -29,7 +31,9 @@ class TurnOption:
                     ('bond_points',self.bond_points),('friendship_members',self.friendship_members)):
             if type(v) is not int or not -200<=v<=3000:
                 raise ValueError(k+' 범위 오류')
-        if not (0<=self.failure_pct<=100 and 0<=self.next_turn_training_bonus<=1000):
+        if (type(self.failure_pct) not in (int,float)
+                or type(self.next_turn_training_bonus) not in (int,float)
+                or not (0<=self.failure_pct<=100 and 0<=self.next_turn_training_bonus<=1000)):
             raise ValueError('실패율/버프 범위 오류')
         return self
 
@@ -44,13 +48,17 @@ class TurnEvidence:
     source:str='unverified'
 
     def validate(self):
-        if (not set(STATS).issubset(self.stats) or not set(STATS).issubset(self.targets)
+        if (not isinstance(self.stats,dict) or not isinstance(self.targets,dict)
+                or not set(STATS).issubset(self.stats) or not set(STATS).issubset(self.targets)
                 or any(type(self.stats[x]) is not int or not 0<=self.stats[x]<=5000
                        or type(self.targets[x]) is not int or not 0<=self.targets[x]<=5000 for x in STATS)
                 or type(self.energy) is not int or not 0<=self.energy<=100):
             raise ValueError('턴/목표 스탯 또는 체력 오류')
-        if self.next_turn_mandatory_race not in (True,False,None):
+        if (self.next_turn_mandatory_race is not None
+                and type(self.next_turn_mandatory_race) is not bool):
             raise ValueError('다음 턴 일정 오류')
+        if type(self.verified) is not bool or type(self.all_actions_visible) is not bool:
+            raise ValueError('관측값 검증 상태는 불리언이어야 합니다.')
         return self
 
 @dataclass(frozen=True)
