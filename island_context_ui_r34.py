@@ -4,11 +4,14 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from island_context_r34 import (STATS, TICKET_PHASES, BOND_PHASES,
                                 PlanningInputs, assess_island_context)
+from island_choices_r35 import compare_checked_choices
 
 class IslandContextPanel(ttk.Frame):
-    def __init__(self, parent, profile_getter, state_getter):
+    def __init__(self, parent, profile_getter, state_getter, comparison_getter=None):
         super().__init__(parent)
         self.profile_getter, self.state_getter = profile_getter, state_getter
+        self.comparison_getter = comparison_getter
+        self._r35_presented = False
         self.phase=tk.StringVar(value='미확인')
         self.bonds=tk.StringVar(value='미확인')
         self.confirmed=tk.BooleanVar(value=False)
@@ -16,6 +19,8 @@ class IslandContextPanel(ttk.Frame):
                      ('friendship','races','next_race','outings',*STATS)}
         self.summary=tk.StringVar(value='① 목표 및 ② 턴에 입력된 값은 자동으로 읽습니다. 나머지는 확인한 값만 입력하세요.')
         self._build()
+        for var in (self.phase, self.bonds, self.confirmed, *self.values.values()):
+            var.trace_add('write', self._invalidate_choices)
 
     @staticmethod
     def _optional_number(raw: str, label: str) -> int | None:
@@ -67,6 +72,7 @@ class IslandContextPanel(ttk.Frame):
         controls=ttk.Frame(root);controls.pack(fill='x',pady=6)
         ttk.Button(controls,text='R34 조건별 검토',command=self.calculate,
                    style='Accent.TButton').pack(side='left',padx=(0,8))
+        ttk.Button(controls,text='R35 확인된 행동 비교',command=self.compare_choices).pack(side='left',padx=(0,8))
         ttk.Button(controls,text='수동 입력 초기화',command=self.reset).pack(side='left')
         ttk.Label(root,textvariable=self.summary,style='Muted.TLabel',
                   wraplength=1050).pack(anchor='w',pady=5)
@@ -101,6 +107,48 @@ class IslandContextPanel(ttk.Frame):
         self.detail.delete('1.0','end')
         self.detail.insert('1.0',content)
         self.detail.config(state='disabled')
+
+    def _invalidate_choices(self, *_):
+        if self._r35_presented:
+            self._r35_presented = False
+            self.summary.set('R35 입력이 변경됐습니다. 검토를 다시 실행하세요.')
+            self._display('R35 이전 비교는 무효화됐습니다. 이번 턴 R6와 R34 조건을 다시 확인하세요.')
+
+    def invalidate_external(self):
+        """A tab switch may make the last R6 evidence obsolete."""
+        self._invalidate_choices()
+
+    def compare_choices(self):
+        try:
+            profile, state, conditions = self.profile_getter(), self.state_getter(), self._inputs()
+            bundle = self.comparison_getter(profile, state) if self.comparison_getter else None
+            result = compare_checked_choices(profile, state, conditions, bundle)
+        except (ValueError, TypeError, KeyError, AttributeError) as error:
+            self._r35_presented = False
+            self.summary.set('R35 행동 비교 보류 · 현재 입력을 확인하세요.')
+            self._display('R35: ' + str(error) + '\n\n⑦ R6 탭에서 모든 행동을 검수한 후 다시 비교하세요.')
+            return None
+        self._r35_presented = True
+        self.summary.set(f'{result.status} · 확인한 행동 {len(result.actions)}개 · R6 점수 변경 없음')
+        lines = ['[R35 · 현재 턴 행동별 입력값 대조]',
+                 'R6는 실험 순위입니다. R35는 새 점수·최적 선택을 생성하지 않습니다.', '']
+        for action in result.actions:
+            gains = ', '.join(f'{s}+{n}' for s, n in action.observed_gains.items() if n)
+            lines.append(f'[{action.name}] R6 실험 #{action.r6_experimental_rank} '
+                         f'({action.r6_experimental_score:.1f}점)')
+            lines.append(f'  입력한 스탯 상승: {gains or "0"}  |  선택 후 체력: {action.energy_after}')
+            lines.append(f'  입력한 스킬 Pt: +{action.skill_points_gain} / 발전 Pt: +{action.development_points_gain}')
+            lines.extend('  • ' + x for x in action.notes)
+            lines.append('')
+        lines.extend(['[R34 장기 조건 관찰]'])
+        if result.context_audit:
+            lines.extend('• ' + x for x in result.context_audit.checks)
+        lines.extend(['', '[현재 보류·재확인 항목]'])
+        lines.extend('• ' + x for x in result.missing or ['없음'])
+        lines.extend(['', '[근거 및 한계]'])
+        lines.extend('• ' + x for x in result.cautions)
+        self._display('\n'.join(lines))
+        return result
 
     def calculate(self):
         try:

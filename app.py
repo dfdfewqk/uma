@@ -715,8 +715,11 @@ class UmaApp(tk.Tk):
         self.r6_panel.pack(fill='both', expand=True)
 
     def _build_context_r34(self):
-        self.r34_panel = IslandContextPanel(self.page_context_r34, self._profile, self._state)
+        self.r34_panel = IslandContextPanel(self.page_context_r34, self._profile, self._state,
+                                           comparison_getter=self._read_r6_for_r8)
         self.r34_panel.pack(fill='both', expand=True)
+        self.notebook.bind('<<NotebookTabChanged>>',
+                           lambda _event: self.r34_panel.invalidate_external(), add='+')
 
     def _build_island_r7(self):
         self.r7_panel = IslandPlannerPanel(self.page_island_r7, self._profile, self._state)
