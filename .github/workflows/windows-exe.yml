@@ -96,6 +96,21 @@ jobs:
           python -m pip install --disable-pip-version-check "pyinstaller>=6.10,<7"
           if ($LASTEXITCODE -ne 0) { throw 'Dependency setup failed' }
 
+      - name: Prepare bundled local Tesseract OCR for Korean game number previews
+        shell: pwsh
+        run: |
+          $ocrDir = Join-Path $env:ProgramFiles 'Tesseract-OCR'
+          if (-not (Test-Path (Join-Path $ocrDir 'tesseract.exe'))) {
+            choco install tesseract --yes --no-progress --limit-output
+            if ($LASTEXITCODE -ne 0) { throw 'OCR engine install failed; portable build blocked' }
+          }
+          if (-not (Test-Path (Join-Path $ocrDir 'tesseract.exe')) -or
+              -not (Test-Path (Join-Path $ocrDir 'tessdata/eng.traineddata'))) {
+            throw 'Bundled OCR program or English-digit traineddata missing'
+          }
+          & (Join-Path $ocrDir 'tesseract.exe') --version
+          if ($LASTEXITCODE -ne 0) { throw 'Bundled Tesseract cannot start' }
+
       - name: Run all source tests and syntax checks
         shell: pwsh
         run: |
@@ -123,10 +138,12 @@ jobs:
       - name: Build companion, live test and offline preflight EXEs
         shell: pwsh
         run: |
-          python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_Companion --hidden-import=screen_r4 --hidden-import=cv2 --hidden-import=numpy `
+          $ocrDir = Join-Path $env:ProgramFiles 'Tesseract-OCR'
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_Companion --hidden-import=screen_r4 --hidden-import=cv2 --hidden-import=numpy ` 
             --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' `
             --add-data 'research\kr_island_courses_r39.json;research' `
-            --add-data 'research\r38_tucker_outings_jp.json;research' companion.py
+            --add-data 'research\r38_tucker_outings_jp.json;research' `
+            --add-data "$ocrDir;ocr" companion.py
           if ($LASTEXITCODE -ne 0) { throw 'Companion build failed' }
           python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_GameTest `
             --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' live_test_ui_r22.py

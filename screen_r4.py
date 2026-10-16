@@ -194,6 +194,12 @@ def tesseract_executable(custom: str = '') -> Optional[str]:
     if custom:
         p=Path(custom)
         return str(p) if p.is_file() and p.name.lower() in ('tesseract.exe','tesseract') else None
+    # The v0.31.8 game-test portable has OCR packaged inside PyInstaller.
+    # Look there first so the player never needs to locate an OCR installer.
+    if getattr(sys,'frozen',False) and hasattr(sys,'_MEIPASS'):
+        bundled=Path(sys._MEIPASS)/'ocr'/'tesseract.exe'
+        if bundled.is_file() and (bundled.parent/'tessdata'/'eng.traineddata').is_file():
+            return str(bundled)
     direct=shutil.which('tesseract')
     if direct:
         return direct

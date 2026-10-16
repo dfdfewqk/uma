@@ -1,2 +1,2 @@
-Uma Trainer KR R47 Game-Test Portable
-Version: 0.31.7
+Uma Trainer KR R48 Game-Test Training Preview
+Version: 0.31.8

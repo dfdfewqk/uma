@@ -28,6 +28,7 @@ from planning_prefs_r44 import (Preferences, REPEAT_CHOICES,
                                 load_preferences, save_preferences, describe_plan)
 from session_dashboard_r45 import read_dashboard
 from unified_advisor_r46 import UnifiedAdvisor, companion_readiness
+from training_preview_r48 import PreviewCollector, selected_training
 from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
                               store_capture, export_pack)
 from screen_r4 import user_dir
@@ -120,6 +121,8 @@ class Companion(tk.Tk):
         self.r28_info=tk.StringVar(value='훈련 추천: 화면 확인·검수 전')
         self.r46_status=tk.StringVar(value='R46 통합 추천: 실제 턴별 보상 검수 전')
         self.unified_advisor=UnifiedAdvisor()
+        self.preview_collector=PreviewCollector()
+        self.preview_info=tk.StringVar(value='R48 게임 훈련 미리보기 탐색 대기 · 0/5')
         self.capture_label=tk.StringVar(value='훈련')
         self.capture_pack=None
         self.capture_pending=False
@@ -178,6 +181,9 @@ class Companion(tk.Tk):
                  font=('Malgun Gothic',14,'bold'),anchor='w',
                  wraplength=290,justify='left').pack(anchor='w',pady=(7,4))
         tk.Label(c,textvariable=self.reason,bg=CARD,fg=TEXT,
+                 font=('Malgun Gothic',9),wraplength=290,
+                 justify='left',anchor='w').pack(anchor='w',pady=(0,4))
+        tk.Label(c,textvariable=self.preview_info,bg=CARD,fg=AQUA,
                  font=('Malgun Gothic',9),wraplength=290,
                  justify='left',anchor='w').pack(anchor='w',pady=(0,4))
         self.helper_switch=tk.Button(c,text='화면 분석 일시 정지',command=self._helper,
@@ -605,6 +611,8 @@ class Companion(tk.Tk):
         self.action.set('추천 보류')
         self.reason.set('이전 화면의 추천과 OCR 수치를 무효화했습니다.')
         self.unified_advisor.suspend()
+        self.preview_collector.reset()
+        self.preview_info.set('R48: 훈련 5종을 게임에서 확인하면 잠정 비교 · 0/5')
         self.r46_status.set('R46: 이전 화면 추천 폐기 · 새 한국 서버 관측값 확인 대기')
 
     def _scan(self):
@@ -650,7 +658,8 @@ class Companion(tk.Tk):
             self._clear_live_evidence()
             self.status.set('게임 연결 감지 오류')
             self.detail.set(type(exc).__name__)
-        self.after(2500,self._scan)
+        # Faster passive screenshot polling while the player previews 5 trainings.
+        self.after(1200,self._scan)
 
     def _read_game(self,game):
         from screen_r4 import profile_path
@@ -674,7 +683,15 @@ class Companion(tk.Tk):
                 except (OSError,ValueError):anchors=[]
                 guess=self.scene_tracker.observe(image,anchors)
                 scene=guess.scene
-                text_scene=f'화면 유형: {scene or "보류"} · {guess.reason}'
+                # A distinctive, narrow Korean portrait training preview can
+                # be detected without R20 calibration templates. This is only
+                # a provisional scene, not proof of the optimal next action.
+                portrait_training=selected_training(image)
+                if scene is None and portrait_training is not None:
+                    scene='훈련'
+                    text_scene='화면 유형: 훈련 미리보기 후보 · 실제 보상 확인 중'
+                else:
+                    text_scene=f'화면 유형: {scene or "보류"} · {guess.reason}'
                 hits=[]
                 try:patterns=load_patterns(button_pattern_path())
                 except (DetectionError,OSError):patterns=[]
@@ -685,6 +702,15 @@ class Companion(tk.Tk):
                 except (DetectorUnavailable,DetectionError,ValueError) as exc:
                     self.button_tracker.reset()
                     buttons='버튼 인식 보류: '+str(exc)[:70]
+                # Passive local preview collection: the player selects
+                # five training icons in the game. No game pointer/keyboard.
+                preview=None
+                if scene == '훈련' and portrait_training is not None:
+                    from screen_r4 import tesseract_executable
+                    preview=self.preview_collector.observe(
+                        image,game.hwnd,tesseract_executable())
+                elif scene is not None and scene != '훈련':
+                    self.preview_collector.reset()
                 values={}
                 if scene == '훈련' and profile_path().exists():
                     with tempfile.TemporaryDirectory(prefix='uma_companion_') as td:
@@ -693,7 +719,7 @@ class Companion(tk.Tk):
                         profile=read_profile(profile_path())
                         results=read_regions(path,profile,min_confidence=80)
                     values=usable_ocr_values(results)
-                self.q.put(('frame',epoch,game.hwnd,(text_scene,buttons,scene,values,hits)))
+                self.q.put(('frame',epoch,game.hwnd,(text_scene,buttons,scene,values,hits,preview)))
             except Exception as e:
                 self.q.put(('error',epoch,game.hwnd,str(e)))
         threading.Thread(target=work,daemon=True).start()
@@ -709,7 +735,7 @@ class Companion(tk.Tk):
                     self._clear_live_evidence()
                     self.reason.set('화면 인식 보류 · '+data[:85])
                     continue
-                scene_text,buttons,scene,values,hits=data
+                scene_text,buttons,scene,values,hits,preview=data
                 self.scene_info.set(scene_text)
                 self.button_info.set(buttons)
                 # Entire frame replaces, never merges with last frame's values.
@@ -751,10 +777,18 @@ class Companion(tk.Tk):
                         energy=safe.get('체력'),epoch=epoch,scene=scene,active=active))
                 self.action.set(view.title)
                 detail=view.explanation
+                if preview is not None:
+                    self.preview_info.set(preview.explanation)
+                elif scene not in ('훈련',None):
+                    self.preview_info.set('R48: 다른 장면 · 훈련 미리보기 후보 비활성')
+                if preview is not None and preview.recommendation is not None:
+                    self.action.set(preview.recommendation+' 훈련 · 잠정 후보')
+                    detail=preview.explanation
                 if scene=='스킬' and (self.current_target is None
                                      or course_for(self.current_target,self.known_courses) is None):
                     detail+=' 목표 코스 미검증 · 스킬 구매 추천은 보류합니다.'
-                if not view.verified_training:
+                if not view.verified_training and (preview is None or
+                                                   preview.recommendation is None):
                     if scene == '훈련':
                         detail+=' · 실게임 훈련별 보상·인연 데이터 미연결 (R22 점검에서 검수 필요)'
                     elif scene is None:
