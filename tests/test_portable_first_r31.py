@@ -143,7 +143,7 @@ class PortableFirstTests(unittest.TestCase):
         self.assertIn('build_installer:',workflow)
         self.assertIn("if: ${{ inputs.build_installer == true }}",workflow)
         self.assertIn('verify_windows_package_r25.py dist $version --portable-only',workflow)
-        self.assertIn('name: UmaTrainerKR-R37-Windows-Verified',workflow)
+        self.assertIn('name: UmaTrainerKR-R47-Windows-Verified',workflow)
         self.assertIn('if: ${{ inputs.publish_release == true }}',workflow)
         self.assertNotIn('  push:',workflow)
         self.assertNotIn('  schedule:',workflow)

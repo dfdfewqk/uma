@@ -138,7 +138,7 @@ Companion에 R46 검수 준비 상태를 추가했지만, 현재 OCR 수치/버�
 ### R47 Windows 게임 테스트용 포터블 실행파일 (2026-10-16)
 
 - 기준 소스: R46 통합 추천 엔진. 포터블 버전 `0.31.5`; 사용자 기록은 기존 `%LOCALAPPDATA%\\UmaTrainerKR` 경로에 유지합니다.
-- GitHub Actions에서 **Build Windows portable (manual and one-time R47 game-test request)** 워크플로의 성공 실행을 열고 **Artifacts → UmaTrainerKR-R47-Windows-Verified**를 내려받습니다. 이 아티팩트 ZIP 안에 다시 `portable/UmaTrainerKR-Portable-v0.31.5.zip`이 들어 있습니다. 안쪽 ZIP을 별도 폴더에 압축 해제한 후 `UmaTrainerKR_Companion.exe`를 실행합니다. 설치나 Python은 필요하지 않으며 OCR용 Tesseract 설치가 별도로 필요할 수 있습니다.
+- GitHub Actions에서 **Build Windows portable (installer optional, manual only)** 워크플로의 성공 실행을 열고 **Artifacts → UmaTrainerKR-R47-Windows-Verified**를 내려받습니다. 이 아티팩트 ZIP 안에 다시 `portable/UmaTrainerKR-Portable-v0.31.5.zip`이 들어 있습니다. 안쪽 ZIP을 별도 폴더에 압축 해제한 후 `UmaTrainerKR_Companion.exe`를 실행합니다. 설치나 Python은 필요하지 않으며 OCR용 Tesseract 설치가 별도로 필요할 수 있습니다.
 - 함께 포함되는 `UmaTrainerKR_GameTest.exe`는 게임 창 인식 진단용, `UmaTrainerKR_Preflight.exe`는 오프라인 점검용입니다. 게임 실행 및 자동 육성은 **현재 자동 클릭이 구현되지 않았습니다.** 스탯·버튼·추천 위치를 게임에서 직접 확인하고 인식 문제를 기록해 주세요.
 - 소스 테스트, Xvfb UI 검사, Windows EXE 자체 검사, SHA256 ZIP 검사 중 하나라도 실패하면 검증되지 않은 EXE를 다운로드용 아티팩트로 공개하지 않습니다. 결과는 GitHub Actions 실행 로그에서 확인합니다.
-- 이번 빌드 요청은 `.github/build-requests/r47-game-test.txt` 변경 때만 한 번 자동으로 실행하도록 제한합니다. 일반 소스 변경에서는 자동 Windows 빌드/Release 게시가 일어나지 않습니다. `workflow_dispatch` 수동 실행도 계속 지원합니다. 자동 Release 게시 기능은 수동 명시적 선택에만 열립니다.
+- 별도의 `.github/workflows/r47-game-test-request.yml`은 `.github/build-requests/r47-game-test-retry.txt` 변경 시 기존 **수동 전용 Windows 검증 워크플로**를 한 번 호출합니다. 일반 소스 변경에서는 자동 빌드나 Release 게시가 발생하지 않습니다. 원본 Windows 워크플로는 계속 `workflow_dispatch` 수동 전용이며, Release 게시는 수동 명시적 동의가 필요합니다.

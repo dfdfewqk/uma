@@ -92,7 +92,7 @@ class R36GuiSmokeTests(unittest.TestCase):
         self.assertIn('workflow_dispatch:',workflow)
         self.assertNotIn('  push:',workflow)
         self.assertNotIn('  schedule:',workflow)
-        self.assertIn('UmaTrainerKR-R36-Windows-Verified',workflow)
+        self.assertIn('UmaTrainerKR-R47-Windows-Verified',workflow)
         self.assertLess(workflow.index('Bounded Windows EXE smoke checks'),
                         workflow.index('Create and verify portable ZIP'))
 

@@ -1,0 +1,28 @@
+name: One-time R47 game-test Windows build request
+
+# Only explicit request file can trigger this. The tested packaging workflow remains manual-only.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/build-requests/r47-game-test-retry.txt'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  request-package:
+    if: ${{ github.repository == 'dfdfewqk/uma' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch existing guarded Windows packaging
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run windows-exe.yml --repo "$GITHUB_REPOSITORY" \
+            --ref "$GITHUB_REF_NAME" \
+            -f build_installer=false -f publish_release=false
+          echo 'Windows portable packaging requested; inspect workflow artifact result.'

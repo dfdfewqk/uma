@@ -1,0 +1,3 @@
+R47 retry build request after reviewing CI test failures.
+Trigger exactly one dispatch of the pre-existing manual Windows package workflow.
+User explicitly requested a Windows game-test download. No auto-release or auto-click.

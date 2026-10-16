@@ -1,12 +1,7 @@
-name: Build Windows portable (manual and one-time R47 game-test request)
+name: Build Windows portable (installer optional, manual only)
 
-# On-demand only: manual dispatch or a single explicit R47 build-request file.
-# Never publish a Release on push. Future ordinary source commits do not trigger this.
+# Manual-only. No push, PR, tag, or schedule trigger; publication is explicit opt-in.
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/build-requests/r47-game-test.txt'
   workflow_dispatch:
     inputs:
       publish_release:
@@ -248,7 +243,7 @@ jobs:
   publish-portable:
     name: Publish reviewed R39 portable archive (opt-in only)
     needs: windows-package
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release == true }}
+    if: ${{ inputs.publish_release == true }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
