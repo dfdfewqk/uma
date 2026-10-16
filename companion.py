@@ -27,6 +27,7 @@ from target_selector_r39 import (Target, STYLES, round_label, kind_for_round,
 from planning_prefs_r44 import (Preferences, REPEAT_CHOICES,
                                 load_preferences, save_preferences, describe_plan)
 from session_dashboard_r45 import read_dashboard
+from unified_advisor_r46 import UnifiedAdvisor, companion_readiness
 from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
                               store_capture, export_pack)
 from screen_r4 import user_dir
@@ -66,7 +67,7 @@ class Companion(tk.Tk):
         self.update_queue=queue.Queue()
         self.update_release=None
         self.update_busy=False
-        self.update_status=tk.StringVar(value=f'R45 소스 단계 · 패키지 기준 v{CURRENT_VERSION} · 자동 조작 미연결')
+        self.update_status=tk.StringVar(value=f'R46 통합 판단 소스 · 패키지 기준 v{CURRENT_VERSION} · 자동 조작 미연결')
         self.event_var=tk.StringVar(value='')
         self.target_round=tk.StringVar(value='')
         self.target_style=tk.StringVar(value='')
@@ -116,6 +117,8 @@ class Companion(tk.Tk):
         self.button_patterns=[]
         self.button_info=tk.StringVar(value='훈련 버튼 자동 확인 대기')
         self.r28_info=tk.StringVar(value='훈련 추천: 화면 확인·검수 전')
+        self.r46_status=tk.StringVar(value='R46 통합 추천: 실제 턴별 보상 검수 전')
+        self.unified_advisor=UnifiedAdvisor()
         self.capture_label=tk.StringVar(value='훈련')
         self.capture_pack=None
         self.capture_pending=False
@@ -230,6 +233,9 @@ class Companion(tk.Tk):
                  anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=2)
         tk.Label(c,textvariable=self.r28_info,bg=CARD,fg=MUTED,
                  anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=(0,4))
+        tk.Label(c,textvariable=self.r46_status,bg=CARD,fg=AQUA,
+                 anchor='w',wraplength=290,justify='left',
+                 font=('Malgun Gothic',8)).pack(anchor='w',pady=(2,4))
 
         c=self._card()
         self._label(c,'현재 수치 · 자동 관측 후보',AQUA,10,'bold').pack(anchor='w',pady=(0,6))
@@ -584,6 +590,8 @@ class Companion(tk.Tk):
         self.button_info.set('훈련 버튼: 현재 화면 미확인')
         self.action.set('추천 보류')
         self.reason.set('이전 화면의 추천과 OCR 수치를 무효화했습니다.')
+        self.unified_advisor.suspend()
+        self.r46_status.set('R46: 이전 화면 추천 폐기 · 새 한국 서버 관측값 확인 대기')
 
     def _scan(self):
         if not self.monitoring:
@@ -689,6 +697,11 @@ class Companion(tk.Tk):
                 self.button_info.set(buttons)
                 # Entire frame replaces, never merges with last frame's values.
                 safe=self.freshness.safe_values(scene,values)
+                self.r46_status.set(companion_readiness(
+                    scene,goal_selected=self.current_target is not None,
+                    ocr_candidate_count=len(safe)))
+                # OCR candidate values cannot become reviewed R46 actions.
+                self.unified_advisor.suspend()
                 for k,var in self.statvals.items():
                     var.set(f'{safe[k]:,} *' if k in safe else '—')
                 self.energy.set(f'{safe["체력"]} *' if '체력' in safe else '—')
