@@ -4,6 +4,12 @@ Run with UmaTrainerKR_GameTest.exe. Read-only screen capture, user-guided traini
 preview collection, OCR suggestions, manual evidence verification and comparison.
 """
 from __future__ import annotations
+
+# Validate a packaged EXE before importing tkinter or any GUI-heavy modules.
+import sys as _uma_startup_sys
+if __name__ == '__main__' and '--self-check-report' in _uma_startup_sys.argv[1:]:
+    from package_selftest_r25 import maybe_run_cli as _uma_early_selfcheck
+    _uma_early_selfcheck('UmaTrainerKR_GameTest')
 import json
 import os
 import sys

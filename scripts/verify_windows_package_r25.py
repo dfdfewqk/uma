@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+from package_selftest_r25 import ASSETS, ESSENTIAL_DEPS
 
 PROGRAMS = ('UmaTrainerKR', 'UmaTrainerKR_Companion',
             'UmaTrainerKR_GameTest', 'UmaTrainerKR_Preflight')
@@ -38,8 +39,19 @@ def verify(directory: Path, version: str, *, require_installer: bool = True) -> 
                 report.get('result')!='PASS' or report.get('game_client_tested') is not False or
                 report.get('automatic_click_enabled') is not False):
             raise ValueError(f'{name} self-check failed or report invalid')
-        if any(not item.get('ok') for item in report.get('required_resources',[])):
-            raise ValueError(f'{name} missing runtime asset')
+        resources=report.get('required_resources')
+        if (not isinstance(resources,list) or len(resources)!=len(ASSETS[name]) or
+                any(not isinstance(item,dict) or
+                    not isinstance(item.get('resource'),str) or
+                    item.get('ok') is not True for item in resources) or
+                {item['resource'] for item in resources} != set(ASSETS[name])):
+            raise ValueError(f'{name} resource checklist invalid or incomplete')
+        dependencies=report.get('dependencies_available')
+        if (not isinstance(dependencies,dict) or
+                any(dependencies.get(dep) is not True for dep in ESSENTIAL_DEPS[name]) or
+                report.get('failed_resource_names') != [] or
+                report.get('missing_dependencies') != []):
+            raise ValueError(f'{name} dependency or asset failure not resolved')
         results[f'{name}.exe']={'size':exe.stat().st_size,'sha256':sha256(exe)}
     if require_installer:
         installer=directory/'installer'/f'UmaTrainerKR_Setup_{version}.exe'

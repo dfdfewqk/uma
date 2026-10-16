@@ -37,6 +37,27 @@ class WindowsSmokeTests(unittest.TestCase):
         self.assertIn('$result.automatic_click_enabled -ne $false',self.helper)
         self.assertIn('uma_r26_windows_first_run_v1',self.helper)
 
+    def test_diagnostic_bootstrap_precedes_gui_imports(self):
+        for path, profile in (
+            ('app.py', 'UmaTrainerKR'),
+            ('companion.py', 'UmaTrainerKR_Companion'),
+            ('live_test_ui_r22.py', 'UmaTrainerKR_GameTest'),
+            ('offline_replay_ui_r23.py', 'UmaTrainerKR_Preflight'),
+        ):
+            with self.subTest(path=path):
+                source=(ROOT/path).read_text('utf-8')
+                self.assertIn("_uma_early_selfcheck('"+profile+"')",source)
+                self.assertLess(source.index('_uma_early_selfcheck('),
+                                source.index('import tkinter as tk'))
+        companion=(ROOT/'companion.py').read_text('utf-8')
+        self.assertLess(companion.index('_uma_early_first_run()'),
+                        companion.index('import tkinter as tk'))
+
+    def test_failed_package_uploads_only_diagnostics(self):
+        self.assertIn('Upload failure diagnostics (no binaries)',self.workflow)
+        self.assertIn('if: ${{ failure() }}',self.workflow)
+        self.assertIn('build/**/warn-*.txt',self.workflow)
+
     def test_workflow_never_publishes_failed_build(self):
         self.assertIn('needs: windows-package',self.workflow)
         self.assertIn('if: ${{ inputs.publish_release == true }}',self.workflow)

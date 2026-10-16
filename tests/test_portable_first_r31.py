@@ -51,6 +51,28 @@ class PortableFirstTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'missing or too small'):
                 verify(root,CURRENT_VERSION,require_installer=False)
 
+    def test_empty_resource_checklist_does_not_pass(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            self.build_mock_binary_reports(root)
+            path=root/'smoke-reports'/'UmaTrainerKR_Preflight.json'
+            report=json.loads(path.read_text(encoding='utf-8'))
+            report['required_resources']=[]
+            path.write_text(json.dumps(report),encoding='utf-8')
+            with self.assertRaisesRegex(ValueError,'resource checklist'):
+                verify(root,CURRENT_VERSION,require_installer=False)
+
+    def test_forged_dependency_availability_does_not_pass(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            self.build_mock_binary_reports(root)
+            path=root/'smoke-reports'/'UmaTrainerKR_Companion.json'
+            report=json.loads(path.read_text(encoding='utf-8'))
+            report['dependencies_available']['cv2']=False
+            path.write_text(json.dumps(report),encoding='utf-8')
+            with self.assertRaisesRegex(ValueError,'dependency or asset'):
+                verify(root,CURRENT_VERSION,require_installer=False)
+
     def test_version_consistency(self):
         self.assertIn('Version: '+CURRENT_VERSION,(ROOT/'VERSION.txt').read_text('utf-8'))
         self.assertIn('"'+CURRENT_VERSION+'"',(ROOT/'UmaTrainerKR_Setup.iss').read_text('utf-8'))

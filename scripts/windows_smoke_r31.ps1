@@ -38,6 +38,7 @@ function Invoke-BoundedExe {
     Write-Host "[UMA smoke] START ${Label} (limit ${Timeout}s)"
     try {
         if (-not $process.Start()) { throw "Could not start $Label" }
+        Write-Host "[UMA smoke] PID ${Label}: $($process.Id)"
         if (-not $process.WaitForExit($Timeout * 1000)) {
             try { $process.Kill($true) } catch { Write-Warning "Could not kill $Label process tree: $_" }
             try { [void]$process.WaitForExit(5000) } catch { }
@@ -48,7 +49,13 @@ function Invoke-BoundedExe {
         }
         $elapsed = [math]::Round(((Get-Date) - $startedAt).TotalSeconds, 1)
         Write-Host "[UMA smoke] PASS ${Label} ($elapsed seconds)"
-    } finally { $process.Dispose() }
+    } catch {
+        $elapsed = [math]::Round(((Get-Date) - $startedAt).TotalSeconds, 1)
+        Write-Host "[UMA smoke] ERROR ${Label} after ${elapsed}s: $($_.Exception.Message)"
+        throw
+    } finally {
+        $process.Dispose()
+    }
 }
 
 if ($Mode -eq 'install') {

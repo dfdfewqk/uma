@@ -165,6 +165,18 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      # Preserve only text diagnostics after failures, never unverified EXEs.
+      - name: Upload failure diagnostics (no binaries)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: UmaTrainerKR-R31-Windows-Diagnostics
+          path: |
+            dist/smoke-reports/*.json
+            build/**/warn-*.txt
+          if-no-files-found: ignore
+          retention-days: 7
+
   publish-portable:
     name: Publish reviewed R31 portable archive (opt-in only)
     needs: windows-package

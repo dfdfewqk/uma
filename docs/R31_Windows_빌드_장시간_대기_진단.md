@@ -29,3 +29,12 @@
 2. `Bounded Windows EXE smoke checks`에서 마지막으로 표시된 `[UMA smoke] START` 대상 확인. 실패하면 90초 내에 해당 실행파일 이름 또는 오류 코드가 표시되어야 함.
 3. 정상일 때에만 `Artifacts → UmaTrainerKR-R31-Windows-Verified → portable/UmaTrainerKR-Portable-v0.31.0.zip` 다운로드.
 4. 배포 파일을 테스트한 뒤에만 선택적으로 공식 Release 등록. 실제 한국 서버의 OCR·추천 정확도는 추가 검증 필요.
+
+## 2026-10-16 후속 조사와 진단 경로 보강
+
+- Actions #2 (`38790462582`)에서는 메인·Companion·GameTest·Preflight의 네 EXE 빌드가 모두 성공했다. 종료 정리에서 `UmaTrainerKR_Companion` 프로세스 둘이 강제 종료됐다. 기존 검사 단계에는 대상별 START 로그가 없으므로 어느 EXE 또는 자식이 대기 원인이었는지는 확정할 수 없다.
+- Actions #3 (`38795705012`) 로그에는 `Aborted by user request`가 명시되어 있다. 메인 EXE 빌드 실패로 분류하지 않는다.
+- 네 GUI 진입점의 `--self-check-report` 요청을 tkinter·OCR·화면 관련 모듈 import 이전에 처리한다. Companion의 `--first-run-report`도 조기 처리한다. 일반 실행 경로와 기능은 유지한다.
+- PowerShell smoke 단계는 대상별 PID와 실패 경과 시간을 출력한다. 실패했을 때는 검증 전 EXE가 아닌 smoke JSON 및 PyInstaller 경고만 별도의 진단 artifact에 보관한다.
+- 아카이브 전 검증은 EXE별 필수 리소스 목록 전체, 각 항목의 성공 여부와 필수 의존성을 재검사한다. 빈 목록·누락된 의존성으로 `PASS`를 주장할 수 없게 한다.
+- 이 변경은 **실제 Windows 빌드의 성공 증거가 아니다.** 소스 정적 회귀 검사를 추가했으며, 새 커밋으로 수동 빌드를 실행해야만 Windows 동작을 확인할 수 있다. 한국 서버 실게임 인식 검증은 별도다.

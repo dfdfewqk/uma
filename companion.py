@@ -2,6 +2,15 @@
 Run 'python companion.py --demo' to see layout without the game.
 """
 from __future__ import annotations
+
+# Validate a packaged EXE before importing tkinter or any GUI-heavy modules.
+import sys as _uma_startup_sys
+if __name__ == '__main__' and '--self-check-report' in _uma_startup_sys.argv[1:]:
+    from package_selftest_r25 import maybe_run_cli as _uma_early_selfcheck
+    _uma_early_selfcheck('UmaTrainerKR_Companion')
+if __name__ == '__main__' and '--first-run-report' in _uma_startup_sys.argv[1:]:
+    from runtime_probe_r26 import maybe_run_cli as _uma_early_first_run
+    _uma_early_first_run()
 import os
 import queue
 import sys
