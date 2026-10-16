@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from package_selftest_r25 import ASSETS, inspect, maybe_run_cli, write_report
+from package_selftest_r25 import ASSETS, inspect, maybe_run_cli, maybe_run_startup_cli, write_report
 from scripts.verify_windows_package_r25 import PROGRAMS, verify
 
 ROOT=Path(__file__).resolve().parent.parent
@@ -26,6 +26,24 @@ class TestR25SelfCheck(unittest.TestCase):
             report=inspect('UmaTrainerKR_GameTest',root=Path(td),frozen=True)
         self.assertEqual(report['result'],'FAIL')
         self.assertEqual(report['failed_resource_names'],['scenario_policies/island_post_patch_v1.json'])
+
+    def test_all_gui_packages_require_island_policy(self):
+        relative='scenario_policies/island_post_patch_v1.json'
+        for name, required in ASSETS.items():
+            with self.subTest(executable=name):
+                self.assertIn(relative,required)
+                with tempfile.TemporaryDirectory() as td:
+                    report=inspect(name,root=Path(td),frozen=True)
+                    self.assertIn(relative,report['failed_resource_names'])
+
+    def test_late_startup_cli_checks_after_imports(self):
+        self.assertFalse(maybe_run_startup_cli('UmaTrainerKR',[]))
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/'startup.json'
+            with self.assertRaises(SystemExit) as ctx:
+                maybe_run_startup_cli('UmaTrainerKR',['--startup-check-report',str(path)])
+            self.assertEqual(ctx.exception.code,0)
+            self.assertEqual(json.loads(path.read_text(encoding='utf-8'))['result'],'PASS')
 
     def test_corrupt_json_blocks_package(self):
         with tempfile.TemporaryDirectory() as td:
@@ -84,6 +102,7 @@ class TestR25SelfCheck(unittest.TestCase):
                 (root/f'{name}.exe').write_bytes(b'A'*10001)
                 report=inspect(name,root=ROOT,frozen=True)
                 (root/'smoke-reports'/f'{name}.json').write_text(json.dumps(report),encoding='utf8')
+                (root/'smoke-reports'/f'{name}_startup.json').write_text(json.dumps(report),encoding='utf8')
             (root/'installer'/'UmaTrainerKR_Setup_0.25.0.exe').write_bytes(b'B'*10001)
             data=verify(root,'0.25.0')
             self.assertEqual(len(data['files']),5)
@@ -97,6 +116,7 @@ class TestR25SelfCheck(unittest.TestCase):
                 report=inspect(name,root=ROOT,frozen=True)
                 if name=='UmaTrainerKR_Companion':report['automatic_click_enabled']=True
                 (root/'smoke-reports'/f'{name}.json').write_text(json.dumps(report),encoding='utf8')
+                (root/'smoke-reports'/f'{name}_startup.json').write_text(json.dumps(report),encoding='utf8')
             (root/'installer'/'UmaTrainerKR_Setup_0.25.0.exe').write_bytes(b'B'*10001)
             with self.assertRaises(ValueError):verify(root,'0.25.0')
 

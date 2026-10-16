@@ -18,6 +18,7 @@ class PortableFirstTests(unittest.TestCase):
             if corrupt and name=='UmaTrainerKR_Companion':
                 report['result']='FAIL'
             (root/'smoke-reports'/f'{name}.json').write_text(json.dumps(report),encoding='utf-8')
+            (root/'smoke-reports'/f'{name}_startup.json').write_text(json.dumps(report),encoding='utf-8')
 
     def test_portable_only_works_without_installer(self):
         with tempfile.TemporaryDirectory() as td:
@@ -71,6 +72,25 @@ class PortableFirstTests(unittest.TestCase):
             report['dependencies_available']['cv2']=False
             path.write_text(json.dumps(report),encoding='utf-8')
             with self.assertRaisesRegex(ValueError,'dependency or asset'):
+                verify(root,CURRENT_VERSION,require_installer=False)
+
+    def test_missing_startup_report_blocks_portable_release(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            self.build_mock_binary_reports(root)
+            (root/'smoke-reports'/'UmaTrainerKR_Companion_startup.json').unlink()
+            with self.assertRaisesRegex(ValueError,'startup import verification did not run'):
+                verify(root,CURRENT_VERSION,require_installer=False)
+
+    def test_false_startup_report_blocks_portable_release(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            self.build_mock_binary_reports(root)
+            path=root/'smoke-reports'/'UmaTrainerKR_Preflight_startup.json'
+            info=json.loads(path.read_text(encoding='utf-8'))
+            info['result']='FAIL'
+            path.write_text(json.dumps(info),encoding='utf-8')
+            with self.assertRaisesRegex(ValueError,'startup import verification failed'):
                 verify(root,CURRENT_VERSION,require_installer=False)
 
     def test_version_consistency(self):

@@ -1131,6 +1131,8 @@ def main():
 if __name__ == '__main__':
     from package_selftest_r25 import maybe_run_cli
     maybe_run_cli("UmaTrainerKR")
+    from package_selftest_r25 import maybe_run_startup_cli
+    maybe_run_startup_cli("UmaTrainerKR")
     try:
         main()
     except Exception:

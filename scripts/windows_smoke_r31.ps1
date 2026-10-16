@@ -90,6 +90,21 @@ foreach ($name in @('UmaTrainerKR', 'UmaTrainerKR_Companion', 'UmaTrainerKR_Game
         $result.automatic_click_enabled -ne $false) {
         throw "Invalid or unsuccessful self-check report for $name"
     }
+    # This second pass reaches the real GUI entrypoint imports without opening Tk.
+    # It detects import-time missing data that the early self-check cannot see.
+    $startup = Join-Path $reports "${prefix}${name}_startup.json"
+    if (Test-Path -LiteralPath $startup) { throw "Refusing stale startup report $startup" }
+    Invoke-BoundedExe -Path $exe -Label "${Mode} $name startup-imports" -Timeout $TimeoutSeconds `
+        -Arguments @('--startup-check-report', $startup)
+    if (-not (Test-Path -LiteralPath $startup)) { throw "Missing startup report after $name" }
+    $launch = Get-Content -LiteralPath $startup -Raw -Encoding utf8 | ConvertFrom-Json
+    if ($launch.schema -ne 'uma_r25_executable_selfcheck_v1' -or
+        $launch.executable -ne $name -or $launch.result -ne 'PASS' -or
+        $launch.frozen_binary -ne $true -or
+        $launch.game_client_tested -ne $false -or
+        $launch.automatic_click_enabled -ne $false) {
+        throw "Invalid or unsuccessful startup import report for $name"
+    }
 }
 
 $companion = Join-Path $base 'UmaTrainerKR_Companion.exe'

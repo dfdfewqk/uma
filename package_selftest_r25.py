@@ -33,9 +33,10 @@ ASSETS = {
         'research/jp_post_patch_2025/sources.csv',
         'research/jp_post_patch_2025/video_chapters.csv',
     ),
-    'UmaTrainerKR_Companion': (),
+    'UmaTrainerKR_Companion': ('scenario_policies/island_post_patch_v1.json',),
     'UmaTrainerKR_GameTest': ('scenario_policies/island_post_patch_v1.json',),
     'UmaTrainerKR_Preflight': (
+        'scenario_policies/island_post_patch_v1.json',
         'examples/r23_demo_manifest.json',
         'examples/r22_mock_roi.json',
         'examples/r22_mock_1.png',
@@ -149,3 +150,18 @@ def maybe_run_cli(package: str, argv: list[str] | None = None) -> bool:
         # GUI executables do not have a console. Exit code signals failure.
         raise SystemExit(2) from exc
     raise SystemExit(0 if report['result'] == 'PASS' else 1)
+
+
+def maybe_run_startup_cli(package: str, argv: list[str] | None = None) -> bool:
+    """Run the existing self-check only *after* all GUI entrypoint imports.
+
+    Entry scripts call this after their imports, before constructing Tk.
+    Thus the Windows package smoke check also catches import-time missing data.
+    Normal application launches are not intercepted.
+    """
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if '--startup-check-report' not in argv:
+        return False
+    if len(argv) != 2 or argv[0] != '--startup-check-report' or not argv[1]:
+        raise SystemExit(2)
+    return maybe_run_cli(package, ['--self-check-report', argv[1]])

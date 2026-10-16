@@ -18,6 +18,16 @@ class TestR24WindowsBuildInputs(unittest.TestCase):
             with self.subTest(file=name):
                 self.assertTrue((ROOT/name).is_file())
 
+    def test_all_packagers_include_island_policy_in_every_exe(self):
+        root=ROOT
+        workflow=(root/'.github/workflows/windows-exe.yml').read_text('utf-8')
+        full=(root/'Windows_EXE_빌드.bat').read_text('utf-8')
+        companion=(root/'Windows_실시간도우미_EXE_수동빌드.bat').read_text('utf-8')
+        policy=r'scenario_policies\island_post_patch_v1.json;scenario_policies'
+        self.assertEqual(workflow.count(policy),4)
+        self.assertEqual(full.count(policy),4)
+        self.assertEqual(companion.count(policy),3)
+
     def test_manual_workflow_and_current_version(self):
         workflow=(ROOT/'.github/workflows/windows-exe.yml').read_text(encoding='utf-8')
         self.assertIn('workflow_dispatch:',workflow)

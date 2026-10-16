@@ -28,6 +28,8 @@ class WindowsSmokeTests(unittest.TestCase):
             self.assertIn(app,self.helper)
         self.assertIn('--first-run-report',self.helper)
         self.assertIn('--self-check-report',self.helper)
+        self.assertIn('--startup-check-report',self.helper)
+        self.assertIn('Missing startup report after',self.helper)
 
     def test_reports_cannot_be_faked_or_reused(self):
         self.assertIn('Refusing stale smoke report',self.helper)
@@ -49,6 +51,11 @@ class WindowsSmokeTests(unittest.TestCase):
                 self.assertIn("_uma_early_selfcheck('"+profile+"')",source)
                 self.assertLess(source.index('_uma_early_selfcheck('),
                                 source.index('import tkinter as tk'))
+        for path in ('app.py','companion.py','live_test_ui_r22.py','offline_replay_ui_r23.py'):
+            source=(ROOT/path).read_text('utf-8')
+            self.assertIn('maybe_run_startup_cli(',source)
+            self.assertGreater(source.index('maybe_run_startup_cli('),
+                               source.index('import tkinter as tk'))
         companion=(ROOT/'companion.py').read_text('utf-8')
         self.assertLess(companion.index('_uma_early_first_run()'),
                         companion.index('import tkinter as tk'))

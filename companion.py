@@ -498,6 +498,8 @@ class Companion(tk.Tk):
 if __name__=='__main__':
     from package_selftest_r25 import maybe_run_cli
     maybe_run_cli("UmaTrainerKR_Companion")
+    from package_selftest_r25 import maybe_run_startup_cli
+    maybe_run_startup_cli("UmaTrainerKR_Companion")
     from runtime_probe_r26 import maybe_run_cli as r26_first_run
     r26_first_run()
     app=Companion('--demo' in sys.argv)

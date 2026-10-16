@@ -57,6 +57,24 @@ def verify(directory: Path, version: str, *, require_installer: bool = True) -> 
                 report.get('failed_resource_names') != [] or
                 report.get('missing_dependencies') != []):
             raise ValueError(f'{name} dependency or asset failure not resolved')
+        # Startup pass is invoked after the real GUI module imports, but before Tk.
+        # Packaging is rejected when it is absent, even if early asset checks pass.
+        startup_file=directory/'smoke-reports'/f'{name}_startup.json'
+        if not startup_file.is_file():
+            raise ValueError(f'{name} startup import verification did not run')
+        startup=json.loads(startup_file.read_text(encoding='utf-8'))
+        if (not isinstance(startup,dict) or
+                startup.get('schema')!='uma_r25_executable_selfcheck_v1' or
+                startup.get('executable')!=name or
+                startup.get('result')!='PASS' or
+                startup.get('frozen_binary') is not True or
+                startup.get('game_client_tested') is not False or
+                startup.get('automatic_click_enabled') is not False or
+                startup.get('required_resources')!=resources or
+                startup.get('dependencies_available')!=dependencies or
+                startup.get('failed_resource_names')!=[] or
+                startup.get('missing_dependencies')!=[]):
+            raise ValueError(f'{name} startup import verification failed')
         results[f'{name}.exe']={'size':exe.stat().st_size,'sha256':sha256(exe)}
     if require_installer:
         installer=directory/'installer'/f'UmaTrainerKR_Setup_{version}.exe'

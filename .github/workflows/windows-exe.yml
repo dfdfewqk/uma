@@ -64,12 +64,14 @@ jobs:
       - name: Build companion, live test and offline preflight EXEs
         shell: pwsh
         run: |
-          python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_Companion --hidden-import=screen_r4 --hidden-import=cv2 --hidden-import=numpy companion.py
+          python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_Companion --hidden-import=screen_r4 --hidden-import=cv2 --hidden-import=numpy `
+            --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' companion.py
           if ($LASTEXITCODE -ne 0) { throw 'Companion build failed' }
           python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_GameTest `
             --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' live_test_ui_r22.py
           if ($LASTEXITCODE -ne 0) { throw 'GameTest build failed' }
           python -m PyInstaller --noconfirm --clean --onefile --windowed --name UmaTrainerKR_Preflight `
+            --add-data 'scenario_policies\island_post_patch_v1.json;scenario_policies' `
             --add-data 'examples\r23_demo_manifest.json;examples' `
             --add-data 'examples\r22_mock_roi.json;examples' `
             --add-data 'examples\r22_mock_1.png;examples' `

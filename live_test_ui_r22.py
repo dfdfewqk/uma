@@ -414,4 +414,6 @@ class LiveTest(tk.Tk):
 if __name__=='__main__':
     from package_selftest_r25 import maybe_run_cli
     maybe_run_cli("UmaTrainerKR_GameTest")
+    from package_selftest_r25 import maybe_run_startup_cli
+    maybe_run_startup_cli("UmaTrainerKR_GameTest")
     LiveTest().mainloop()
