@@ -1,0 +1,176 @@
+{
+  "schema": "uma_r41_synthetic_replay_v1",
+  "origin": "synthetic_test",
+  "target": {
+    "round": 2,
+    "style": "추입"
+  },
+  "repetitions": 3,
+  "simulated_outcomes": [
+    "good",
+    "disposed",
+    "failed"
+  ],
+  "turns": [
+    {
+      "label": "junior weak training vs race skill pts",
+      "stats": {
+        "스피드": 100,
+        "스태미나": 100,
+        "파워": 100,
+        "근성": 100,
+        "지능": 100
+      },
+      "targets": {
+        "스피드": 1000,
+        "스태미나": 1000,
+        "파워": 1000,
+        "근성": 1000,
+        "지능": 1000
+      },
+      "energy": 75,
+      "next_turn_mandatory_race": false,
+      "all_actions_visible": true,
+      "options": [
+        {
+          "name": "스피드 훈련",
+          "kind": "training",
+          "stat_gains": {
+            "스피드": 20
+          },
+          "skill_pt": 7,
+          "bond_points": 4,
+          "energy_delta": -20,
+          "verified": true
+        },
+        {
+          "name": "일반 레이스",
+          "kind": "race",
+          "skill_pt": 32,
+          "energy_delta": -12,
+          "verified": true
+        },
+        {
+          "name": "휴식",
+          "kind": "rest",
+          "energy_delta": 40,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "label": "near stat target skill Pt higher priority",
+      "stats": {
+        "스피드": 990,
+        "스태미나": 990,
+        "파워": 990,
+        "근성": 990,
+        "지능": 990
+      },
+      "targets": {
+        "스피드": 1000,
+        "스태미나": 1000,
+        "파워": 1000,
+        "근성": 1000,
+        "지능": 1000
+      },
+      "energy": 70,
+      "next_turn_mandatory_race": false,
+      "all_actions_visible": true,
+      "options": [
+        {
+          "name": "파워 훈련",
+          "kind": "training",
+          "stat_gains": {
+            "파워": 90
+          },
+          "skill_pt": 8,
+          "friendship_members": 3,
+          "energy_delta": -15,
+          "verified": true
+        },
+        {
+          "name": "스킬 Pt 레이스",
+          "kind": "race",
+          "skill_pt": 32,
+          "energy_delta": -10,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "label": "race tomorrow voids one-turn training buff",
+      "stats": {
+        "스피드": 500,
+        "스태미나": 500,
+        "파워": 500,
+        "근성": 500,
+        "지능": 500
+      },
+      "targets": {
+        "스피드": 1000,
+        "스태미나": 1000,
+        "파워": 1000,
+        "근성": 1000,
+        "지능": 1000
+      },
+      "energy": 55,
+      "next_turn_mandatory_race": true,
+      "all_actions_visible": true,
+      "options": [
+        {
+          "name": "섬 트레이닝",
+          "kind": "island",
+          "next_turn_training_bonus": 120,
+          "skill_pt": 4,
+          "verified": true
+        },
+        {
+          "name": "외출",
+          "kind": "outing",
+          "energy_delta": 40,
+          "skill_pt": 9,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "label": "high failure rate rest comparison",
+      "stats": {
+        "스피드": 500,
+        "스태미나": 500,
+        "파워": 500,
+        "근성": 500,
+        "지능": 500
+      },
+      "targets": {
+        "스피드": 1000,
+        "스태미나": 1000,
+        "파워": 1000,
+        "근성": 1000,
+        "지능": 1000
+      },
+      "energy": 10,
+      "next_turn_mandatory_race": false,
+      "all_actions_visible": true,
+      "options": [
+        {
+          "name": "실패 위험 훈련",
+          "kind": "training",
+          "stat_gains": {
+            "스피드": 150
+          },
+          "energy_delta": -25,
+          "failure_pct": 80,
+          "verified": true
+        },
+        {
+          "name": "휴식",
+          "kind": "rest",
+          "energy_delta": 55,
+          "verified": true
+        }
+      ]
+    }
+  ]
+}

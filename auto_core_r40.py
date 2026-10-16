@@ -39,11 +39,14 @@ class TPView:
     item_count:int|None
     item_recovery:int|None
     verified:bool=False
+    tp_cap:int|None=None
 
     def validate(self):
-        for n in (self.tp,self.cost,self.item_count,self.item_recovery):
+        for n in (self.tp,self.cost,self.item_count,self.item_recovery,self.tp_cap):
             if n is not None and (type(n) is not int or not 0<=n<=100000):
                 raise ValueError('TP 화면 값 오류')
+        if self.tp_cap is not None and self.tp is not None and self.tp>self.tp_cap:
+            raise ValueError('현재 TP가 최대 TP보다 높습니다.')
         return self
 
 @dataclass(frozen=True)
@@ -58,10 +61,13 @@ def advise_tp(view:TPView)->Request:
         return Request('wait_verification','현재 TP와 필요 TP를 실게임에서 검증해야 합니다.')
     if view.tp>=view.cost:
         return Request('start_run','TP가 충분하므로 다음 육성 시작 가능')
-    if (view.item_count is None or view.item_recovery is None
-            or view.item_count<1 or view.item_recovery<=0):
-        return Request('wait_tp','무료 회복 아이템 사용 가능 여부 미확인/부족 · 자연 회복 대기')
-    return Request('use_tp_item','검수된 무료 TP 회복 아이템 사용 후보 · 유료 재화 사용 금지')
+    if view.item_count is None or view.item_recovery is None:
+        return Request('wait_verification','무료 TP 회복 아이템 보유량·회복량 확인이 필요합니다.')
+    if view.item_count<1 or view.item_recovery<=0:
+        return Request('wait_tp','무료 TP 회복 아이템이 없어 자연 회복 대기')
+    if view.tp_cap is not None and min(view.item_recovery,view.tp_cap-view.tp)<=0:
+        return Request('wait_verification','TP 상한/아이템 회복값이 충돌합니다.')
+    return Request('use_tp_item','검수된 무료 TP 아이템 사용 후보 · 상한 초과 회복량을 확인하세요. 유료 재화 사용 금지')
 
 @dataclass
 class AutomationProgress:
@@ -85,9 +91,13 @@ class AutomationProgress:
             raise ValueError('완료된 육성 ID 재사용')
         if self.phase=='in_run' and not self.pending_run_id:
             raise ValueError('진행 중 육성 ID가 없습니다.')
+        if self.phase!='in_run' and self.pending_run_id is not None:
+            raise ValueError('진행 중이 아닌데 육성 ID가 남아 있습니다.')
         if self.pending_run_id is not None and (not isinstance(self.pending_run_id,str)
               or not 1<=len(self.pending_run_id)<=128):
             raise ValueError('진행 중 육성 ID 오류')
+        if self.phase!='finished' and len(self.completed_ids)==self.config.repetitions:
+            raise ValueError('모든 육성을 완료했지만 단계가 완료가 아닙니다.')
         if self.phase=='finished' and len(self.completed_ids)!=self.config.repetitions:
             raise ValueError('완료되지 않은 육성을 완료 처리')
         return self
