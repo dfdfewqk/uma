@@ -142,3 +142,11 @@ Companion에 R46 검수 준비 상태를 추가했지만, 현재 OCR 수치/버�
 - 함께 포함되는 `UmaTrainerKR_GameTest.exe`는 게임 창 인식 진단용, `UmaTrainerKR_Preflight.exe`는 오프라인 점검용입니다. 게임 실행 및 자동 육성은 **현재 자동 클릭이 구현되지 않았습니다.** 스탯·버튼·추천 위치를 게임에서 직접 확인하고 인식 문제를 기록해 주세요.
 - 소스 테스트, Xvfb UI 검사, Windows EXE 자체 검사, SHA256 ZIP 검사 중 하나라도 실패하면 검증되지 않은 EXE를 다운로드용 아티팩트로 공개하지 않습니다. 결과는 GitHub Actions 실행 로그에서 확인합니다.
 - 별도의 `.github/workflows/r47-game-test-request.yml`은 `.github/build-requests/r47-game-test-retry.txt` 변경 시 기존 **수동 전용 Windows 검증 워크플로**를 한 번 호출합니다. 일반 소스 변경에서는 자동 빌드나 Release 게시가 발생하지 않습니다. 원본 Windows 워크플로는 계속 `workflow_dispatch` 수동 전용이며, Release 게시는 수동 명시적 동의가 필요합니다.
+
+### R47.1 — 한국 서버 384px 세로 게임 창 인식 오류 수정 (포터블 v0.31.6)
+
+- 실제 게임 스크린샷에서 `umamusume` 창은 약 384px 너비인데 기존 자동 선택/수동 점검기 모두 최소 너비 500px로 고정되어 **게임 창을 찾지 못했습니다**가 발생했다. 게임 종료/재설치와 무관한 창 크기 기준 오류다.
+- `companion_core.is_game_window_size_supported`를 공통 조건으로 사용한다. 500px 이상 기존 게임 창은 그대로 지원하고, 폭 300~499px의 **정확한 게임 창 제목이 확인되는 세로 창**만 새로 허용한다. 가짜 제목·브라우저 클래스·낮고 작은 팝업은 제외하고 복수 후보에서는 자동 선택하지 않는다.
+- `live_test_ui_r22.py`의 직접 선택과 선택 창 재확인도 동일한 크기 정책을 사용한다. 이전 창을 재사용하지 않으며 게임 창이 비활성화되면 추천/검수는 보류된다.
+- R47.1 소스 회귀 테스트 6개 추가. 최신 Windows 포터블 다운로드는 **Actions → Build Windows portable (installer optional, manual only) → 최신 성공 Run → Artifacts → UmaTrainerKR-R47-Windows-Verified**. 아티팩트 안의 `portable/UmaTrainerKR-Portable-v0.31.6.zip` 압축을 풀어 `UmaTrainerKR_Companion.exe`를 실행한다. 별도 Tesseract OCR 설정 및 실제 게임 화면 인식 캘리브레이션은 아직 필요할 수 있다.
+- 사용자 기존 `%LOCALAPPDATA%\\UmaTrainerKR` 자료와 옛 v0.31.5 압축/실행파일은 삭제하거나 덮어쓰지 않는다. 자동 입력·완전 자동 육성은 미구현이다.

@@ -20,7 +20,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from PIL import Image,ImageTk,ImageGrab
 
-from companion_core import choose_window
+from companion_core import choose_window, is_game_window_size_supported
 from companion_window import discover_windows
 from screen_r4 import user_dir,load_image,tesseract_executable
 from live_training_r22 import (TrainingCaptureSession,NumericProfile,FieldBox,
@@ -157,7 +157,7 @@ class LiveTest(tk.Tk):
             windows=discover_windows()
             if self.manual_window_id is not None:
                 selected=next((w for w in windows if w.hwnd==self.manual_window_id),None)
-                if selected and selected.width>=500 and selected.height>=320:
+                if selected and is_game_window_size_supported(selected):
                     self.game=selected
                     self.status.set('사용자가 지정한 창: '+selected.title[:65])
                     return
@@ -171,7 +171,7 @@ class LiveTest(tk.Tk):
         if os.name!='nt':
             messagebox.showinfo('Windows 전용','게임 창 직접 선택은 Windows에서만 작동합니다.')
             return
-        choices=[w for w in discover_windows() if w.width>=500 and w.height>=320
+        choices=[w for w in discover_windows() if is_game_window_size_supported(w)
                  and 'uma trainer kr' not in w.title.lower() and 'r22 실게임' not in w.title.lower()]
         if not choices:
             messagebox.showwarning('목록 없음','선택할 수 있는 창이 없습니다. 게임을 먼저 실행하세요.')

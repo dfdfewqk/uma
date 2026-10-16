@@ -26,10 +26,37 @@ def is_game_candidate(title: str, class_name: str = '') -> bool:
                 'trainer kr' not in title and '도우미' not in title)
 
 
+COMPACT_GAME_TITLES = frozenset((
+    'umamusume', 'umamusume pretty derby', '우마무스메',
+    'ウマ娘', 'ウマ娘 プリティーダービー',
+))
+
+
+def is_compact_game_window(window: GameWindow) -> bool:
+    """Allow the portrait Korean client (e.g. 384x700) without broadening
+    the small-window rule to browser pages and unrelated desktop utilities.
+    """
+    return bool(
+        is_game_candidate(window.title, window.class_name)
+        and window.title.strip().casefold() in COMPACT_GAME_TITLES
+        and 300 <= window.width < 500
+        and window.height >= 320
+        and window.height > window.width
+    )
+
+
+def is_game_window_size_supported(window: GameWindow) -> bool:
+    """Shared automatic/manual game-window size policy."""
+    return bool(
+        window.height >= 320
+        and (window.width >= 500 or is_compact_game_window(window))
+    )
+
+
 def choose_window(windows: list[GameWindow]):
     """Never guess when several game windows look plausible."""
     candidates=[w for w in windows if is_game_candidate(w.title,w.class_name)
-                and w.width >= 500 and w.height >= 320]
+                and is_game_window_size_supported(w)]
     if len(candidates) != 1:
         return None, ('게임 창 후보가 여러 개입니다. 창을 정리해야 합니다.' if candidates
                       else '실행 중인 우마무스메 게임 창을 찾지 못했습니다.')
