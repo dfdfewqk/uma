@@ -31,6 +31,7 @@ from analytics_r3 import (run_audit, corpus_audit, audit_verified_video_turns,
 from screen_ui_r4 import ScreenPanel
 from training_ui_r5 import TrainingPanel
 from decision_ui_r6 import DecisionPanel
+from island_context_ui_r34 import IslandContextPanel
 from island_ui_r7 import IslandPlannerPanel
 from island_ui_r8 import IslandImpactPanel
 from calibration_ui_r9 import CalibrationPanel
@@ -163,6 +164,7 @@ class UmaApp(tk.Tk):
         self.page_screen = ttk.Frame(self.notebook)
         self.page_training_r5 = ttk.Frame(self.notebook)
         self.page_decision_r6 = ttk.Frame(self.notebook)
+        self.page_context_r34 = ttk.Frame(self.notebook)
         self.page_island_r7 = ttk.Frame(self.notebook)
         self.page_island_r8 = ttk.Frame(self.notebook)
         self.page_calibration_r9 = ttk.Frame(self.notebook)
@@ -177,7 +179,7 @@ class UmaApp(tk.Tk):
         self.page_sources = ttk.Frame(self.notebook)
         for page, title in ((self.page_live_r18, '게임 동반자 R20'), (self.page_setup, '① 목표'), (self.page_turn, '② 턴'),
                             (self.page_records, '③ 기록'), (self.page_analytics, '④ R3'),
-                            (self.page_screen, '⑤ R4'), (self.page_training_r5, '⑥ R5'), (self.page_decision_r6, '⑦ R6'), (self.page_island_r7, '⑧ R7'), (self.page_island_r8, '⑨ R8'), (self.page_calibration_r9, '⑩ R9'), (self.page_review_r10, '⑪ R10'), (self.page_goal_r11, '⑫ R11'), (self.page_course_r12, '⑬ 코스·스킬'), (self.page_event_r13, '⑭ 대회·인자'), (self.page_lineage_r14, '⑮ 계승·미래시'), (self.page_learning_r15, '⑯ R15 학습자료'), (self.page_ml_r16, '⑰ R16 ML 연구'), (self.page_ml_r17, '⑱ R17 모델·결과'), (self.page_sources, '⑲ 자료')):
+                            (self.page_screen, '⑤ R4'), (self.page_training_r5, '⑥ R5'), (self.page_decision_r6, '⑦ R6'), (self.page_context_r34, 'R34 무인도 조건'), (self.page_island_r7, '⑧ R7'), (self.page_island_r8, '⑨ R8'), (self.page_calibration_r9, '⑩ R9'), (self.page_review_r10, '⑪ R10'), (self.page_goal_r11, '⑫ R11'), (self.page_course_r12, '⑬ 코스·스킬'), (self.page_event_r13, '⑭ 대회·인자'), (self.page_lineage_r14, '⑮ 계승·미래시'), (self.page_learning_r15, '⑯ R15 학습자료'), (self.page_ml_r16, '⑰ R16 ML 연구'), (self.page_ml_r17, '⑱ R17 모델·결과'), (self.page_sources, '⑲ 자료')):
             self.notebook.add(page, text=title)
         self.extra_pages=list(self.notebook.tabs())[1:]
         for page in self.extra_pages:self.notebook.hide(page)
@@ -190,6 +192,7 @@ class UmaApp(tk.Tk):
         self._build_screen()
         self._build_training_r5()
         self._build_decision_r6()
+        self._build_context_r34()
         self._build_island_r7()
         self._build_island_r8()
         self._build_calibration_r9()
@@ -710,6 +713,10 @@ class UmaApp(tk.Tk):
         self.r6_panel = DecisionPanel(self.page_decision_r6, self._profile, self._state,
                                       self._read_current_actions)
         self.r6_panel.pack(fill='both', expand=True)
+
+    def _build_context_r34(self):
+        self.r34_panel = IslandContextPanel(self.page_context_r34, self._profile, self._state)
+        self.r34_panel.pack(fill='both', expand=True)
 
     def _build_island_r7(self):
         self.r7_panel = IslandPlannerPanel(self.page_island_r7, self._profile, self._state)
