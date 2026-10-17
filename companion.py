@@ -50,6 +50,7 @@ from game_overlay_r28 import TrainingOverlay
 from portable_update_r30 import check_latest, download_portable, UpdateError, CURRENT_VERSION
 from scene_recognition_r20 import StableScene, load_library, profile_path as scene_profile_path
 from scene_fusion_r53 import StableScreenFusion, STAGE_SCENES
+from passive_numbers_r54 import StableLiveNumberReader, read_regions as read_passive_numbers
 from visual_controls_r50 import unique_scene
 from button_detection_r21 import StableButtons, load_patterns, path_default as button_pattern_path, DetectionError, DetectorUnavailable
 
@@ -127,6 +128,11 @@ class Companion(tk.Tk):
         self.scene_info=tk.StringVar(value='화면 유형: 확인 전 (R20 기준 화면 필요)')
         self.scene_tracker=StableScene()
         self.scene_fusion=StableScreenFusion()
+        self.numeric_reader=StableLiveNumberReader()
+        self.numeric_status=tk.StringVar(value='R54 숫자 영역 미등록 · 검수 전 OCR 후보만 표시')
+        self.failure_rate=tk.StringVar(value='—')
+        self.island_tickets=tk.StringVar(value='—')
+        self.development_points=tk.StringVar(value='—')
         self.hint_gate=HintGate()
         self.hint_overlay=TrainingOverlay(self)
         self.button_tracker=StableButtons()
@@ -323,6 +329,15 @@ class Companion(tk.Tk):
         tk.Label(info,textvariable=self.energy,bg=CARD,fg=TEXT).pack(side='left')
         self._label(info,'      스킬 Pt ',MUTED,9).pack(side='left')
         tk.Label(info,textvariable=self.skill,bg=CARD,fg=TEXT).pack(side='left')
+        extra=tk.Frame(c,bg=CARD);extra.pack(fill='x',pady=(3,1))
+        for caption,variable in (('실패율 ',self.failure_rate),
+                                 ('  섬 티켓 ',self.island_tickets),
+                                 ('  발전 Pt ',self.development_points)):
+            self._label(extra,caption,MUTED,8).pack(side='left')
+            tk.Label(extra,textvariable=variable,bg=CARD,fg=TEXT,
+                     font=('Malgun Gothic',8)).pack(side='left')
+        tk.Label(c,textvariable=self.numeric_status,bg=CARD,fg=MUTED,
+                 wraplength=290,anchor='w',justify='left').pack(anchor='w',pady=(3,2))
         self._label(c,'* 표시는 검수 전 OCR 후보 · 화면 전환 시 자동으로 지움',
                     MUTED,8).pack(anchor='w',pady=(5,0))
 
@@ -359,6 +374,9 @@ class Companion(tk.Tk):
                   relief='flat').pack(fill='x',pady=(0,5))
         tk.Button(row,text='R53 화면 종류 기준 등록 · 고유 영역 2개',
                   command=self._open_r53_passive_scene_registration,bg='#355174',
+                  fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
+        tk.Button(row,text='R54 숫자 OCR 영역 등록 · 화면별 숫자 하나',
+                  command=self._open_r54_numeric_registration,bg='#355174',
                   fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
         tk.Button(row,text='상세 설정·자료 관리 열기',
                   command=self._launch_advanced,bg='#263754',fg=TEXT,
@@ -403,6 +421,10 @@ class Companion(tk.Tk):
         """User-controlled, passive scene fingerprint calibration only."""
         from passive_scene_ui_r53 import PassiveSceneRegistration
         PassiveSceneRegistration(self)
+
+    def _open_r54_numeric_registration(self):
+        from passive_numbers_ui_r54 import PassiveNumberRegistration
+        PassiveNumberRegistration(self)
 
     def _stop_all_automation(self):
         self._stop_autotour()
@@ -926,6 +948,11 @@ class Companion(tk.Tk):
     def _clear_live_evidence(self):
         """Never display last-turn values after window/layout/scene invalidation."""
         self.scene_fusion.reset()
+        self.numeric_reader.reset()
+        self.numeric_status.set('R54 인식 보류 · 이전 화면의 수치 후보 폐기')
+        self.failure_rate.set('—')
+        self.island_tickets.set('—')
+        self.development_points.set('—')
         for var in self.statvals.values(): var.set('—')
         self.energy.set('—');self.skill.set('—')
         self.scene_info.set('화면 유형: 미확인 · 검수 대기')
@@ -1044,13 +1071,34 @@ class Companion(tk.Tk):
                 elif scene is not None and scene != '훈련':
                     self.preview_collector.reset()
                 values={}
-                if scene == '훈련' and profile_path().exists():
-                    with tempfile.TemporaryDirectory(prefix='uma_companion_') as td:
-                        path=Path(td)/'game.png'
-                        image.save(path)
-                        profile=read_profile(profile_path())
-                        results=read_regions(path,profile,min_confidence=80)
-                    values=usable_ocr_values(results)
+                numeric_note='R54 현재 장면 숫자 영역 미등록 · 검수 전'
+                r54_active=False
+                passive_rois=read_passive_numbers(user_dir()/'r54_numeric_regions.json')
+                active_rois=tuple(r for r in passive_rois if r.scene==scene)
+                if active_rois:
+                    from screen_r4 import tesseract_executable
+                    # Never infer a turn identity from OCR. The training
+                    # baseline fingerprint is only a cache-invalidation key.
+                    from training_preview_r48 import _turn_signature
+                    turn_key=_turn_signature(image) if scene=='훈련' else None
+                    number_frame=self.numeric_reader.observe(
+                        image,scene,active_rois,tesseract_executable(),
+                        game.hwnd,game.rect,turn_key)
+                    values=number_frame.numbers
+                    numeric_note='R54 '+number_frame.status
+                    r54_active=True
+                else:
+                    self.numeric_reader.reset()
+                    # Backward compatibility: preserve the user's old R4
+                    # training profile until an R54 scene profile is registered.
+                    if scene=='훈련' and profile_path().exists():
+                        with tempfile.TemporaryDirectory(prefix='uma_companion_') as td:
+                            path=Path(td)/'game.png'
+                            image.save(path)
+                            profile=read_profile(profile_path())
+                            results=read_regions(path,profile,min_confidence=80)
+                        values=usable_ocr_values(results)
+                        numeric_note='기존 R4 OCR 후보 · 직접 검수 전'
                 packet=None
                 if self.full_batch is not None and self.full_batch.armed:
                     from screen_r4 import tesseract_executable
@@ -1064,7 +1112,7 @@ class Companion(tk.Tk):
                         skill_approvals=self.r51_skill_approvals,
                         cycle=len(self.full_batch.planner.completed_ids))
                 self.q.put(('frame',epoch,game.hwnd,
-                            (text_scene,buttons,scene,values,hits,preview,packet,screen)))
+                            (text_scene,buttons,scene,values,hits,preview,packet,screen,r54_active,numeric_note)))
             except Exception as e:
                 self.q.put(('error',epoch,game.hwnd,str(e)))
         threading.Thread(target=work,daemon=True).start()
@@ -1080,11 +1128,16 @@ class Companion(tk.Tk):
                     self._clear_live_evidence()
                     self.reason.set('화면 인식 보류 · '+data[:85])
                     continue
-                scene_text,buttons,scene,values,hits,preview,packet,screen=data
+                scene_text,buttons,scene,values,hits,preview,packet,screen,r54_active,numeric_note=data
                 self.scene_info.set(scene_text)
                 self.button_info.set(buttons)
                 # Entire frame replaces, never merges with last frame's values.
-                safe=self.freshness.safe_values(scene,values)
+                safe=(dict(values) if r54_active and scene is not None
+                      else self.freshness.safe_values(scene,values))
+                self.numeric_status.set(numeric_note)
+                self.failure_rate.set(str(safe['실패율'])+'% *' if '실패율' in safe else '—')
+                self.island_tickets.set(str(safe['섬 티켓'])+' *' if '섬 티켓' in safe else '—')
+                self.development_points.set(str(safe['발전 Pt'])+' *' if '발전 Pt' in safe else '—')
                 self.r46_status.set(companion_readiness(
                     scene,goal_selected=self.current_target is not None,
                     ocr_candidate_count=len(safe)))
