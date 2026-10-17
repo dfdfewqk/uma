@@ -128,6 +128,20 @@ class TourTests(unittest.TestCase):
                        collected_names=("스피드","스태미나"),clock=105)
         self.assertEqual(t.intent.target_label,"파워")
 
+    def test_click_dispatch_never_counts_a_completed_turn(self):
+        tour=TrainingTour()
+        tour.start()
+        tour.on_click_result(True,"confirm_training","스피드",100)
+        self.assertEqual(tour.commits,0)
+        self.assertEqual(tour.state,"await_new_turn")
+
+    def test_r57_companion_integrates_postclick_guard(self):
+        source=(Path(__file__).resolve().parents[1]/"companion.py").read_text("utf-8")
+        for phrase in ("TrainingClickGuard()","self.training_click_guard.observe(",
+                       "self.training_click_guard.arm(","self.training_click_guard.reset()",
+                       "observed.code in ('blocked','review_required')"):
+            self.assertIn(phrase,source)
+
     def test_unknown_scene_stops_without_click(self):
         tour=TrainingTour();tour.start()
         value=tour.propose(pframe(),11,(20,40,404,780),None,

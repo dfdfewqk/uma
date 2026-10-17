@@ -54,8 +54,9 @@ class TrainingTour:
         self.awaiting_name=expected_name if kind=="preview_training" else None
         self.click_time=moment
         self.state="await_preview" if kind=="preview_training" else "await_new_turn"
-        if kind=="confirm_training":
-            self.commits+=1
+        # Click dispatch is not an actual completed game turn. The R57
+        # transition witness halts after a visible post-click change and
+        # requests a reviewed run/turn result instead of incrementing commits.
 
     def _intent(self,image,hwnd,rect,kind,selected,desired,clock):
         if selected not in NAMES or desired not in NAMES:

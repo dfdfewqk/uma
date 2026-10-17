@@ -32,6 +32,7 @@ from training_preview_r48 import PreviewCollector, selected_training, portrait_s
 from training_evidence_r55 import TrainingEvidenceCollector
 from ranker_strategy_r56 import StrategyContext
 from training_tour_r49 import TrainingTour
+from training_transition_r57 import TrainingClickGuard
 from foreground_click_r49 import ForegroundWindowsPointer, AutoInputBlocked
 from batch_planner_r49 import BatchPlanner
 from outcome_learning_r49 import inspect_record_counts
@@ -150,6 +151,7 @@ class Companion(tk.Tk):
         self.ranker_strategy_info=tk.StringVar(
             value='R56 전략 비교 대기 · JP 공략 참고, KR 실제 턴 검수 필요')
         self.autotour=TrainingTour()
+        self.training_click_guard=TrainingClickGuard()
         self.autopointer=ForegroundWindowsPointer(dry_run=(os.name!='nt'))
         self.auto_status=tk.StringVar(value='자동 훈련 실험 꺼짐 · TP/스킬/반복 조작 미검증')
         self.learning_status=tk.StringVar(value='실제 턴 전후 검수 기록 확인 전')
@@ -597,16 +599,19 @@ class Companion(tk.Tk):
                 '실게임에서 훈련 미리보기 5개를 자동으로 확인한 뒤 '
                 '검수 전 OCR 스탯 합계가 가장 높은 훈련의 결정 버튼을 클릭합니다.\n'
                 '인연/체력/실패율/스킬 Pt는 반영되지 않으므로 실제 효율을 보장하지 않습니다.\n'
+                '훈련 클릭 뒤에는 실제 턴/보상 결과 미검증으로 자동 입력이 중단됩니다.\n'
                 'TP 회복·스킬 구매·육성 종료/재시작은 아직 자동으로 진행하지 않습니다.\n'
                 '실험을 시작하시겠습니까?',parent=self):
             return
         self.autotour.start()
+        self.training_click_guard.reset()
         self.auto_confirmed_risk=True
         self.preview_collector.reset()
         self.auto_status.set('실험적 자동 훈련 활성 · 게임 창을 클릭해 활성화하세요.')
 
     def _stop_autotour(self):
         self.autotour.stop()
+        self.training_click_guard.reset()
         self.auto_confirmed_risk=False
         self.auto_status.set('자동 조작 중지됨 · 클릭하지 않습니다.')
         if self.full_batch is not None and self.full_batch.armed:
@@ -642,6 +647,26 @@ class Companion(tk.Tk):
                 self._stop_autotour()
                 self.auto_status.set('이 게임 화면의 비율은 자동 훈련 실험 미지원')
                 return
+            # R57: A real Windows click being dispatched does NOT mean that
+            # the game received it. Never issue a second click while waiting.
+            if self.training_click_guard.armed:
+                observed=self.training_click_guard.observe(
+                    scene=scene,selected=selected_training(image),
+                    preview_selected=(preview.selected if preview else None),
+                    collected_names=tuple(self.preview_collector.collected),
+                    signature=(_turn_signature(image) if scene=='훈련' else None),
+                    hwnd=hwnd,rect=rect)
+                if observed.code=='preview_confirmed':
+                    self.autotour.state='scanning'
+                    self.autotour.awaiting_name=None
+                    self.auto_status.set('R57 '+observed.message)
+                    return
+                if observed.code in ('blocked','review_required'):
+                    self._stop_autotour()
+                    self.auto_status.set('R57 '+observed.message)
+                    return
+                self.auto_status.set('R57 '+observed.message)
+                return
             proposal=self.autotour.propose(
                 image,hwnd,rect,preview,scene=scene,user_armed=True,
                 collected_names=tuple(self.preview_collector.collected))
@@ -656,8 +681,10 @@ class Companion(tk.Tk):
             self.autotour.on_click_result(ok,proposal.intent.kind,
                   proposal.intent.target_label,__import__('time').monotonic())
             if ok:
-                self.auto_status.set('자동 조작: '+proposal.explanation+
-                    ' · 다음 장면 재확인 전 추가 클릭 금지')
+                self.training_click_guard.arm(
+                    proposal.intent,_turn_signature(image))
+                self.auto_status.set('R57 게임 클릭 전송 · 후속 실제 화면 검수 대기'
+                    ' · 결과 확인 전 추가 클릭 금지')
         except (AutoInputBlocked,ValueError,OSError,RuntimeError) as exc:
             self._stop_autotour()
             self.auto_status.set('안전 중지: '+str(exc)[:115])
@@ -962,6 +989,7 @@ class Companion(tk.Tk):
         """Never display last-turn values after window/layout/scene invalidation."""
         self.scene_fusion.reset()
         self.numeric_reader.reset()
+        self.training_click_guard.reset()
         self.training_evidence.reset()
         self.training_evidence_info.set('R55 훈련 화면/턴 변경 · 지난 후보 폐기')
         self.ranker_strategy_info.set('R56 이전 전략 후보 폐기 · 한국 게임 화면 대기')
