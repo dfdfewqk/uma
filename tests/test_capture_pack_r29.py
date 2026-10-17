@@ -23,6 +23,36 @@ class CapturePackTests(unittest.TestCase):
         changed = GameWindow(121, 'Umamusume', (20, 30, 920, 630))
         with self.assertRaises(CaptureError): check_capture_target(self.game, changed, 121, self.panel)
 
+    def test_compact_384x700_actual_client_capture(self):
+        compact=GameWindow(121, 'umamusume', (30, 20, 414, 720))
+        self.assertEqual(check_capture_target(compact, compact, 121,
+                         (430, 20, 770, 720)), compact.rect)
+        im=Image.new('RGB', (384, 700), 'white')
+        row=store_capture(self.pack, im, scene_label='훈련 미리보기',
+                          window_size=(384, 700))
+        self.assertEqual(row['size'], [384,700])
+        self.assertEqual(row['review_state'], 'unverified')
+        self.assertIsNone(row['detected_scene'])
+        self.assertEqual(load_pack(self.pack)['captures'][0]['scene_label'], '훈련 미리보기')
+
+    def test_compact_non_game_capture_target_rejected(self):
+        unrelated=GameWindow(121, 'umamusume wiki', (30, 20, 414, 720))
+        with self.assertRaises(CaptureError):
+            check_capture_target(unrelated, unrelated, 121, (430, 20, 770, 720))
+
+    def test_invalid_short_portrait_rejected(self):
+        with self.assertRaises(CaptureError):
+            store_capture(self.pack, Image.new('RGB', (384, 340)),
+                          scene_label='훈련', window_size=(384, 340))
+
+    def test_extended_evidence_categories_remain_manual(self):
+        im=Image.new('RGB', (800, 600), 'white')
+        row=store_capture(self.pack, im, scene_label='TP 회복',
+                          window_size=(800, 600))
+        self.assertEqual(row['source'], 'manual_delayed_game_capture')
+        self.assertIsNone(row['detected_scene'])
+        self.assertEqual(row['review_state'], 'unverified')
+
     def test_target_rejects_companion_overlap(self):
         with self.assertRaises(CaptureError): check_capture_target(self.game, self.game, 121, (700, 20, 900, 400))
 

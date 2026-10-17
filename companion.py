@@ -40,8 +40,8 @@ from skill_authorizations_r51 import load_authorizations,approved_skill_labels
 from batch_checkpoint_r50 import (
     current_snapshot,save_checkpoint,load_checkpoint,restore_finished_only,
 )
-from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
-                              store_capture, export_pack)
+from capture_pack_r29 import (CaptureError, SCENES, MAX_CAPTURES, check_capture_target, new_pack,
+                              store_capture, load_pack, export_pack)
 from screen_r4 import user_dir
 from live_state_r24 import FreshnessGate, rectangles_overlap
 from companion_window import discover_windows
@@ -342,9 +342,12 @@ class Companion(tk.Tk):
         tk.Button(row,text='R23 · 게임 없이 사전점검',
                   command=self._launch_preflight,bg='#345778',fg=TEXT,
                   relief='flat').pack(fill='x',pady=(0,5))
-        self._label(row,'R29 · 화면 자료 수집 (개발 검수용)',AQUA,9,'bold').pack(anchor='w',pady=(3,2))
+        self._label(row,'2단계 · 실제 화면 자료 수집 (로컬/검수 전)',AQUA,9,'bold').pack(anchor='w',pady=(3,2))
         ttk.Combobox(row,values=SCENES,textvariable=self.capture_label,
                      state='readonly').pack(fill='x',pady=(0,4))
+        self._label(row,'훈련·TP·스킬·레이스·이벤트·종료 화면을 선택해 저장합니다. '
+                    '화면 종류는 수동 선택이며 AI가 자동 판별한 결과가 아닙니다.',
+                    MUTED,8).pack(anchor='w',pady=(0,4))
         tk.Button(row,text='4초 뒤 게임 화면 저장 · 게임 창으로 돌아가기',
                   command=self._schedule_capture,bg='#346075',fg=TEXT,
                   relief='flat').pack(fill='x',pady=(0,4))
@@ -836,7 +839,8 @@ class Companion(tk.Tk):
             image=ImageGrab.grab(bbox=rect,all_screens=True)
             store_capture(self.capture_pack,image,scene_label=scene,
                           window_size=(current.width,current.height))
-            self.reason.set(f'로컬 화면 저장 완료 · {scene} · 폴더: r29_local_captures (외부 전송 없음)')
+            self.reason.set(f'로컬 화면 저장 완료 · {scene} · {len(load_pack(self.capture_pack, check_images=False)["captures"])}/{MAX_CAPTURES}장'
+                            ' · r29_local_captures (외부 전송 없음)')
         except (CaptureError,OSError,ValueError) as error:
             self.reason.set('R29 캡처 보류 · '+str(error)[:100])
         finally:

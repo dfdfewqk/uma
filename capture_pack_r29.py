@@ -16,8 +16,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 SCHEMA = 'uma_r29_local_capture_pack_v1'
-SCENES = ('훈련', '스킬', '시설', '이벤트', '기타/미확인')
-MAX_CAPTURES = 12
+# Keep the R29 labels for old packs and extend manually labelled evidence collection.
+# These tags are chosen by the user and MUST NOT be treated as scene recognition.
+SCENES = ('훈련', '스킬', '시설', '이벤트', '기타/미확인',
+          '육성 시작/편성', 'TP 회복', '훈련 미리보기', '훈련 결과',
+          '휴식/외출', '레이스', '무인도 시설/섬', '스킬 목록/구매',
+          '육성 결과', '다음 육성', '팝업/기타')
+MAX_CAPTURES = 40
 MAX_PNG_BYTES = 18 * 1024 * 1024
 
 
@@ -36,7 +41,11 @@ def check_capture_target(expected, current, foreground_hwnd, panel_rect):
         raise CaptureError('게임 창이 활성화되지 않았습니다. 게임을 클릭한 뒤 다시 시도하세요.')
     if rectangles_overlap(current.rect, panel_rect):
         raise CaptureError('도우미 창이 게임을 가리고 있습니다. 창을 분리하세요.')
-    if current.width < 500 or current.height < 320 or current.width * current.height > 24_000_000:
+    # The companion has supported compact 384x700 KR clients since R47;
+    # never reject the same trusted window only in the evidence-capture path.
+    from companion_core import is_game_window_size_supported, is_game_capture_size_supported
+    if not (is_game_window_size_supported(current) and
+            is_game_capture_size_supported(current.width, current.height)):
         raise CaptureError('게임 창 크기를 확인하세요.')
     return current.rect
 
@@ -99,9 +108,10 @@ def store_capture(folder: Path, image, *, scene_label: str, window_size: tuple[i
     if scene_label not in SCENES: raise CaptureError('알 수 없는 화면 종류입니다.')
     folder = Path(folder)
     manifest = load_pack(folder)
-    if len(manifest['captures']) >= MAX_CAPTURES: raise CaptureError('한 묶음에 최대 12장만 저장할 수 있습니다.')
+    if len(manifest['captures']) >= MAX_CAPTURES: raise CaptureError(f'한 묶음에 최대 {MAX_CAPTURES}장만 저장할 수 있습니다.')
     width, height = window_size
-    if not (isinstance(width, int) and isinstance(height, int) and 500 <= width and 320 <= height and width * height <= 24_000_000):
+    from companion_core import is_game_capture_size_supported
+    if not is_game_capture_size_supported(width, height):
         raise CaptureError('화면 해상도가 유효하지 않습니다.')
     if image.size != (width, height): raise CaptureError('캡처 크기가 게임 창 크기와 다릅니다.')
     raw = io.BytesIO()
