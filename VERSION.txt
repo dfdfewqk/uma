@@ -1,2 +1,2 @@
-Uma Trainer KR R49 Experimental Automation
-Version: 0.32.0
+Uma Trainer KR R50 Calibrated Automation Preview
+Version: 0.32.1

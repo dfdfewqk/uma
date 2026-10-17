@@ -1,2 +1,2 @@
-R49 Windows v0.32.0 CI retry: updater fixture now derives its test release version from CURRENT_VERSION.
+R50 Windows v0.32.1 CI request: calibrated TP/skill/result/repeat prototype with guarded checkpoints.
 Fail-closed tests unchanged; no premium purchases or public Releases. One-time dispatch only.

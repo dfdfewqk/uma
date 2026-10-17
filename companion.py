@@ -1,4 +1,4 @@
-"""Uma Trainer KR companion: game-side overlay preview, not an auto-bot.
+"""Uma Trainer KR companion: read-only preview plus opt-in registered-scene experiments.
 Run 'python companion.py --demo' to see layout without the game.
 """
 from __future__ import annotations
@@ -33,6 +33,12 @@ from training_tour_r49 import TrainingTour
 from foreground_click_r49 import ForegroundWindowsPointer, AutoInputBlocked
 from batch_planner_r49 import BatchPlanner
 from outcome_learning_r49 import inspect_record_counts
+from autopilot_bridge_r50 import LiveBatchSupervisor
+from visual_controls_r50 import load_profiles
+from numeric_observer_r50 import load_rois
+from batch_checkpoint_r50 import (
+    current_snapshot,save_checkpoint,load_checkpoint,restore_finished_only,
+)
 from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
                               store_capture, export_pack)
 from screen_r4 import user_dir
@@ -72,7 +78,7 @@ class Companion(tk.Tk):
         self.update_queue=queue.Queue()
         self.update_release=None
         self.update_busy=False
-        self.update_status=tk.StringVar(value=f'R46 통합 판단 소스 · 패키지 기준 v{CURRENT_VERSION} · 자동 조작 미연결')
+        self.update_status=tk.StringVar(value=f'R50 화면 등록/검증형 자동화 시범 · v{CURRENT_VERSION} · 미등록 화면 중지')
         self.event_var=tk.StringVar(value='')
         self.target_round=tk.StringVar(value='')
         self.target_style=tk.StringVar(value='')
@@ -131,6 +137,11 @@ class Companion(tk.Tk):
         self.auto_status=tk.StringVar(value='자동 훈련 실험 꺼짐 · TP/스킬/반복 조작 미검증')
         self.learning_status=tk.StringVar(value='실제 턴 전후 검수 기록 확인 전')
         self.batch_coordinator=None
+        self.full_batch=None
+        self.r50_profiles=()
+        self.r50_rois=()
+        self.r50_status=tk.StringVar(value='R50 TP·스킬·종료/반복 버튼 등록 대기 · 실전 검증 전')
+        self.r50_training_frames=0
         self.auto_confirmed_risk=False
         self.preview_info=tk.StringVar(value='R48 게임 훈련 미리보기 탐색 대기 · 0/5')
         self.capture_label=tk.StringVar(value='훈련')
@@ -200,7 +211,7 @@ class Companion(tk.Tk):
         self.helper_switch=tk.Button(c,text='화면 분석 일시 정지',command=self._helper,
                  bg='#226F83',fg='white',relief='flat')
         self.helper_switch.pack(fill='x',pady=(8,1))
-        self._label(c,'훈련·휴식·이벤트 선택은 게임에서만 클릭합니다. 프로그램은 입력하지 않습니다.',
+        self._label(c,'기본은 직접 클릭. 실험 자동화에서는 사용자 등록/검증 화면에서만 입력합니다.',
                     MUTED,8).pack(anchor='w',pady=(5,0))
 
         c=self._card()
@@ -212,11 +223,20 @@ class Companion(tk.Tk):
                   command=self._start_autotour,bg='#24637D',fg=TEXT,
                   relief='flat').pack(fill='x',pady=(0,3))
         tk.Button(c,text='자동 조작 즉시 중단',
-                  command=self._stop_autotour,bg='#7D3545',fg=TEXT,
+                  command=self._stop_all_automation,bg='#7D3545',fg=TEXT,
                   relief='flat').pack(fill='x',pady=(0,3))
-        self._label(c,'지원: 게임 훈련 5종 미리보기와 잠정 후보 선택만. '
-                 'TP 충전·스킬 구매·육성 재시작은 실제 화면 검수 전 자동 입력 중지.',
-                 MUTED,8).pack(anchor='w')
+        tk.Label(c,textvariable=self.r50_status,bg=CARD,fg=MUTED,
+                 wraplength=290,anchor='w',justify='left',
+                 font=('Malgun Gothic',8)).pack(anchor='w',pady=(3,4))
+        tk.Button(c,text='R50 게임 화면·TP/스킬 숫자 한 번 등록',
+                  command=self._open_r50_calibration,
+                  bg='#355174',fg=TEXT,relief='flat').pack(fill='x',pady=2)
+        tk.Button(c,text='등록된 화면만 반복 자동 실행 (실험)',
+                  command=self._start_full_batch,
+                  bg='#245a54',fg=TEXT,relief='flat').pack(fill='x',pady=2)
+        self._label(c,'미등록 이벤트·레이스·시설·결과에서는 안전 중지. '
+                  '자동화 신뢰도 실게임 미검증 · 유료 TP/주얼 결제 금지.',
+                  MUTED,8).pack(anchor='w')
 
         c=self._card()
         self._label(c,'실제 결과 기반 학습 · 검수 기록',AQUA,10,'bold').pack(anchor='w')
@@ -363,8 +383,136 @@ class Companion(tk.Tk):
         except (OSError,ValueError,KeyError,TypeError) as exc:
             self.learning_status.set('학습 원본 손상/버전 불일치 · 데이터 보존: '+str(exc)[:90])
 
+    def _open_r50_calibration(self):
+        """Explicit user-reviewed Korean game button/number ROI registration."""
+        from calibration_ui_r50 import CalibrationWindow
+        CalibrationWindow(self)
+
+    def _stop_all_automation(self):
+        self._stop_autotour()
+        if self.full_batch is not None:
+            self.full_batch.halt('사용자가 자동 조작을 중단했습니다.')
+        self.r50_status.set('R50 중지됨 · 자동 클릭/반복 없음')
+
+    def _save_r50_progress(self):
+        if self.full_batch is not None:
+            save_checkpoint(user_dir()/'r50_batch_progress.json',
+                            current_snapshot(self.full_batch))
+
+    def _start_full_batch(self):
+        """Only live, registered and opt-in scenes may be clicked."""
+        if self.demo or os.name!='nt' or not self.monitoring or self.current_target is None:
+            self.r50_status.set('Windows 게임/목표/감시 상태 확인 전 자동 실행할 수 없습니다.')
+            return
+        try:
+            prof=load_profiles(user_dir()/'r50_visual_controls.json')
+            rois=load_rois(user_dir()/'r50_numeric_rois.json')
+            stages={x.stage for x in prof}
+            if not {'tp','result','repeat'}.issubset(stages):
+                raise ValueError('TP/육성 종료/반복 화면을 먼저 실제 게임에서 등록하세요.')
+            if not {'tp','tp_cost','tp_cap','free_item_count','free_item_recovery'}.issubset(
+                    {x.field for x in rois if x.stage=='tp'}):
+                raise ValueError('TP/비용/상한/무료아이템 수량·회복량 OCR 영역을 등록하세요.')
+            course=course_for(self.current_target,self.known_courses)
+            skills_ready=(course is not None and 'skill' in stages and
+                          {'skill_points','skill_price'}.issubset(
+                           {x.field for x in rois if x.stage=='skill'}))
+            notice=('등록한 한국 서버 화면 템플릿과 숫자 OCR로 실제 게임을 클릭하는 실험입니다.\n'
+                    '현재 캐릭터·서포트 덱·계승·선택 각질을 실제 게임에서 확인했습니까?\n'
+                    '인식하지 못하는 이벤트/시설/레이스에서 중지됩니다. 유료 TP 결제는 사용하지 않습니다.\n'
+                    '미검증 장면에서는 자동 실행을 멈춥니다. 시작할까요?')
+            if not messagebox.askyesno('R50 실험적 자동 육성 동의',notice,parent=self):
+                return
+            self._stop_all_automation()
+            self.r50_profiles=prof
+            self.r50_rois=rois
+            new_runner=LiveBatchSupervisor(self.current_target,
+                            self.repeat_preferences.repeats,dry_run=False)
+            existing=load_checkpoint(user_dir()/'r50_batch_progress.json',
+                                      self.current_target,self.repeat_preferences.repeats)
+            if existing is not None:
+                restore_finished_only(new_runner,existing)
+                if new_runner.planner.remaining<=0:
+                    self.r50_status.set('R50 저장된 반복 횟수가 이미 완료됐습니다.')
+                    return
+            self.full_batch=new_runner
+            self.full_batch.arm(setup_reviewed=True,
+                 character_deck_inheritance_reviewed=True,
+                 skill_scope_reviewed=skills_ready)
+            self._save_r50_progress()
+            self.preview_collector.reset()
+            self.r50_training_frames=0
+            self.r50_status.set('R50 실험 활성 · 등록된 장면/숫자 검증 중 · 게임 창으로 돌아가세요.')
+        except (OSError,ValueError,TypeError,KeyError) as exc:
+            self.r50_status.set('R50 준비 보류: '+str(exc)[:145])
+
+    def _run_r50_on_frame(self,packet,scene,preview,hwnd,rect):
+        batch=self.full_batch
+        if batch is None or not batch.armed:
+            return
+        if not rect or self.current_target is None:
+            batch.halt('게임 창/육성 목표 없음')
+            return
+        if batch.awaiting is not None and batch.awaiting['action']=='start_run':
+            if scene=='훈련' and preview is not None and preview.selected:
+                self.r50_training_frames+=1
+                if self.r50_training_frames>=2 and batch.confirm_training_start():
+                    self._save_r50_progress()
+                    self.autotour.start()
+                    self.auto_confirmed_risk=True
+                    self.r50_status.set('R50 실제 훈련 화면 확인 · 자동 미리보기 탐색')
+            else:
+                self.r50_training_frames=0
+            return
+        if scene=='훈련':
+            if batch.awaiting is not None:
+                batch.halt('이전 TP/스킬/종료 버튼의 결과 확인 전 훈련 화면으로 이동')
+                self.r50_status.set('R50 안전 중지 · 이전 입력의 결과 재검수 필요')
+                return
+            if not self.autotour.enabled:
+                self.autotour.start()
+                self.auto_confirmed_risk=True
+            return
+        if packet is None or packet.stage is None:
+            batch.halt('현재 장면 미등록 · 이벤트/레이스 등 수동 검수 필요')
+            self.autotour.stop()
+            self.auto_confirmed_risk=False
+            self.r50_status.set('R50 안전 정지: 미등록 장면이므로 버튼을 누르지 않습니다.')
+            return
+        c=course_for(self.current_target,self.known_courses)
+        try:
+            advice=batch.decision(packet,style=self.current_target.style,
+                                  distance=(c['distance'] if c else None),
+                                  surface=(c['surface'] if c else None))
+            self._save_r50_progress()
+            self.r50_status.set('R50 '+packet.stage+' · '+advice.reason[:115])
+            if advice.action=='stop':
+                batch.halt(advice.reason)
+                return
+            if advice.action not in ('start_run','free_tp_item',
+                     'purchase_skill','finish_run','repeat_run'):
+                return
+            from PIL import ImageGrab
+            import ctypes
+            if ctypes.windll.user32.GetForegroundWindow()!=hwnd:
+                return
+            image=ImageGrab.grab(bbox=rect,all_screens=True)
+            sent=batch.click(advice,packet,image,self.r50_profiles,
+                              hwnd=hwnd,rect=rect,approved=True)
+            if sent:
+                self._save_r50_progress()
+                self.r50_status.set('R50 '+advice.action+
+                    ' 클릭 · 다음 화면/숫자 변화 확인 전 추가 입력 금지')
+        except (ValueError,OSError,RuntimeError,TypeError,KeyError) as exc:
+            batch.halt(str(exc))
+            self.autotour.stop()
+            self.auto_confirmed_risk=False
+            self.r50_status.set('R50 안전 중지: '+str(exc)[:125])
+
     def _start_autotour(self):
         """Explicit opt-in. Never continue blindly through modal/other scenes."""
+        if self.full_batch is not None and self.full_batch.armed:
+            self._stop_all_automation()
         if self.demo or os.name!='nt' or self.current_target is None:
             self.auto_status.set('Windows 실게임 및 대회/각질 목표 확인 후 시작하세요.')
             return
@@ -384,6 +532,8 @@ class Companion(tk.Tk):
         self.autotour.stop()
         self.auto_confirmed_risk=False
         self.auto_status.set('자동 조작 중지됨 · 클릭하지 않습니다.')
+        if self.full_batch is not None and self.full_batch.armed:
+            self.full_batch.halt('훈련 자동 탐색 중단 · 반복 조작도 안전 정지')
 
     def _run_autotour_on_frame(self,scene,preview,hwnd,rect):
         """A frame-based experiment. One foreground click only per verified step."""
@@ -485,6 +635,8 @@ class Companion(tk.Tk):
                 self.target_error='설정 저장 실패: '+str(exc)[:55]
         if self.autotour.enabled:
             self._stop_autotour()
+        if self.full_batch is not None and self.full_batch.armed:
+            self.full_batch.halt('육성 목표 변경')
         self.batch_coordinator=BatchPlanner(self.current_target,self.repeat_preferences.repeats)
         self._refresh_target_status()
         self._refresh_learning_status()
@@ -618,6 +770,7 @@ class Companion(tk.Tk):
         """Click-only monitoring control; no game keyboard or pointer events."""
         self.monitoring=not self.monitoring
         if not self.monitoring:
+            self._stop_all_automation()
             self.freshness.update(None)
             self.hint_gate.clear()
             self.scene_tracker.reset()
@@ -849,7 +1002,18 @@ class Companion(tk.Tk):
                         profile=read_profile(profile_path())
                         results=read_regions(path,profile,min_confidence=80)
                     values=usable_ocr_values(results)
-                self.q.put(('frame',epoch,game.hwnd,(text_scene,buttons,scene,values,hits,preview)))
+                packet=None
+                if self.full_batch is not None and self.full_batch.armed:
+                    from screen_r4 import tesseract_executable
+                    packet=self.full_batch.adapter.observe(
+                        image,game.hwnd,self.r50_profiles,self.r50_rois,
+                        tesseract_executable(),
+                        run_id=self.full_batch.active_run_id,
+                        skill_scope_reviewed=self.full_batch.skill_scope_reviewed,
+                        goal_scope=(self.current_target.key+":"+self.current_target.style
+                                    if self.current_target is not None else ""))
+                self.q.put(('frame',epoch,game.hwnd,
+                            (text_scene,buttons,scene,values,hits,preview,packet)))
             except Exception as e:
                 self.q.put(('error',epoch,game.hwnd,str(e)))
         threading.Thread(target=work,daemon=True).start()
@@ -865,7 +1029,7 @@ class Companion(tk.Tk):
                     self._clear_live_evidence()
                     self.reason.set('화면 인식 보류 · '+data[:85])
                     continue
-                scene_text,buttons,scene,values,hits,preview=data
+                scene_text,buttons,scene,values,hits,preview,packet=data
                 self.scene_info.set(scene_text)
                 self.button_info.set(buttons)
                 # Entire frame replaces, never merges with last frame's values.
@@ -924,7 +1088,10 @@ class Companion(tk.Tk):
                     elif scene is None:
                         detail+=' · 한국 서버 화면 인식 기준 미등록/미확인 · 장면 점검 필요'
                 self.reason.set(detail)
-                if self.autotour.enabled:
+                if self.full_batch is not None and self.full_batch.armed:
+                    self._run_r50_on_frame(packet,scene,preview,hwnd,rect)
+                if self.autotour.enabled and (self.full_batch is None or
+                       not self.full_batch.armed or scene=='훈련'):
                     self._run_autotour_on_frame(scene,preview,hwnd,rect)
                 if view.verified_training and hint and rect:
                     self.r28_info.set('확인된 훈련 후보: '+hint.label)
