@@ -28,7 +28,11 @@ from planning_prefs_r44 import (Preferences, REPEAT_CHOICES,
                                 load_preferences, save_preferences, describe_plan)
 from session_dashboard_r45 import read_dashboard
 from unified_advisor_r46 import UnifiedAdvisor, companion_readiness
-from training_preview_r48 import PreviewCollector, selected_training
+from training_preview_r48 import PreviewCollector, selected_training, portrait_supported
+from training_tour_r49 import TrainingTour
+from foreground_click_r49 import ForegroundWindowsPointer, AutoInputBlocked
+from batch_planner_r49 import BatchPlanner
+from outcome_learning_r49 import inspect_record_counts
 from capture_pack_r29 import (CaptureError, SCENES, check_capture_target, new_pack,
                               store_capture, export_pack)
 from screen_r4 import user_dir
@@ -122,6 +126,12 @@ class Companion(tk.Tk):
         self.r46_status=tk.StringVar(value='R46 통합 추천: 실제 턴별 보상 검수 전')
         self.unified_advisor=UnifiedAdvisor()
         self.preview_collector=PreviewCollector()
+        self.autotour=TrainingTour()
+        self.autopointer=ForegroundWindowsPointer(dry_run=(os.name!='nt'))
+        self.auto_status=tk.StringVar(value='자동 훈련 실험 꺼짐 · TP/스킬/반복 조작 미검증')
+        self.learning_status=tk.StringVar(value='실제 턴 전후 검수 기록 확인 전')
+        self.batch_coordinator=None
+        self.auto_confirmed_risk=False
         self.preview_info=tk.StringVar(value='R48 게임 훈련 미리보기 탐색 대기 · 0/5')
         self.capture_label=tk.StringVar(value='훈련')
         self.capture_pack=None
@@ -135,6 +145,7 @@ class Companion(tk.Tk):
         self.skill=tk.StringVar(value='—')
         self._draw()
         self._target_changed(persist=False)
+        self._refresh_learning_status()
         self.after(300,self._update_poll)
         if getattr(sys, 'frozen', False) and os.name == 'nt':
             self.after(2600,self._check_updates)
@@ -190,6 +201,31 @@ class Companion(tk.Tk):
                  bg='#226F83',fg='white',relief='flat')
         self.helper_switch.pack(fill='x',pady=(8,1))
         self._label(c,'훈련·휴식·이벤트 선택은 게임에서만 클릭합니다. 프로그램은 입력하지 않습니다.',
+                    MUTED,8).pack(anchor='w',pady=(5,0))
+
+        c=self._card()
+        self._label(c,'자동 훈련 탐색 · 실험 기능',AQUA,10,'bold').pack(anchor='w')
+        tk.Label(c,textvariable=self.auto_status,bg=CARD,fg=YELLOW,
+                 wraplength=290,justify='left',anchor='w',
+                 font=('Malgun Gothic',9)).pack(anchor='w',pady=(4,6))
+        tk.Button(c,text='자동 훈련 탐색 시작 (OCR 잠정 후보 사용)',
+                  command=self._start_autotour,bg='#24637D',fg=TEXT,
+                  relief='flat').pack(fill='x',pady=(0,3))
+        tk.Button(c,text='자동 조작 즉시 중단',
+                  command=self._stop_autotour,bg='#7D3545',fg=TEXT,
+                  relief='flat').pack(fill='x',pady=(0,3))
+        self._label(c,'지원: 게임 훈련 5종 미리보기와 잠정 후보 선택만. '
+                 'TP 충전·스킬 구매·육성 재시작은 실제 화면 검수 전 자동 입력 중지.',
+                 MUTED,8).pack(anchor='w')
+
+        c=self._card()
+        self._label(c,'실제 결과 기반 학습 · 검수 기록',AQUA,10,'bold').pack(anchor='w')
+        tk.Label(c,textvariable=self.learning_status,bg=CARD,fg=MUTED,
+                 anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=(4,4))
+        tk.Button(c,text='실제 검수 학습 데이터 상태 다시 확인',
+                  command=self._refresh_learning_status,bg='#263754',
+                  fg=TEXT,relief='flat').pack(fill='x')
+        self._label(c,'잠정 OCR 후보·합성자료는 학습 정답이 아닙니다.',
                     MUTED,8).pack(anchor='w',pady=(5,0))
 
         c=self._card()
@@ -312,6 +348,93 @@ class Companion(tk.Tk):
         self._label(advanced,'고급 점검은 실게임 인식 검증을 위한 개발 도구이며 육성 중 필요하지 않습니다.',
                     MUTED,8).pack(anchor='w',padx=14,pady=(0,8))
 
+    def _refresh_learning_status(self):
+        if self.current_target is None:
+            self.learning_status.set('대회/각질 목표 미선택 · 학습 상태 보류')
+            return
+        try:
+            groups=inspect_record_counts(user_dir()/'r49_reviewed_turns.json',
+                                         self.current_target.scenario)
+            total=sum(v['turns'] for v in groups.values())
+            runs=sum(v['runs'] for v in groups.values())
+            self.learning_status.set('검수된 실게임 '+str(total)+'턴 / '+str(runs)+
+                  '회 육성 · 패치 '+str(len(groups))+
+                  '종 분리. 검수된 결과가 부족하면 학습 미적용')
+        except (OSError,ValueError,KeyError,TypeError) as exc:
+            self.learning_status.set('학습 원본 손상/버전 불일치 · 데이터 보존: '+str(exc)[:90])
+
+    def _start_autotour(self):
+        """Explicit opt-in. Never continue blindly through modal/other scenes."""
+        if self.demo or os.name!='nt' or self.current_target is None:
+            self.auto_status.set('Windows 실게임 및 대회/각질 목표 확인 후 시작하세요.')
+            return
+        if not messagebox.askyesno('실험적 자동 훈련',
+                '실게임에서 훈련 미리보기 5개를 자동으로 확인한 뒤 '
+                '검수 전 OCR 스탯 합계가 가장 높은 훈련의 결정 버튼을 클릭합니다.\n'
+                '인연/체력/실패율/스킬 Pt는 반영되지 않으므로 실제 효율을 보장하지 않습니다.\n'
+                'TP 회복·스킬 구매·육성 종료/재시작은 아직 자동으로 진행하지 않습니다.\n'
+                '실험을 시작하시겠습니까?',parent=self):
+            return
+        self.autotour.start()
+        self.auto_confirmed_risk=True
+        self.preview_collector.reset()
+        self.auto_status.set('실험적 자동 훈련 활성 · 게임 창을 클릭해 활성화하세요.')
+
+    def _stop_autotour(self):
+        self.autotour.stop()
+        self.auto_confirmed_risk=False
+        self.auto_status.set('자동 조작 중지됨 · 클릭하지 않습니다.')
+
+    def _run_autotour_on_frame(self,scene,preview,hwnd,rect):
+        """A frame-based experiment. One foreground click only per verified step."""
+        if not self.autotour.enabled or not self.auto_confirmed_risk:
+            return
+        if self.current_target is None or not self.monitoring or not rect:
+            self._stop_autotour()
+            return
+        if os.name!='nt':
+            self._stop_autotour()
+            return
+        if self.topmost_var.get():
+            panel=(self.winfo_rootx(),self.winfo_rooty(),
+                   self.winfo_rootx()+self.winfo_width(),
+                   self.winfo_rooty()+self.winfo_height())
+            if rectangles_overlap(rect,panel):
+                self._stop_autotour()
+                self.auto_status.set('게임과 도우미가 겹쳐 자동 클릭 정지')
+                return
+        try:
+            from PIL import ImageGrab
+            import ctypes
+            if ctypes.windll.user32.GetForegroundWindow()!=hwnd:
+                # Focus can change whenever the user operates the companion.
+                self.auto_status.set('게임 창이 활성화될 때까지 입력 대기')
+                return
+            image=ImageGrab.grab(bbox=rect,all_screens=True)
+            if not portrait_supported(image):
+                self._stop_autotour()
+                self.auto_status.set('이 게임 화면의 비율은 자동 훈련 실험 미지원')
+                return
+            proposal=self.autotour.propose(
+                image,hwnd,rect,preview,scene=scene,user_armed=True,
+                collected_names=tuple(self.preview_collector.collected))
+            self.auto_status.set(proposal.explanation)
+            if proposal.intent is None:
+                if proposal.status=='blocked':
+                    self.auto_confirmed_risk=False
+                return
+            selected=selected_training(image)
+            ok=self.autopointer.click(proposal.intent,approved=True,
+                                      fresh_image=image,observed_selection=selected)
+            self.autotour.on_click_result(ok,proposal.intent.kind,
+                  proposal.intent.target_label,__import__('time').monotonic())
+            if ok:
+                self.auto_status.set('자동 조작: '+proposal.explanation+
+                    ' · 다음 장면 재확인 전 추가 클릭 금지')
+        except (AutoInputBlocked,ValueError,OSError,RuntimeError) as exc:
+            self._stop_autotour()
+            self.auto_status.set('안전 중지: '+str(exc)[:115])
+
     def _toggle_topmost(self):
         """Optional always-on-top; default is off so the game is unobstructed."""
         self.attributes('-topmost',bool(self.topmost_var.get()))
@@ -360,7 +483,11 @@ class Companion(tk.Tk):
                     self.target_error=''
             except (OSError,ValueError) as exc:
                 self.target_error='설정 저장 실패: '+str(exc)[:55]
+        if self.autotour.enabled:
+            self._stop_autotour()
+        self.batch_coordinator=BatchPlanner(self.current_target,self.repeat_preferences.repeats)
         self._refresh_target_status()
+        self._refresh_learning_status()
 
     def _refresh_target_status(self):
         target=self.current_target
@@ -496,6 +623,7 @@ class Companion(tk.Tk):
             self.scene_tracker.reset()
             self.button_tracker.reset()
             self.reading=False
+            self._stop_autotour()
             self._clear_live_evidence()
             view=paused_view()
             self.action.set(view.title)
@@ -611,6 +739,8 @@ class Companion(tk.Tk):
         self.action.set('추천 보류')
         self.reason.set('이전 화면의 추천과 OCR 수치를 무효화했습니다.')
         self.unified_advisor.suspend()
+        if self.autotour.enabled:
+            self._stop_autotour()
         self.preview_collector.reset()
         self.preview_info.set('R48: 훈련 5종을 게임에서 확인하면 잠정 비교 · 0/5')
         self.r46_status.set('R46: 이전 화면 추천 폐기 · 새 한국 서버 관측값 확인 대기')
@@ -794,6 +924,8 @@ class Companion(tk.Tk):
                     elif scene is None:
                         detail+=' · 한국 서버 화면 인식 기준 미등록/미확인 · 장면 점검 필요'
                 self.reason.set(detail)
+                if self.autotour.enabled:
+                    self._run_autotour_on_frame(scene,preview,hwnd,rect)
                 if view.verified_training and hint and rect:
                     self.r28_info.set('확인된 훈련 후보: '+hint.label)
                     if not self.hint_overlay.show(rect,hint):

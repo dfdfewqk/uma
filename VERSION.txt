@@ -1,2 +1,2 @@
-Uma Trainer KR R48 Game-Test Training Preview
-Version: 0.31.8
+Uma Trainer KR R49 Experimental Automation
+Version: 0.32.0
