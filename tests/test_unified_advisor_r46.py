@@ -59,6 +59,20 @@ def screen_now(**kwargs):
 
 
 class R46IntegrationTests(unittest.TestCase):
+    def test_r56_provisional_research_does_not_set_r46_decision_or_click(self):
+        from training_evidence_r55 import TrainingEvidenceView, TrainingOptionEvidence
+        from ranker_strategy_r56 import StrategyContext
+        from pathlib import Path
+        opts=(TrainingOptionEvidence("스피드",(15,5,0,0,0)),)
+        draft=TrainingEvidenceView("스피드",opts,1,0,"OCR 후보")
+        engine=UnifiedAdvisor()
+        out=engine.inspect_training_research(draft,StrategyContext())
+        self.assertIsNone(engine.gate.pending)
+        self.assertIsNone(engine.last_content_fingerprint)
+        self.assertFalse(out.game_input_allowed)
+        self.assertFalse(out.decision_ready)
+        self.assertIn("1/5",out.label)
+
     def test_training_needs_two_stable_reviewed_frames(self):
         engine=UnifiedAdvisor()
         self.assertIsNone(engine.evaluate(training()).action)

@@ -30,6 +30,7 @@ from session_dashboard_r45 import read_dashboard
 from unified_advisor_r46 import UnifiedAdvisor, companion_readiness
 from training_preview_r48 import PreviewCollector, selected_training, portrait_supported, _turn_signature
 from training_evidence_r55 import TrainingEvidenceCollector
+from ranker_strategy_r56 import StrategyContext
 from training_tour_r49 import TrainingTour
 from foreground_click_r49 import ForegroundWindowsPointer, AutoInputBlocked
 from batch_planner_r49 import BatchPlanner
@@ -146,6 +147,8 @@ class Companion(tk.Tk):
         self.training_evidence=TrainingEvidenceCollector()
         self.training_evidence_info=tk.StringVar(
             value='R55 훈련별 보상 수집 0/5 · 우정/인연 정보 미검수')
+        self.ranker_strategy_info=tk.StringVar(
+            value='R56 전략 비교 대기 · JP 공략 참고, KR 실제 턴 검수 필요')
         self.autotour=TrainingTour()
         self.autopointer=ForegroundWindowsPointer(dry_run=(os.name!='nt'))
         self.auto_status=tk.StringVar(value='자동 훈련 실험 꺼짐 · TP/스킬/반복 조작 미검증')
@@ -224,6 +227,9 @@ class Companion(tk.Tk):
                  font=('Malgun Gothic',9),wraplength=290,
                  justify='left',anchor='w').pack(anchor='w',pady=(0,4))
         tk.Label(c,textvariable=self.training_evidence_info,bg=CARD,fg=MUTED,
+                 font=('Malgun Gothic',8),wraplength=290,
+                 justify='left',anchor='w').pack(anchor='w',pady=(0,4))
+        tk.Label(c,textvariable=self.ranker_strategy_info,bg=CARD,fg=MUTED,
                  font=('Malgun Gothic',8),wraplength=290,
                  justify='left',anchor='w').pack(anchor='w',pady=(0,4))
         self.helper_switch=tk.Button(c,text='화면 분석 일시 정지',command=self._helper,
@@ -958,6 +964,7 @@ class Companion(tk.Tk):
         self.numeric_reader.reset()
         self.training_evidence.reset()
         self.training_evidence_info.set('R55 훈련 화면/턴 변경 · 지난 후보 폐기')
+        self.ranker_strategy_info.set('R56 이전 전략 후보 폐기 · 한국 게임 화면 대기')
         self.numeric_status.set('R54 인식 보류 · 이전 화면의 수치 후보 폐기')
         self.failure_rate.set('—')
         self.island_tickets.set('—')
@@ -1159,6 +1166,11 @@ class Companion(tk.Tk):
                       else self.freshness.safe_values(scene,values))
                 self.numeric_status.set(numeric_note)
                 self.training_evidence_info.set(training_state.explanation)
+                # Source guides are JP hypotheses. Do not infer verified KR
+                # phase, ticket expiry or support friendship from R55 OCR.
+                research_view=self.unified_advisor.inspect_training_research(
+                    training_state, StrategyContext())
+                self.ranker_strategy_info.set('R56 '+research_view.label)
                 self.failure_rate.set(str(safe['실패율'])+'% *' if '실패율' in safe else '—')
                 self.island_tickets.set(str(safe['섬 티켓'])+' *' if '섬 티켓' in safe else '—')
                 self.development_points.set(str(safe['발전 Pt'])+' *' if '발전 Pt' in safe else '—')

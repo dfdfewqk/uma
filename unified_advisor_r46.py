@@ -15,6 +15,7 @@ from race_outing_r38 import CharacterCalendar, ScreenTurn, assess_turn, next_goa
 from skill_budget_r42 import SkillOffer, plan_retry_purchase
 from target_selector_r39 import Target
 from turn_policy_r40 import TurnEvidence, TurnOption, suggest_turn, score_option
+from ranker_strategy_r56 import StrategyContext, inspect_strategy
 
 TRUSTED = ("reviewed_game_screenshot", "reviewed_game_video")
 TRAINABLE_KINDS = ("training", "race", "rest", "outing", "facility", "island")
@@ -202,6 +203,14 @@ class UnifiedAdvisor:
     def suspend(self):
         self.gate.stop()
         self.last_content_fingerprint = None
+
+    def inspect_training_research(self, training_view, context=None):
+        """R56: explain candidate observations without touching reviewed R46 gate.
+
+        JP post-adjustment guide opinions and provisional R55 OCR values
+        cannot become reviewed Korean turn options or click authorizations.
+        """
+        return inspect_strategy(training_view, context or StrategyContext())
 
     def acknowledge(self, frame: ObservedFrame, ticket: str) -> bool:
         frame.validate()
