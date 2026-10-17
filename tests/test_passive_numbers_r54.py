@@ -31,6 +31,15 @@ class NumberR54Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_live_number("10","우정 훈련")
 
+    def test_training_effects_are_separate_from_current_balance(self):
+        from passive_numbers_r54 import parse_live_number
+        self.assertEqual(parse_live_number("+15","스킬 Pt 증가"),15)
+        self.assertEqual(parse_live_number("8","체력 소모"),8)
+        self.assertIsNone(parse_live_number("-8","체력 소모"))
+        self.assertIsNone(parse_live_number("250","스킬 Pt 증가"))
+        with self.assertRaises(ValueError):
+            roi("체력 소모","스킬").validate()
+
     def test_storage_does_not_overwrite_or_modify_r50(self):
         with tempfile.TemporaryDirectory() as td:
             path=Path(td)/"r54.json"

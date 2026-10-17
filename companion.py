@@ -28,7 +28,8 @@ from planning_prefs_r44 import (Preferences, REPEAT_CHOICES,
                                 load_preferences, save_preferences, describe_plan)
 from session_dashboard_r45 import read_dashboard
 from unified_advisor_r46 import UnifiedAdvisor, companion_readiness
-from training_preview_r48 import PreviewCollector, selected_training, portrait_supported
+from training_preview_r48 import PreviewCollector, selected_training, portrait_supported, _turn_signature
+from training_evidence_r55 import TrainingEvidenceCollector
 from training_tour_r49 import TrainingTour
 from foreground_click_r49 import ForegroundWindowsPointer, AutoInputBlocked
 from batch_planner_r49 import BatchPlanner
@@ -142,6 +143,9 @@ class Companion(tk.Tk):
         self.r46_status=tk.StringVar(value='R46 통합 추천: 실제 턴별 보상 검수 전')
         self.unified_advisor=UnifiedAdvisor()
         self.preview_collector=PreviewCollector()
+        self.training_evidence=TrainingEvidenceCollector()
+        self.training_evidence_info=tk.StringVar(
+            value='R55 훈련별 보상 수집 0/5 · 우정/인연 정보 미검수')
         self.autotour=TrainingTour()
         self.autopointer=ForegroundWindowsPointer(dry_run=(os.name!='nt'))
         self.auto_status=tk.StringVar(value='자동 훈련 실험 꺼짐 · TP/스킬/반복 조작 미검증')
@@ -218,6 +222,9 @@ class Companion(tk.Tk):
                  justify='left',anchor='w').pack(anchor='w',pady=(0,4))
         tk.Label(c,textvariable=self.preview_info,bg=CARD,fg=AQUA,
                  font=('Malgun Gothic',9),wraplength=290,
+                 justify='left',anchor='w').pack(anchor='w',pady=(0,4))
+        tk.Label(c,textvariable=self.training_evidence_info,bg=CARD,fg=MUTED,
+                 font=('Malgun Gothic',8),wraplength=290,
                  justify='left',anchor='w').pack(anchor='w',pady=(0,4))
         self.helper_switch=tk.Button(c,text='화면 분석 일시 정지',command=self._helper,
                  bg='#226F83',fg='white',relief='flat')
@@ -949,6 +956,8 @@ class Companion(tk.Tk):
         """Never display last-turn values after window/layout/scene invalidation."""
         self.scene_fusion.reset()
         self.numeric_reader.reset()
+        self.training_evidence.reset()
+        self.training_evidence_info.set('R55 훈련 화면/턴 변경 · 지난 후보 폐기')
         self.numeric_status.set('R54 인식 보류 · 이전 화면의 수치 후보 폐기')
         self.failure_rate.set('—')
         self.island_tickets.set('—')
@@ -1064,10 +1073,12 @@ class Companion(tk.Tk):
                 # Passive local preview collection: the player selects
                 # five training icons in the game. No game pointer/keyboard.
                 preview=None
+                ocr_binary=None
                 if scene == '훈련' and portrait_training is not None:
                     from screen_r4 import tesseract_executable
+                    ocr_binary=tesseract_executable()
                     preview=self.preview_collector.observe(
-                        image,game.hwnd,tesseract_executable())
+                        image,game.hwnd,ocr_binary)
                 elif scene is not None and scene != '훈련':
                     self.preview_collector.reset()
                 values={}
@@ -1079,10 +1090,11 @@ class Companion(tk.Tk):
                     from screen_r4 import tesseract_executable
                     # Never infer a turn identity from OCR. The training
                     # baseline fingerprint is only a cache-invalidation key.
-                    from training_preview_r48 import _turn_signature
-                    turn_key=_turn_signature(image) if scene=='훈련' else None
+                    # One selected training's failure rate/cost must not
+                    # leak into the next training icon of the same turn.
+                    turn_key=(_turn_signature(image), portrait_training) if scene=='훈련' else None
                     number_frame=self.numeric_reader.observe(
-                        image,scene,active_rois,tesseract_executable(),
+                        image,scene,active_rois,(ocr_binary or tesseract_executable()),
                         game.hwnd,game.rect,turn_key)
                     values=number_frame.numbers
                     numeric_note='R54 '+number_frame.status
@@ -1099,6 +1111,17 @@ class Companion(tk.Tk):
                             results=read_regions(path,profile,min_confidence=80)
                         values=usable_ocr_values(results)
                         numeric_note='기존 R4 OCR 후보 · 직접 검수 전'
+                # R55 assembles R48's 2-frame gain readings with selected-
+                # training-scoped R54 values, WITHOUT authorizing a click.
+                training_state=self.training_evidence.observe(
+                    scene=scene,
+                    selected=preview.selected if preview else None,
+                    window_key=game.hwnd,window_rect=game.rect,image_size=image.size,
+                    turn_signature=_turn_signature(image) if scene=='훈련' else None,
+                    preview_readings=(dict(self.preview_collector.collected)
+                                      if scene=='훈련' and preview is not None and ocr_binary
+                                      else {}),
+                    numeric_candidates=(values if r54_active else {}))
                 packet=None
                 if self.full_batch is not None and self.full_batch.armed:
                     from screen_r4 import tesseract_executable
@@ -1112,7 +1135,7 @@ class Companion(tk.Tk):
                         skill_approvals=self.r51_skill_approvals,
                         cycle=len(self.full_batch.planner.completed_ids))
                 self.q.put(('frame',epoch,game.hwnd,
-                            (text_scene,buttons,scene,values,hits,preview,packet,screen,r54_active,numeric_note)))
+                            (text_scene,buttons,scene,values,hits,preview,packet,screen,r54_active,numeric_note,training_state)))
             except Exception as e:
                 self.q.put(('error',epoch,game.hwnd,str(e)))
         threading.Thread(target=work,daemon=True).start()
@@ -1128,13 +1151,14 @@ class Companion(tk.Tk):
                     self._clear_live_evidence()
                     self.reason.set('화면 인식 보류 · '+data[:85])
                     continue
-                scene_text,buttons,scene,values,hits,preview,packet,screen,r54_active,numeric_note=data
+                scene_text,buttons,scene,values,hits,preview,packet,screen,r54_active,numeric_note,training_state=data
                 self.scene_info.set(scene_text)
                 self.button_info.set(buttons)
                 # Entire frame replaces, never merges with last frame's values.
                 safe=(dict(values) if r54_active and scene is not None
                       else self.freshness.safe_values(scene,values))
                 self.numeric_status.set(numeric_note)
+                self.training_evidence_info.set(training_state.explanation)
                 self.failure_rate.set(str(safe['실패율'])+'% *' if '실패율' in safe else '—')
                 self.island_tickets.set(str(safe['섬 티켓'])+' *' if '섬 티켓' in safe else '—')
                 self.development_points.set(str(safe['발전 Pt'])+' *' if '발전 Pt' in safe else '—')

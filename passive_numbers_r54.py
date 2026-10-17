@@ -19,8 +19,12 @@ from screen_r4 import FIELD_LIMITS, ScreenError, _recognize_one, parse_numeric
 from visual_controls_r50 import _bbox
 
 SCHEMA = "uma_r54_passive_numbers_v1"
-NUMERIC_FIELDS = tuple(FIELD_LIMITS) + ("실패율",)
-LIMITS = dict(FIELD_LIMITS, **{"실패율": (0, 100)})
+NUMERIC_FIELDS = tuple(FIELD_LIMITS) + ("실패율", "체력 소모", "스킬 Pt 증가")
+# These are optional PREVIEW NUMBERS, not current-balance fields. Never infer
+# skill-point gain from the player's current skill-point balance.
+LIMITS = dict(FIELD_LIMITS, **{"실패율": (0, 100),
+                             "체력 소모": (0, 100),
+                             "스킬 Pt 증가": (0, 200)})
 SCENES = ("훈련", "스킬", "시설", "섬 훈련", "휴식/외출", "레이스", "육성 결과")
 MAX_REGIONS = 40
 MAX_BYTES = 60000
@@ -40,6 +44,8 @@ class LiveNumberRegion:
     def validate(self):
         if self.scene not in SCENES or self.field not in LIMITS:
             raise ValueError("지원하지 않는 한국 게임 숫자/화면 종류")
+        if self.field in ("체력 소모", "스킬 Pt 증가") and self.scene != "훈련":
+            raise ValueError("훈련 효과 숫자는 훈련 화면에만 등록할 수 있습니다")
         if self.reviewed is not True or self.source != "manual_kr_game_number_region":
             raise ValueError("실제 한국 서버 숫자 위치 직접 확인 필요")
         if (type(self.width) is not int or type(self.height) is not int
@@ -110,13 +116,18 @@ def save_region(path, region):
 def parse_live_number(raw, field):
     if field not in LIMITS:
         raise ValueError("등록되지 않은 수치")
-    if field != "실패율":
+    if field not in ("실패율", "체력 소모", "스킬 Pt 증가"):
         return parse_numeric(raw, field)
     value = str(raw).strip().replace(" ", "")
-    if not re.fullmatch(r"[0-9]{1,3}%?", value):
-        return None
-    result = int(value.rstrip("%"))
-    return result if 0 <= result <= 100 else None
+    if field == "실패율":
+        if not re.fullmatch(r"[0-9]{1,3}%?", value):
+            return None
+        result = int(value.rstrip("%"))
+    else:
+        if not re.fullmatch(r"\+?[0-9]{1,3}", value):
+            return None
+        result = int(value.lstrip("+"))
+    return result if LIMITS[field][0] <= result <= LIMITS[field][1] else None
 
 
 def read_candidate(image, region, binary, confidence=MIN_CONFIDENCE):
