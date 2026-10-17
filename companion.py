@@ -35,6 +35,7 @@ from training_tour_r49 import TrainingTour
 from training_transition_r57 import TrainingClickGuard
 from foreground_click_r49 import ForegroundWindowsPointer, AutoInputBlocked
 from batch_planner_r49 import BatchPlanner
+from setup_preflight_r58 import audit_setup
 from outcome_learning_r49 import inspect_record_counts
 from autopilot_bridge_r50 import LiveBatchSupervisor
 from visual_controls_r50 import load_profiles
@@ -257,6 +258,9 @@ class Companion(tk.Tk):
         tk.Button(c,text='R50 게임 화면·TP/스킬 숫자 한 번 등록',
                   command=self._open_r50_calibration,
                   bg='#355174',fg=TEXT,relief='flat').pack(fill='x',pady=2)
+        tk.Button(c,text='R58 육성 시작 준비 점검 (클릭 없음)',
+                  command=self._check_setup_preflight,
+                  bg='#355174',fg=TEXT,relief='flat').pack(fill='x',pady=2)
         tk.Button(c,text='등록된 화면만 반복 자동 실행 (실험)',
                   command=self._start_full_batch,
                   bg='#245a54',fg=TEXT,relief='flat').pack(fill='x',pady=2)
@@ -453,6 +457,16 @@ class Companion(tk.Tk):
             save_checkpoint(user_dir()/'r50_batch_progress.json',
                             current_snapshot(self.full_batch))
 
+    def _check_setup_preflight(self):
+        """Explain missing setup/TP/result registrations; never control game."""
+        try:
+            profiles=load_profiles(user_dir()/'r50_visual_controls.json')
+            rois=load_rois(user_dir()/'r50_numeric_rois.json')
+            report=audit_setup(profiles,rois)
+            self.r50_status.set(report.summary)
+        except (OSError,ValueError,TypeError,KeyError) as exc:
+            self.r50_status.set('R58 사전 점검 오류: '+str(exc)[:170])
+
     def _start_full_batch(self):
         """Only live, registered and opt-in scenes may be clicked."""
         if self.demo or os.name!='nt' or not self.monitoring or self.current_target is None:
@@ -462,12 +476,10 @@ class Companion(tk.Tk):
             prof=load_profiles(user_dir()/'r50_visual_controls.json')
             rois=load_rois(user_dir()/'r50_numeric_rois.json')
             auth=load_authorizations(user_dir()/'r51_skill_authorizations.json')
+            preflight=audit_setup(prof,rois)
+            if not preflight.ready_for_manual_review:
+                raise ValueError(preflight.summary)
             stages={x.stage for x in prof}
-            if not {'tp','result','repeat'}.issubset(stages):
-                raise ValueError('TP/육성 종료/반복 화면을 먼저 실제 게임에서 등록하세요.')
-            if not {'tp','tp_cost','tp_cap','free_item_count','free_item_recovery'}.issubset(
-                    {x.field for x in rois if x.stage=='tp'}):
-                raise ValueError('TP/비용/상한/무료아이템 수량·회복량 OCR 영역을 등록하세요.')
             course=course_for(self.current_target,self.known_courses)
             scope=self.current_target.key+":"+self.current_target.style
             signed=approved_skill_labels(auth,scope)
@@ -478,10 +490,15 @@ class Companion(tk.Tk):
                           bool(signed) and
                           {'skill_points','skill_price'}.issubset(
                            {x.field for x in rois if x.stage=='skill'}))
-            notice=('등록한 한국 서버 화면 템플릿과 숫자 OCR로 실제 게임을 클릭하는 실험입니다.\n'
-                    '현재 캐릭터·서포트 덱·계승·선택 각질을 실제 게임에서 확인했습니까?\n'
-                    '인식하지 못하는 이벤트/시설/레이스에서 중지됩니다. 유료 TP 결제는 사용하지 않습니다.\n'
-                    '미검증 장면에서는 자동 실행을 멈춥니다. 시작할까요?')
+            notice=('R58 등록 점검을 통과했지만 실제 게임 설정을 자동 검증한 것은 아닙니다.\n'
+                    '현재 게임에서 아래 네 가지를 모두 직접 확인했습니까?\n'
+                    '1. 육성 캐릭터·복장\n'
+                    '2. 서포트 덱 구성\n'
+                    '3. 계승 부모 및 설정\n'
+                    '4. 육성 목표 각질\n'
+                    '육성 준비 화면 자동 선택은 아직 지원되지 않습니다.\n'
+                    '미등록 이벤트·레이스·시설에서 중지합니다. 유료 TP/주얼 결제는 금지합니다.\n'
+                    '직접 확인한 경우에만 실험 자동 실행을 시작하시겠습니까?')
             if not messagebox.askyesno('R50 실험적 자동 육성 동의',notice,parent=self):
                 return
             self._stop_all_automation()
