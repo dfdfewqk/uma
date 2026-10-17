@@ -13,6 +13,7 @@ from tkinter import ttk, messagebox
 from pathlib import Path
 
 from visual_controls_r50 import register,save_profile
+from skill_authorizations_r51 import SkillAuthorization,save_authorization
 from numeric_observer_r50 import NumberROI,save_roi,FIELDS
 from screen_r4 import user_dir
 
@@ -41,6 +42,7 @@ class CalibrationWindow(tk.Toplevel):
         self.field=tk.StringVar(value="tp")
         self.mode=tk.StringVar(value="scene")
         self.free_confirmed=tk.BooleanVar(value=False)
+        self.skill_conditions_reviewed=tk.BooleanVar(value=False)
         self.reviewed=tk.BooleanVar(value=False)
         self.status=tk.StringVar(value="먼저 게임 화면을 띄우고 4초 뒤 화면 캡처를 눌러주세요.")
         self.draw()
@@ -74,6 +76,8 @@ class CalibrationWindow(tk.Toplevel):
         tk.Checkbutton(actions,text="실제 한국 서버 화면/버튼을 직접 확인함",variable=self.reviewed).pack(side="left")
         tk.Checkbutton(actions,text="이 TP 아이템은 무료임을 게임에서 직접 확인함",
                        variable=self.free_confirmed).pack(side="left")
+        tk.Checkbutton(self,text="스킬의 현재 캐릭터·거리·각질·마장 적성을 실제 한국 게임에서 모두 확인함",
+                       variable=self.skill_conditions_reviewed).pack(anchor="w",padx=12)
         buttons=tk.Frame(self);buttons.pack(fill="x",padx=8,pady=6)
         tk.Button(buttons,text="버튼 템플릿 저장 (덮어쓰기 없음)",
                   command=self.save_control).pack(side="left",padx=6)
@@ -87,6 +91,7 @@ class CalibrationWindow(tk.Toplevel):
         self.regions.clear()
         self.reviewed.set(False)
         self.free_confirmed.set(False)
+        self.skill_conditions_reviewed.set(False)
         self._repaint()
 
     def delayed_capture(self):
@@ -178,13 +183,23 @@ class CalibrationWindow(tk.Toplevel):
             if self.stage.get()=="skill" and current_goal is None:
                 raise ValueError("스킬은 대회 회차·각질을 먼저 선택하고 등록해야 합니다.")
             scope=(current_goal.key+":"+current_goal.style) if self.stage.get()=="skill" else ""
+            if self.stage.get()=="skill":
+                if (not action.startswith("skill:") or
+                        not self.skill_conditions_reviewed.get()):
+                    raise ValueError("스킬의 현재 캐릭터·거리·각질·마장 조건 확인 후 승인해야 합니다.")
             p=register(self.image,stage=self.stage.get(),action=action,
                        scene_box=a,button_box=b,click=click,
                        reviewed=self.reviewed.get(),
                        free_only=self.free_confirmed.get(),target_scope=scope)
             dest=user_dir()/"r50_visual_controls.json"
             save_profile(dest,p)
-            self.status.set("버튼 영역 등록 완료 · 이 설정만으로 자동 조작이 시작되지는 않습니다.")
+            if self.stage.get()=="skill":
+                auth=SkillAuthorization(
+                     scope=scope,skill=action.removeprefix("skill:"),
+                     character_reviewed=True,distance_reviewed=True,
+                     style_reviewed=True,surface_reviewed=True).validate()
+                save_authorization(user_dir()/"r51_skill_authorizations.json",auth)
+            self.status.set("버튼 영역 등록 완료 · 게임 안의 숫자/스킬 검수 이후에만 자동 사용 가능합니다.")
         except (OSError,ValueError,TypeError) as exc:
             self.status.set("저장 보류: "+str(exc)[:190])
 

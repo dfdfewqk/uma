@@ -36,6 +36,7 @@ from outcome_learning_r49 import inspect_record_counts
 from autopilot_bridge_r50 import LiveBatchSupervisor
 from visual_controls_r50 import load_profiles
 from numeric_observer_r50 import load_rois
+from skill_authorizations_r51 import load_authorizations,approved_skill_labels
 from batch_checkpoint_r50 import (
     current_snapshot,save_checkpoint,load_checkpoint,restore_finished_only,
 )
@@ -140,6 +141,7 @@ class Companion(tk.Tk):
         self.full_batch=None
         self.r50_profiles=()
         self.r50_rois=()
+        self.r51_skill_approvals=frozenset()
         self.r50_status=tk.StringVar(value='R50 TP·스킬·종료/반복 버튼 등록 대기 · 실전 검증 전')
         self.r50_training_frames=0
         self.auto_confirmed_risk=False
@@ -393,6 +395,7 @@ class Companion(tk.Tk):
         if self.full_batch is not None:
             self.full_batch.halt('사용자가 자동 조작을 중단했습니다.')
         self.r50_status.set('R50 중지됨 · 자동 클릭/반복 없음')
+        self.r51_skill_approvals=frozenset()
 
     def _save_r50_progress(self):
         if self.full_batch is not None:
@@ -407,6 +410,7 @@ class Companion(tk.Tk):
         try:
             prof=load_profiles(user_dir()/'r50_visual_controls.json')
             rois=load_rois(user_dir()/'r50_numeric_rois.json')
+            auth=load_authorizations(user_dir()/'r51_skill_authorizations.json')
             stages={x.stage for x in prof}
             if not {'tp','result','repeat'}.issubset(stages):
                 raise ValueError('TP/육성 종료/반복 화면을 먼저 실제 게임에서 등록하세요.')
@@ -414,7 +418,13 @@ class Companion(tk.Tk):
                     {x.field for x in rois if x.stage=='tp'}):
                 raise ValueError('TP/비용/상한/무료아이템 수량·회복량 OCR 영역을 등록하세요.')
             course=course_for(self.current_target,self.known_courses)
+            scope=self.current_target.key+":"+self.current_target.style
+            signed=approved_skill_labels(auth,scope)
+            actual_skills={x.action.removeprefix("skill:") for x in prof if
+                           x.stage=="skill" and x.target_scope==scope}
+            signed=signed.intersection(actual_skills)
             skills_ready=(course is not None and 'skill' in stages and
+                          bool(signed) and
                           {'skill_points','skill_price'}.issubset(
                            {x.field for x in rois if x.stage=='skill'}))
             notice=('등록한 한국 서버 화면 템플릿과 숫자 OCR로 실제 게임을 클릭하는 실험입니다.\n'
@@ -426,6 +436,8 @@ class Companion(tk.Tk):
             self._stop_all_automation()
             self.r50_profiles=prof
             self.r50_rois=rois
+            # Reapply authorizations AFTER stop() clears the previous session.
+            self.r51_skill_approvals=signed if skills_ready else frozenset()
             new_runner=LiveBatchSupervisor(self.current_target,
                             self.repeat_preferences.repeats,dry_run=False)
             existing=load_checkpoint(user_dir()/'r50_batch_progress.json',
@@ -439,6 +451,7 @@ class Companion(tk.Tk):
             self.full_batch.arm(setup_reviewed=True,
                  character_deck_inheritance_reviewed=True,
                  skill_scope_reviewed=skills_ready)
+            self.full_batch.skill_approvals=self.r51_skill_approvals
             self._save_r50_progress()
             self.preview_collector.reset()
             self.r50_training_frames=0
@@ -450,8 +463,11 @@ class Companion(tk.Tk):
         batch=self.full_batch
         if batch is None or not batch.armed:
             return
-        if not rect or self.current_target is None:
-            batch.halt('게임 창/육성 목표 없음')
+        if not rect or self.current_target is None or batch.planner.goal!=self.current_target:
+            batch.halt('게임 창/육성 목표가 변경돼 자동 실행을 중단했습니다.')
+            return
+        if batch.planner.repeats!=self.repeat_preferences.repeats:
+            batch.halt('반복 목표 횟수가 변경돼 자동 실행을 중단했습니다.')
             return
         if batch.awaiting is not None and batch.awaiting['action']=='start_run':
             if scene=='훈련' and preview is not None and preview.selected:
@@ -1011,7 +1027,9 @@ class Companion(tk.Tk):
                         run_id=self.full_batch.active_run_id,
                         skill_scope_reviewed=self.full_batch.skill_scope_reviewed,
                         goal_scope=(self.current_target.key+":"+self.current_target.style
-                                    if self.current_target is not None else ""))
+                                    if self.current_target is not None else ""),
+                        skill_approvals=self.r51_skill_approvals,
+                        cycle=len(self.full_batch.planner.completed_ids))
                 self.q.put(('frame',epoch,game.hwnd,
                             (text_scene,buttons,scene,values,hits,preview,packet)))
             except Exception as e:

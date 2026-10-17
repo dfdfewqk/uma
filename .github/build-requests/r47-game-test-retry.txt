@@ -1,2 +1,3 @@
-R50 Windows v0.32.1 CI request: calibrated TP/skill/result/repeat prototype with guarded checkpoints.
-Fail-closed tests unchanged; no premium purchases or public Releases. One-time dispatch only.
+R51 v0.32.2 explicitly user-requested Windows game-test build.
+Audit and retest scoped verified skill purchases, TP/skill transition evidence and repeated runs.
+No real-money/paid TP, no automatic Release. Manual-only package workflow invoked once.

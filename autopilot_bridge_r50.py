@@ -46,7 +46,7 @@ class VisualStageAdapter:
         self.count=0
 
     def observe(self,image,window_key,profiles,rois,ocr_binary,
-                *, run_id=None,skill_scope_reviewed=False,goal_scope=""):
+                *, run_id=None,skill_scope_reviewed=False,goal_scope="",skill_approvals=(),cycle=0):
         stage,controls=unique_scene(image,profiles)
         if stage is None:
             self.reset()
@@ -54,7 +54,14 @@ class VisualStageAdapter:
         from visual_controls_r50 import recognize
         names=tuple(sorted(c.action for c in controls))
         nums=self.reader.observe(stage,image,rois,ocr_binary,window_key)
-        key=(stage,window_key,image.size,names,tuple(sorted(nums.items())))
+        # Same TP/skill pixels recur between separate cultivations. Bind
+        # reviewed evidence to the batch cycle and active run, so the second
+        # run cannot replay the first run's evidence or be rejected as a
+        # duplicate solely because numeric values happen to match.
+        if type(cycle) is not int or cycle<0 or cycle>10000:
+            raise ValueError("육성 회차 컨텍스트 오류")
+        key=(stage,window_key,image.size,names,tuple(sorted(nums.items())),
+             cycle,run_id or "before-start")
         if key==self.last:
             self.count=min(self.count+1,20)
         else:
@@ -94,7 +101,8 @@ class VisualStageAdapter:
                           p.identity==c.profile_identity and
                           p.target_scope==goal_scope and goal_scope
                           for p in profiles)]
-                if len(visible)==1 and len(matching)==1:
+                if (len(visible)==1 and len(matching)==1 and
+                    matching[0].action[len("skill:"):] in skill_approvals):
                     label=matching[0].action[len("skill:"):]
                     offers=(VerifiedOffer(label,nums["skill_price"],100,
                                           True,reviewed,False),)
@@ -125,6 +133,8 @@ class LiveBatchSupervisor:
         self.last_frame_key=None
         self.event_log=[]
         self.skill_scope_reviewed=False
+        self.skill_approvals=frozenset()
+        self.purchased_skills=set()  # No repeated same-skill purchase per actual run.
         self.character_setup_reviewed=False
 
     @property
@@ -159,6 +169,7 @@ class LiveBatchSupervisor:
         self.active_run_id="kr-"+uuid.uuid4().hex
         self.awaiting=None
         self.planner.pending=None
+        self.purchased_skills.clear()
         self._log("새 육성의 훈련 화면 재확인 · 진행 ID 생성")
         return True
 
@@ -181,10 +192,13 @@ class LiveBatchSupervisor:
                      after.get("tp",-1)>before.get("tp",100000) and
                      after.get("free_item_count",100000)<before.get("free_item_count",-1))
         elif action=="purchase_skill":
-            changed=(packet.stage=="skill" and
-                     after.get("skill_points",100000)<before.get("skill_points",-1))
+            price=pending.get("expected_skill_price")
+            changed=(packet.stage=="skill" and type(price) is int and
+                     price>0 and "skill_points" in after and
+                     "skill_points" in before and
+                     before["skill_points"]-after["skill_points"]==price)
         elif action=="finish_run":
-            changed=(packet.stage=="repeat" and
+            changed=(packet.stage in ("repeat","setup","tp") and
                      pending.get("run_id") is not None)
         elif action=="repeat_run":
             changed=packet.stage in ("setup","tp") and obs.evidence_id!=pending["evidence"]
@@ -203,6 +217,9 @@ class LiveBatchSupervisor:
             self._log("검수한 결과+다음 화면 확인 후 완료 1회 반영")
         elif action=="repeat_run":
             self._log("반복 버튼 클릭 후 시작 화면 확인")
+        elif action=="purchase_skill":
+            self.purchased_skills.add(pending["skill_label"])
+            self._log("검수된 스킬 Pt 정확 감소 · 같은 스킬 반복 구매 차단")
         else:
             self._log(action+" 이후 실제 수치/장면 변화 확인")
         self.awaiting=None
@@ -243,8 +260,22 @@ class LiveBatchSupervisor:
         matches=[c for c in packet.controls if c.action==target]
         if len(matches)!=1:
             raise SceneClickBlocked("화면에서 등록된 버튼을 한 개로 확인할 수 없습니다.")
-        if advice.action=="purchase_skill" and not self.skill_scope_reviewed:
-            raise SceneClickBlocked("현재 각질/대회 스킬 검수 없이 자동 구매 금지")
+        if advice.action=="purchase_skill":
+            if not self.active_run_id:
+                raise SceneClickBlocked("현재 육성 ID가 확인되지 않아 스킬 구매 금지")
+            skill_name=target.removeprefix("skill:")
+            if (not self.skill_scope_reviewed or
+                skill_name not in self.skill_approvals):
+                raise SceneClickBlocked("해당 스킬의 한국 서버 적성 검수/대회 승인 누락")
+            if skill_name in self.purchased_skills:
+                raise SceneClickBlocked("이미 구매한 스킬의 반복 구매 차단")
+            eligible=[x for x in obs.skill_offers if x.label==skill_name and
+                       x.reviewed and x.eligible and not x.owned and
+                       x.price<=obs.skill_points]
+            if len(eligible)!=1:
+                raise SceneClickBlocked("현재 스킬 가격/잔여 Pt/적성 재확인 필요")
+        if advice.action=="start_run" and self.active_run_id is not None:
+            raise SceneClickBlocked("이전 육성 종료 결과를 확인하기 전 시작 금지")
         if advice.action=="repeat_run" and (not self.character_setup_reviewed or
                                              self.planner.remaining<=0):
             raise SceneClickBlocked("이전 캐릭터·덱·계승/반복 횟수 검증 필요")
@@ -265,6 +296,8 @@ class LiveBatchSupervisor:
                 self.planner.record_click(advice,obs)
             self.awaiting=dict(action=advice.action,evidence=obs.evidence_id,
                   numbers=dict(packet.numbers),when=self.clock(),
-                  result_observation=obs,run_id=self.active_run_id)
+                  result_observation=obs,run_id=self.active_run_id,
+                  skill_label=(skill_name if advice.action=="purchase_skill" else None),
+                  expected_skill_price=(eligible[0].price if advice.action=="purchase_skill" else None))
             self._log("실제 클릭: "+advice.action+" · 결과 확인 전 대기")
         return sent

@@ -1,2 +1,2 @@
-Uma Trainer KR R50 Calibrated Automation Preview
-Version: 0.32.1
+Uma Trainer KR R51 Live Batch Safety Integration
+Version: 0.32.2
