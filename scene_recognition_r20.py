@@ -15,7 +15,9 @@ from typing import Optional
 
 from PIL import Image, ImageChops, ImageStat
 
-SCENES_R20 = ('훈련','스킬','시설','이벤트')
+# Old four scene names are retained for backward-compatible saved anchor files.
+SCENES_R20 = ('훈련','스킬','시설','이벤트','육성 준비','TP 회복',
+              '휴식/외출','레이스','섬 훈련','육성 결과','다음 육성','팝업/기타')
 VERSION = 'uma_scene_templates_r20_v1'
 
 
@@ -83,7 +85,7 @@ def profile_path():
 
 def save_library(path, anchors):
     path=Path(path)
-    if len(anchors)>20: raise SceneError('기준 이미지는 최대 20개')
+    if len(anchors)>48: raise SceneError('기준 이미지는 최대 48개')
     rows=[]
     for a in anchors:
         a.validate();rows.append(vars(a).copy())
@@ -98,9 +100,9 @@ def load_library(path):
     path=Path(path)
     if not path.exists():return []
     raw=path.read_text(encoding='utf8')
-    if len(raw)>2_000_000:raise SceneError('데이터 파일이 비정상적으로 큽니다')
+    if len(raw)>8_000_000:raise SceneError('데이터 파일이 비정상적으로 큽니다')
     data=json.loads(raw)
-    if data.get('schema')!=VERSION or not isinstance(data.get('anchors'),list) or len(data['anchors'])>20:
+    if data.get('schema')!=VERSION or not isinstance(data.get('anchors'),list) or len(data['anchors'])>48:
         raise SceneError('R20 기준 이미지 파일 형식 오류')
     return [Anchor(**row).validate() for row in data['anchors']]
 
@@ -140,17 +142,28 @@ class SceneGuess:
     reason: str
 
 
+def independent_anchors(first, second):
+    """Same/overlapping landmarks are NOT two independent scene proofs."""
+    if first.scene != second.scene:
+        return False
+    ax1,ay1,ax2,ay2=first.x,first.y,first.x+first.w,first.y+first.h
+    bx1,by1,bx2,by2=second.x,second.y,second.x+second.w,second.y+second.h
+    return min(ax2,bx2)<=max(ax1,bx1) or min(ay2,by2)<=max(ay1,by1)
+
+
 def detect_scene(img, anchors, threshold=.91, margin=.055):
-    """Requires at least two independently chosen anchors per scene."""
+    """Requires two NONOVERLAPPING landmarks, no guessing across UI layouts."""
     grouped={s:[] for s in SCENES_R20}
     for a in anchors:
         grouped[a.scene].append(a)
     scores=[]
     for scene, parts in grouped.items():
         if len(parts)<2: continue
-        matches=sorted((anchor_match(img,a) for a in parts),reverse=True)
-        # Two separate anchors must both match; an additional weak anchor cannot overrule.
-        score=min(matches[:2])
+        measured=[(anchor_match(img,a),a) for a in parts]
+        pairs=(min(x[0],y[0]) for i,x in enumerate(measured)
+               for y in measured[i+1:] if independent_anchors(x[1],y[1]))
+        score=max(pairs,default=None)
+        if score is None: continue
         scores.append((score,scene))
     if not scores:
         return SceneGuess(None,0.0,'장면별 고유 영역 2개 등록 필요')

@@ -29,6 +29,20 @@ class SceneR20(unittest.TestCase):
         self.assertEqual(engine.observe(im,anchors).scene,'훈련')
         self.assertIsNone(engine.observe(synthetic('스킬'),anchors).scene)
         self.assertEqual(engine.observe(synthetic('스킬'),anchors).scene,'스킬')
+    def test_new_screen_categories_support_explicit_registration(self):
+        for label in ('레이스','TP 회복','육성 결과','다음 육성','팝업/기타'):
+            with self.subTest(label=label):
+                im=synthetic('훈련')
+                a=make_anchor(im,label,80/800,170/1100,100/800,65/1100)
+                b=make_anchor(im,label,500/800,860/1100,100/800,65/1100)
+                self.assertEqual(detect_scene(im,[a,b]).scene,label)
+
+    def test_overlapping_anchors_never_count_as_two_proofs(self):
+        im=synthetic('훈련')
+        a=make_anchor(im,'훈련',80/800,170/1100,100/800,65/1100)
+        b=make_anchor(im,'훈련',85/800,173/1100,100/800,65/1100)
+        self.assertIsNone(detect_scene(im,[a,b]).scene)
+
     def test_scene_not_guessed_with_one_landmark(self):
         self.assertIsNone(detect_scene(synthetic(),self.anchors('훈련')[:1]).scene)
     def test_scene_dropped_immediately_on_unknown(self):

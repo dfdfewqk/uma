@@ -49,6 +49,8 @@ from recommendation_bridge_r28 import load_handoff, HintGate, HandoffError
 from game_overlay_r28 import TrainingOverlay
 from portable_update_r30 import check_latest, download_portable, UpdateError, CURRENT_VERSION
 from scene_recognition_r20 import StableScene, load_library, profile_path as scene_profile_path
+from scene_fusion_r53 import StableScreenFusion, STAGE_SCENES
+from visual_controls_r50 import unique_scene
 from button_detection_r21 import StableButtons, load_patterns, path_default as button_pattern_path, DetectionError, DetectorUnavailable
 
 BG='#0D1524'; CARD='#17243B'; TEXT='#EFF6FF'; MUTED='#9DAFC5'; AQUA='#6DDCCB'; YELLOW='#F9C56B'
@@ -124,6 +126,7 @@ class Companion(tk.Tk):
         self.reason=tk.StringVar(value='육성 중 입력할 필요 없습니다. 확인되지 않은 화면에서는 추천을 보류합니다.')
         self.scene_info=tk.StringVar(value='화면 유형: 확인 전 (R20 기준 화면 필요)')
         self.scene_tracker=StableScene()
+        self.scene_fusion=StableScreenFusion()
         self.hint_gate=HintGate()
         self.hint_overlay=TrainingOverlay(self)
         self.button_tracker=StableButtons()
@@ -354,6 +357,9 @@ class Companion(tk.Tk):
         tk.Button(row,text='저장된 화면 ZIP 내보내기 (직접 선택)',
                   command=self._export_capture_pack,bg='#344766',fg=TEXT,
                   relief='flat').pack(fill='x',pady=(0,5))
+        tk.Button(row,text='R53 화면 종류 기준 등록 · 고유 영역 2개',
+                  command=self._open_r53_passive_scene_registration,bg='#355174',
+                  fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
         tk.Button(row,text='상세 설정·자료 관리 열기',
                   command=self._launch_advanced,bg='#263754',fg=TEXT,
                   relief='flat').pack(fill='x')
@@ -392,6 +398,11 @@ class Companion(tk.Tk):
         """Explicit user-reviewed Korean game button/number ROI registration."""
         from calibration_ui_r50 import CalibrationWindow
         CalibrationWindow(self)
+
+    def _open_r53_passive_scene_registration(self):
+        """User-controlled, passive scene fingerprint calibration only."""
+        from passive_scene_ui_r53 import PassiveSceneRegistration
+        PassiveSceneRegistration(self)
 
     def _stop_all_automation(self):
         self._stop_autotour()
@@ -462,9 +473,21 @@ class Companion(tk.Tk):
         except (OSError,ValueError,TypeError,KeyError) as exc:
             self.r50_status.set('R50 준비 보류: '+str(exc)[:145])
 
-    def _run_r50_on_frame(self,packet,scene,preview,hwnd,rect):
+    def _run_r50_on_frame(self,packet,scene,preview,hwnd,rect,screen):
         batch=self.full_batch
         if batch is None or not batch.armed:
+            return
+        if screen.status == 'conflict':
+            batch.halt('R20·R50·R48 장면 인식 결과 충돌')
+            self.autotour.stop()
+            self.auto_confirmed_risk=False
+            self.r50_status.set('R53 안전 중지: 서로 다른 화면으로 인식되어 클릭하지 않습니다.')
+            return
+        if screen.status == 'waiting':
+            return
+        if packet is not None and packet.stage is not None and scene != STAGE_SCENES[packet.stage]:
+            batch.halt('자동 실행 장면과 화면 인식 결과가 불일치합니다.')
+            self.r50_status.set('R53 안전 중지: 장면 불일치')
             return
         if not rect or self.current_target is None or batch.planner.goal!=self.current_target:
             batch.halt('게임 창/육성 목표가 변경돼 자동 실행을 중단했습니다.')
@@ -902,6 +925,7 @@ class Companion(tk.Tk):
 
     def _clear_live_evidence(self):
         """Never display last-turn values after window/layout/scene invalidation."""
+        self.scene_fusion.reset()
         for var in self.statvals.values(): var.set('—')
         self.energy.set('—');self.skill.set('—')
         self.scene_info.set('화면 유형: 미확인 · 검수 대기')
@@ -985,16 +1009,21 @@ class Companion(tk.Tk):
                 try:anchors=load_library(scene_profile_path())
                 except (OSError,ValueError):anchors=[]
                 guess=self.scene_tracker.observe(image,anchors)
-                scene=guess.scene
-                # A distinctive, narrow Korean portrait training preview can
-                # be detected without R20 calibration templates. This is only
-                # a provisional scene, not proof of the optimal next action.
+                # R53 unifies passive R20 two-anchor scene evidence, R50
+                # reviewed visual control stage, and provisional R48 training.
+                # No scene result alone grants any permission to click.
                 portrait_training=selected_training(image)
-                if scene is None and portrait_training is not None:
-                    scene='훈련'
-                    text_scene='화면 유형: 훈련 미리보기 후보 · 실제 보상 확인 중'
-                else:
-                    text_scene=f'화면 유형: {scene or "보류"} · {guess.reason}'
+                try:
+                    passive_profiles=(self.r50_profiles
+                         if self.full_batch is not None and self.full_batch.armed
+                         else load_profiles(user_dir()/'r50_visual_controls.json'))
+                except (OSError,ValueError,TypeError,KeyError) as exc:
+                    raise RuntimeError('R50 화면 등록 파일을 읽을 수 없어 인식을 중단합니다') from exc
+                registered_stage=(unique_scene(image,passive_profiles)[0]
+                                  if passive_profiles else None)
+                screen=self.scene_fusion.observe(guess.scene,registered_stage,portrait_training)
+                scene=screen.scene
+                text_scene=f'화면 유형: {scene or "보류"} · {screen.reason}'
                 hits=[]
                 try:patterns=load_patterns(button_pattern_path())
                 except (DetectionError,OSError):patterns=[]
@@ -1035,7 +1064,7 @@ class Companion(tk.Tk):
                         skill_approvals=self.r51_skill_approvals,
                         cycle=len(self.full_batch.planner.completed_ids))
                 self.q.put(('frame',epoch,game.hwnd,
-                            (text_scene,buttons,scene,values,hits,preview,packet)))
+                            (text_scene,buttons,scene,values,hits,preview,packet,screen)))
             except Exception as e:
                 self.q.put(('error',epoch,game.hwnd,str(e)))
         threading.Thread(target=work,daemon=True).start()
@@ -1051,7 +1080,7 @@ class Companion(tk.Tk):
                     self._clear_live_evidence()
                     self.reason.set('화면 인식 보류 · '+data[:85])
                     continue
-                scene_text,buttons,scene,values,hits,preview,packet=data
+                scene_text,buttons,scene,values,hits,preview,packet,screen=data
                 self.scene_info.set(scene_text)
                 self.button_info.set(buttons)
                 # Entire frame replaces, never merges with last frame's values.
@@ -1111,7 +1140,7 @@ class Companion(tk.Tk):
                         detail+=' · 한국 서버 화면 인식 기준 미등록/미확인 · 장면 점검 필요'
                 self.reason.set(detail)
                 if self.full_batch is not None and self.full_batch.armed:
-                    self._run_r50_on_frame(packet,scene,preview,hwnd,rect)
+                    self._run_r50_on_frame(packet,scene,preview,hwnd,rect,screen)
                 if self.autotour.enabled and (self.full_batch is None or
                        not self.full_batch.armed or scene=='훈련'):
                     self._run_autotour_on_frame(scene,preview,hwnd,rect)
