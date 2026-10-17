@@ -9,13 +9,14 @@ import zipfile
 
 from portable_update_r30 import (
     Release, UpdateError, check_latest, deploy_verified_archive, parse_release,
-    parse_checksum, parse_version, _check_zip, EXE_FILES,
+    parse_checksum, parse_version, _check_zip, EXE_FILES, CURRENT_VERSION,
 )
 
 
 class PortableUpdaterTests(unittest.TestCase):
     def setUp(self):
-        self.version='0.32.0'
+        parts=list(parse_version(CURRENT_VERSION));parts[-1]+=1
+        self.version='.'.join(str(x) for x in parts)
         self.asset=f'UmaTrainerKR-Portable-v{self.version}.zip'
         self.url=f'https://github.com/dfdfewqk/uma/releases/download/v{self.version}/'
         self.meta={'tag_name':'v'+self.version,'draft':False,'prerelease':False,
@@ -32,7 +33,7 @@ class PortableUpdaterTests(unittest.TestCase):
         self.assertEqual(parse_release(self.meta).version,self.version)
 
     def test_same_old_release(self):
-        self.assertIsNone(parse_release(self.meta,current='0.32.0'))
+        self.assertIsNone(parse_release(self.meta,current=self.version))
         self.assertIsNone(parse_release(self.meta,current='0.33.0'))
 
     def test_draft_or_prerelease_not_offered(self):
@@ -91,7 +92,7 @@ class PortableUpdaterTests(unittest.TestCase):
             archive=self._create_zip(root)
             sha=hashlib.sha256(archive.read_bytes()).hexdigest()
             updated=deploy_verified_archive(archive,self.release,current,expected_sha256=sha)
-            self.assertEqual(updated.parent.resolve(), (root/'UmaTrainerKR_Portable_v0.32.0').resolve())
+            self.assertEqual(updated.parent.resolve(), (root/('UmaTrainerKR_Portable_v'+self.version)).resolve())
             self.assertTrue(updated.exists())
             self.assertEqual(current.read_bytes(),b'ORIGINAL STAYS')
             self.assertEqual(old_data.read_text(),'unchanged')
@@ -110,7 +111,7 @@ class PortableUpdaterTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td);old=root/'old';old.mkdir()
             current=old/'UmaTrainerKR_Companion.exe';current.write_bytes(b'old')
-            (root/'UmaTrainerKR_Portable_v0.32.0').mkdir()
+            (root/('UmaTrainerKR_Portable_v'+self.version)).mkdir()
             archive=self._create_zip(root)
             with self.assertRaises(UpdateError):
                 deploy_verified_archive(archive,self.release,current,expected_sha256=hashlib.sha256(archive.read_bytes()).hexdigest())

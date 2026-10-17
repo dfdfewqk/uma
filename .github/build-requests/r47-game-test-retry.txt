@@ -1,3 +1,2 @@
-R49 one-time Windows portable game-test request (version 0.32.0).
-Requested by user: integrated recommendations, opt-in input, TP, skills, repeat & outcome learning.
-No auto-release or premium purchase. CI must fail closed. Retain existing data.
+R49 Windows v0.32.0 CI retry: updater fixture now derives its test release version from CURRENT_VERSION.
+Fail-closed tests unchanged; no premium purchases or public Releases. One-time dispatch only.
