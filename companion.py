@@ -36,6 +36,7 @@ from training_transition_r57 import TrainingClickGuard
 from foreground_click_r49 import ForegroundWindowsPointer, AutoInputBlocked
 from batch_planner_r49 import BatchPlanner
 from setup_preflight_r58 import audit_setup
+from setup_choices_r59 import StableSetupChoices, SetupChoiceView, load_choices
 from outcome_learning_r49 import inspect_record_counts
 from autopilot_bridge_r50 import LiveBatchSupervisor
 from visual_controls_r50 import load_profiles
@@ -132,6 +133,8 @@ class Companion(tk.Tk):
         self.scene_info=tk.StringVar(value='화면 유형: 확인 전 (R20 기준 화면 필요)')
         self.scene_tracker=StableScene()
         self.scene_fusion=StableScreenFusion()
+        self.setup_choice_tracker=StableSetupChoices()
+        self.setup_choices_status=tk.StringVar(value='R59 육성 시작 선택지 · 기본/이벤트 등록 대기')
         self.numeric_reader=StableLiveNumberReader()
         self.numeric_status=tk.StringVar(value='R54 숫자 영역 미등록 · 검수 전 OCR 후보만 표시')
         self.failure_rate=tk.StringVar(value='—')
@@ -326,6 +329,9 @@ class Companion(tk.Tk):
         self._label(c,'게임 화면 자동 확인',AQUA,10,'bold').pack(anchor='w')
         tk.Label(c,textvariable=self.scene_info,bg=CARD,fg=TEXT,
                  anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=(5,2))
+        tk.Label(c,textvariable=self.setup_choices_status,bg=CARD,fg=AQUA,
+                 anchor='w',wraplength=290,justify='left',
+                 font=('Malgun Gothic',8)).pack(anchor='w',pady=(2,3))
         tk.Label(c,textvariable=self.button_info,bg=CARD,fg=MUTED,
                  anchor='w',wraplength=290,justify='left').pack(anchor='w',pady=2)
         tk.Label(c,textvariable=self.r28_info,bg=CARD,fg=MUTED,
@@ -397,6 +403,9 @@ class Companion(tk.Tk):
         tk.Button(row,text='R54 숫자 OCR 영역 등록 · 화면별 숫자 하나',
                   command=self._open_r54_numeric_registration,bg='#355174',
                   fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
+        tk.Button(row,text='R59 육성 시작 선택지 등록 · 일반/이벤트',
+                  command=self._open_r59_setup_registration,bg='#355174',
+                  fg=TEXT,relief='flat').pack(fill='x',pady=(0,5))
         tk.Button(row,text='상세 설정·자료 관리 열기',
                   command=self._launch_advanced,bg='#263754',fg=TEXT,
                   relief='flat').pack(fill='x')
@@ -444,6 +453,10 @@ class Companion(tk.Tk):
     def _open_r54_numeric_registration(self):
         from passive_numbers_ui_r54 import PassiveNumberRegistration
         PassiveNumberRegistration(self)
+
+    def _open_r59_setup_registration(self):
+        from setup_choices_ui_r59 import SetupChoiceRegistration
+        SetupChoiceRegistration(self)
 
     def _stop_all_automation(self):
         self._stop_autotour()
@@ -1005,6 +1018,8 @@ class Companion(tk.Tk):
     def _clear_live_evidence(self):
         """Never display last-turn values after window/layout/scene invalidation."""
         self.scene_fusion.reset()
+        self.setup_choice_tracker.reset()
+        self.setup_choices_status.set('R59 게임 화면 전환 · 시작 선택지 재확인 필요')
         self.numeric_reader.reset()
         self.training_click_guard.reset()
         self.training_evidence.reset()
@@ -1112,6 +1127,17 @@ class Companion(tk.Tk):
                 screen=self.scene_fusion.observe(guess.scene,registered_stage,portrait_training)
                 scene=screen.scene
                 text_scene=f'화면 유형: {scene or "보류"} · {screen.reason}'
+                # R59 read-only: never feed visible options to the R50 click
+                # supervisor; registered starting paths are not authorizations.
+                try:
+                    choice_profiles=load_choices(user_dir()/'r59_setup_choices.json')
+                    setup_view=self.setup_choice_tracker.observe(
+                        image,hwnd=game.hwnd,rect=game.rect,active=True,
+                        scene=scene,profiles=choice_profiles)
+                except (OSError,ValueError,TypeError,KeyError) as exc:
+                    self.setup_choice_tracker.reset()
+                    setup_view=SetupChoiceView(
+                        None,None,(),'등록한 육성 선택지 인식 보류: '+str(exc)[:95])
                 hits=[]
                 try:patterns=load_patterns(button_pattern_path())
                 except (DetectionError,OSError):patterns=[]
@@ -1187,7 +1213,7 @@ class Companion(tk.Tk):
                         skill_approvals=self.r51_skill_approvals,
                         cycle=len(self.full_batch.planner.completed_ids))
                 self.q.put(('frame',epoch,game.hwnd,
-                            (text_scene,buttons,scene,values,hits,preview,packet,screen,r54_active,numeric_note,training_state)))
+                            (text_scene,buttons,scene,values,hits,preview,packet,screen,r54_active,numeric_note,training_state,setup_view)))
             except Exception as e:
                 self.q.put(('error',epoch,game.hwnd,str(e)))
         threading.Thread(target=work,daemon=True).start()
@@ -1203,8 +1229,17 @@ class Companion(tk.Tk):
                     self._clear_live_evidence()
                     self.reason.set('화면 인식 보류 · '+data[:85])
                     continue
-                scene_text,buttons,scene,values,hits,preview,packet,screen,r54_active,numeric_note,training_state=data
+                scene_text,buttons,scene,values,hits,preview,packet,screen,r54_active,numeric_note,training_state,setup_view=data
                 self.scene_info.set(scene_text)
+                if setup_view.branch is not None:
+                    name='일반' if setup_view.branch=='normal' else '이벤트'
+                    self.setup_choices_status.set(
+                        'R59 '+name+' · '+setup_view.step+' · 보이는 선택지: '
+                        +', '.join(setup_view.choices)+' (자동 입력 없음)')
+                elif scene in ('육성 준비','TP 회복','팝업/기타',None):
+                    self.setup_choices_status.set('R59 '+setup_view.status)
+                else:
+                    self.setup_choices_status.set('R59 육성 시작 전 선택지 · 현재 화면 해당 없음')
                 self.button_info.set(buttons)
                 # Entire frame replaces, never merges with last frame's values.
                 safe=(dict(values) if r54_active and scene is not None
