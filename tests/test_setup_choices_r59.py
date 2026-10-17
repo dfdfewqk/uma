@@ -46,6 +46,41 @@ class ChoicesR59Tests(unittest.TestCase):
         self.assertIsNone(v.selected_choice)
         self.assertFalse(v.ml_training_label)
 
+    def test_selected_marker_is_optional_and_not_a_click_approval(self):
+        from setup_choices_r59 import selected_marker_visible
+        from PIL import ImageDraw
+        im=frame()
+        draw=ImageDraw.Draw(im)
+        draw.rectangle((240,494,302,522), fill="#8D22CA")
+        draw.text((244,500),"SELECTED",fill="white")
+        c=(.605,.667,.81,.714)
+        p=register_choice(im,branch="normal",step="character",choice="choice A",
+                          scene_box=A,button_box=B,reviewed=True,
+                          selected_box=c,selected_reviewed=True)
+        self.assertTrue(selected_marker_visible(im,p))
+        self.assertFalse(selected_marker_visible(frame(),p))
+        s=StableSetupChoices()
+        self.observe(s,im,(p,))
+        visible=self.observe(s,im,(p,))
+        self.assertEqual(visible.selected_choice,"choice A")
+        self.assertFalse(visible.game_input_allowed)
+        self.assertFalse(visible.ml_training_label)
+
+    def test_marker_not_fabricated_for_older_profiles(self):
+        from setup_choices_r59 import selected_marker_visible
+        p=record()
+        self.assertFalse(selected_marker_visible(frame(),p))
+        s=StableSetupChoices()
+        self.observe(s,frame(),(p,))
+        self.assertIsNone(self.observe(s,frame(),(p,)).selected_choice)
+
+    def test_unreviewed_selected_marker_must_be_rejected(self):
+        with self.assertRaises(ValueError):
+            register_choice(frame(),branch="normal",step="character",
+                            choice="choice A",scene_box=A,button_box=B,
+                            reviewed=True,selected_box=(.61,.67,.81,.71),
+                            selected_reviewed=False)
+
     def test_event_branch_is_separate_from_normal(self):
         p=record(branch="event")
         s=StableSetupChoices()

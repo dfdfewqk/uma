@@ -27,6 +27,7 @@ class SetupChoiceRegistration(tk.Toplevel):
         self.choice = tk.StringVar(value="")
         self.mode = tk.StringVar(value="scene")
         self.confirmed = tk.BooleanVar(value=False)
+        self.selected_reviewed = tk.BooleanVar(value=False)
         self.status = tk.StringVar(value="일반 시작 또는 이벤트 시작을 선택하고 실제 한국 게임 화면을 등록하세요.")
         self.image = None
         self.game = None
@@ -46,7 +47,8 @@ class SetupChoiceRegistration(tk.Toplevel):
         tk.Entry(line,textvariable=self.choice,width=19).pack(side="left")
         line2=tk.Frame(self);line2.pack(fill="x",padx=9,pady=(5,0))
         tk.Button(line2,text="4초 후 게임 화면 캡처",command=self.schedule_capture).pack(side="left",padx=4)
-        for name,desc in (("scene","고유한 화면 표식"),("button","선택지 버튼")):
+        for name,desc in (("scene","고유한 화면 표식"),("button","선택지 버튼"),
+                          ("selected","선택 중 표식 (선택사항)")):
             tk.Radiobutton(line2,text=desc,variable=self.mode,value=name).pack(side="left",padx=5)
         self.canvas=tk.Canvas(self,bg="#142338",highlightthickness=0)
         self.canvas.pack(fill="both",expand=True,padx=9,pady=8)
@@ -55,6 +57,8 @@ class SetupChoiceRegistration(tk.Toplevel):
         self.canvas.bind("<ButtonRelease-1>",self.up)
         tk.Checkbutton(self,text="실제 한국 서버 화면의 선택지 명칭과 위치를 직접 확인했습니다",
                        variable=self.confirmed).pack(anchor="w",padx=9)
+        tk.Checkbutton(self,text="화면에서 해당 선택지가 현재 선택 중임을 확인했습니다 (선택 표식 등록 시)",
+                       variable=self.selected_reviewed).pack(anchor="w",padx=9)
         tk.Button(self,text="현재 선택지 등록 (기존 선택지 보존)",
                   command=self.save).pack(fill="x",padx=9,pady=5)
         tk.Label(self,textvariable=self.status,wraplength=730,justify="left",
@@ -82,6 +86,7 @@ class SetupChoiceRegistration(tk.Toplevel):
             self.image=image.convert("RGB")
             self.boxes.clear()
             self.confirmed.set(False)
+            self.selected_reviewed.set(False)
             self.redraw()
             self.status.set("화면 캡처 완료 · 고유 표식 및 선택지 버튼을 각각 드래그하세요.")
         except (OSError,ValueError,RuntimeError) as exc:
@@ -103,7 +108,8 @@ class SetupChoiceRegistration(tk.Toplevel):
         for kind,box in self.boxes.items():
             x1,y1,x2,y2=box
             self.canvas.create_rectangle(5+x1*w,5+y1*h,5+x2*w,5+y2*h,
-                        outline="#FBC96D" if kind=="button" else "#64DCC8",width=3)
+                        outline={"button":"#FBC96D","scene":"#64DCC8",
+                                 "selected":"#DD94F1"}[kind],width=3)
 
     def down(self,event):
         self.drag=(event.x,event.y)
@@ -125,16 +131,20 @@ class SetupChoiceRegistration(tk.Toplevel):
 
     def save(self):
         try:
-            if self.image is None or set(self.boxes) != {"scene","button"}:
+            if self.image is None or not {"scene","button"}.issubset(self.boxes):
                 raise ValueError("같은 화면에서 고유 표식과 선택지 버튼을 모두 지정하세요")
             if not self.confirmed.get():
                 raise ValueError("실제 게임에서 선택지를 확인했다고 체크하세요")
+            if ("selected" in self.boxes) != self.selected_reviewed.get():
+                raise ValueError("선택 중 표식 영역을 그린 경우 실제 선택 중임을 확인해 주세요")
             profile=register_choice(
                 self.image,branch=self.branch.get(),step=self.step.get(),
                 choice=self.choice.get(),scene_box=self.boxes["scene"],
-                button_box=self.boxes["button"],reviewed=True)
+                button_box=self.boxes["button"],reviewed=True,
+                selected_box=self.boxes.get("selected"),
+                selected_reviewed=self.selected_reviewed.get())
             save_choice(user_dir()/"r59_setup_choices.json",profile)
             self.master.setup_choice_tracker.reset()
-            self.status.set("등록 완료 · 일반/이벤트 경로별로 구분 · 자동 클릭은 아직 허용하지 않음")
+            self.status.set("선택지 등록 완료 · 선택 중 표식은 2프레임 일치 시에만 표시 · 자동 클릭 없음")
         except (OSError,ValueError,TypeError,KeyError) as exc:
             self.status.set("선택지 저장 보류: "+str(exc)[:165])

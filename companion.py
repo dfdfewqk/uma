@@ -1233,9 +1233,11 @@ class Companion(tk.Tk):
                 self.scene_info.set(scene_text)
                 if setup_view.branch is not None:
                     name='일반' if setup_view.branch=='normal' else '이벤트'
+                    chosen=(' · 선택 중: '+setup_view.selected_choice
+                            if setup_view.selected_choice else ' · 현재 선택 상태 미확인')
                     self.setup_choices_status.set(
-                        'R59 '+name+' · '+setup_view.step+' · 보이는 선택지: '
-                        +', '.join(setup_view.choices)+' (자동 입력 없음)')
+                        'R60 '+name+' · '+setup_view.step+' · 보이는 선택지: '
+                        +', '.join(setup_view.choices)+chosen+' (자동 입력 없음)')
                 elif scene in ('육성 준비','TP 회복','팝업/기타',None):
                     self.setup_choices_status.set('R59 '+setup_view.status)
                 else:

@@ -42,6 +42,11 @@ class SetupChoice:
     reviewed: bool = True
     source: str = "user_marked_live_kr_setup"
     schema: str = SCHEMA
+    # Optional *observed selected-state* marker from an actual game screen.
+    # Older R59 profiles remain readable with all three fields at defaults.
+    selected_box: tuple[float, float, float, float] | None = None
+    selected_png: str | None = None
+    selected_reviewed: bool = False
 
     @property
     def identity(self):
@@ -67,19 +72,35 @@ class SetupChoice:
             if (abs(im.width - round((box[2]-box[0])*self.width)) > 2
                     or abs(im.height - round((box[3]-box[1])*self.height)) > 2):
                 raise ValueError("등록된 부분 이미지 크기가 실제 화면과 다릅니다")
+        if any((self.selected_box is not None, self.selected_png is not None,
+                self.selected_reviewed is True)):
+            if (self.selected_box is None or self.selected_png is None
+                    or self.selected_reviewed is not True):
+                raise ValueError("선택 표시 영역은 실제 선택된 게임 화면에서만 등록")
+            box = _bbox(self.selected_box)
+            image = _decode(self.selected_png)
+            if (abs(image.width-round((box[2]-box[0])*self.width))>2
+                    or abs(image.height-round((box[3]-box[1])*self.height))>2):
+                raise ValueError("선택 표식의 이미지/원본 화면 크기가 다릅니다")
         return self
 
 
 def register_choice(image, *, branch, step, choice, scene_box, button_box,
-                    reviewed=False):
+                    reviewed=False, selected_box=None, selected_reviewed=False):
     from training_preview_r48 import portrait_supported
     if not isinstance(image, Image.Image) or not portrait_supported(image):
         raise ValueError("현재 지원하지 않는 한국 PC 게임 창 비율")
     a = _bbox(scene_box)
     b = _bbox(button_box)
+    if (selected_box is None) != (selected_reviewed is False):
+        raise ValueError("선택 표식은 선택된 실제 게임 화면 확인 후에만 등록")
+    selected = _bbox(selected_box) if selected_box is not None else None
     obj = SetupChoice(branch, _label(step, 50), _label(choice, 60),
                       image.width, image.height, a, b,
-                      _png(crop(image, a)), _png(crop(image, b)), reviewed)
+                      _png(crop(image, a)), _png(crop(image, b)), reviewed,
+                      selected_box=selected,
+                      selected_png=(_png(crop(image, selected)) if selected else None),
+                      selected_reviewed=selected_reviewed)
     return obj.validate()
 
 
@@ -98,7 +119,9 @@ def load_choices(path):
         raise ValueError("육성 선택지 등록 형식 오류")
     records = tuple(SetupChoice(**{
         **item, "scene_box": tuple(item["scene_box"]),
-        "button_box": tuple(item["button_box"])}).validate()
+        "button_box": tuple(item["button_box"]),
+        "selected_box": (tuple(item["selected_box"])
+                         if item.get("selected_box") is not None else None)}).validate()
         for item in data["choices"])
     if len({x.identity for x in records}) != len(records):
         raise ValueError("중복 등록된 화면 선택지")
@@ -139,6 +162,16 @@ def visible_choice(image, choice):
     return a and b
 
 
+def selected_marker_visible(image, choice):
+    """A marker is evidence only when the user registered a selected state."""
+    choice.validate()
+    if not (choice.selected_reviewed and choice.selected_box
+            and choice.selected_png and visible_choice(image, choice)):
+        return False
+    found, _ = _match_patch(image, choice.selected_box, choice.selected_png, .94)
+    return bool(found)
+
+
 @dataclass(frozen=True)
 class SetupChoiceView:
     branch: str | None
@@ -147,7 +180,7 @@ class SetupChoiceView:
     status: str
     game_input_allowed: bool = False
     click_position: None = None
-    selected_choice: None = None
+    selected_choice: str | None = None
     ml_training_label: bool = False
 
 
@@ -175,10 +208,18 @@ class StableSetupChoices:
             return SetupChoiceView(None, None, (), "시작 경로/단계가 불확실하거나 중복 · 선택 보류")
         branch, step = next(iter(routes))
         choices = tuple(sorted({p.choice for p in matches}))
-        token = (hwnd, rect, image.size, scene, branch, step, choices)
+        selected = tuple(sorted({p.choice for p in matches
+                                 if selected_marker_visible(image,p)}))
+        if len(selected)>1:
+            self.reset()
+            return SetupChoiceView(None,None,(),"서로 다른 선택 표식 동시 감지 · 상태 보류")
+        selected_choice=selected[0] if selected else None
+        token = (hwnd, rect, image.size, scene, branch, step, choices, selected_choice)
         self.count = min(self.count + 1, 2) if token == self.previous else 1
         self.previous = token
         if self.count < 2:
             return SetupChoiceView(None, None, (), "화면 선택지를 한 번 더 확인하는 중")
-        return SetupChoiceView(branch, step, choices,
-                               "화면의 선택지 확인 · 자동 선택은 검수 전 보류")
+        return SetupChoiceView(
+            branch, step, choices,
+            "화면 선택지 확인 · 실제 클릭/진행은 사용자 검수 전 보류",
+            selected_choice=selected_choice)
